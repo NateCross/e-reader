@@ -3,6 +3,7 @@
 EPUB reader written in vanilla JavaScript.
 Aims to be a convenient and customizable way to view .epub files
 you have on your PC or mobile device.
+Uses [epub.js](https://github.com/futurepress/epub.js/).
 
 # TODO
 
