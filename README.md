@@ -7,6 +7,8 @@ you have on your PC or mobile device.
 # TODO
 
 - [ ] Literally everything
+- [ ] Implement epub reader
+  - Use [epub.js](https://github.com/futurepress/epub.js/)
 - [ ] Implement epub file uploads
   - [ ] **Check for specifically epub files with proper format**
   - [ ] Drag-and-drop
