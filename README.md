@@ -15,3 +15,12 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
   - [ ] Drag-and-drop
   - [ ] Upload button (HTML)
   - [ ] Grab from a direct link to an epub file
+
+# Tests
+
+This project uses [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
+Load the page `test/run-tests.html` to test.
+
+Add new scripts to test inside the designated area of `test/run-tests.html`.
+Write tests in `test/tests.js`.
+
