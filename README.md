@@ -9,12 +9,16 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 
 - [ ] Literally everything
 - [ ] Implement epub reader
-  - Use [epub.js](https://github.com/futurepress/epub.js/)
+  - [x] Use [epub.js](https://github.com/futurepress/epub.js/)
 - [ ] Implement epub file uploads
   - [ ] **Check for specifically epub files with proper format**
   - [ ] Drag-and-drop
-  - [ ] Upload button (HTML)
+  - [x] Upload button (HTML)
   - [ ] Grab from a direct link to an epub file
+    - May not be possible? Needs further research.
+- [x] Get book metadata
+- [ ] Store list of previously opened books
+  - [ ] Use local storage
 
 # Tests
 
