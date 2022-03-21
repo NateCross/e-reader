@@ -30,6 +30,9 @@
   <br> <br>
   <img id="book-cover">
 
+  <br> <br>
+  <ul id="recently-opened-books"> </ul>
+
   <script>
 
   var book = ePub();
@@ -37,16 +40,30 @@
 
   var inputElement = document.getElementById("input");
 
+  const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
+  // function pushToRecentlyOpenedBooks(book)
+
   inputElement.addEventListener('change', function (e) {
         var file = e.target.files[0];
+        console.log(file);
+
+        // const objectURL = window.URL.createObjectURL(file);
+        // console.log(objectURL);
+
+
+        // console.log(`File: ${file}`);
         if (window.FileReader) {
             var reader = new FileReader();
             reader.onload = openBook;
             reader.readAsArrayBuffer(file);
+
         }
     });
 
+
   function openBook(e){
+    console.log(`e: ${e.target}`);
+
     var bookData = e.target.result;
     console.log(`Bookdata: ${bookData}`);
     var title = document.getElementById("title");
@@ -67,8 +84,22 @@
       bookCover.src = url;
     });
 
+
     // Get metadata from book
-    book.loaded.metadata.then(metadata => console.log(metadata));
+    var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
+    // var bookMetadata = book.loaded.metadata.then(metadata => metadata);
+    console.log(`Metadata: ${bookMetadata}`);
+
+    // const objectURL = window.URL.createObjectURL(file);
+    // console.log(objectURL);
+
+    // Push to a list of recently opened books
+    let listItem = document.createElement("li");
+    bookMetadata.then(metadata => {
+      listItem.innerText = metadata.title;
+    }) // Must be in the 'then' function otherwise it will return promise
+    recentlyOpenedBooks.appendChild(listItem);
+
 
     /// END TEST FUNCTIONS ///
 
