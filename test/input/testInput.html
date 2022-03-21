@@ -10,9 +10,15 @@
   <title>EPUB.js Input Example</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
-  <script src="../modules/epub.min.js"></script>
+  <script src="../../modules/epub.min.js"></script>
 
   <link rel="stylesheet" type="text/css" href="examples.css">
+
+  <style>
+    #book-cover {
+      display: none;
+    }
+  </style>
 
 </head>
 <body>
@@ -20,6 +26,9 @@
   <div id="viewer" class="spreads"></div>
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
+
+  <br> <br>
+  <img id="book-cover">
 
   <script>
 
@@ -39,11 +48,29 @@
 
   function openBook(e){
     var bookData = e.target.result;
+    console.log(`Bookdata: ${bookData}`);
     var title = document.getElementById("title");
     var next = document.getElementById("next");
     var prev = document.getElementById("prev");
 
     book.open(bookData, "binary");
+
+    /// TEST FUNCTIONS ///
+
+    // Accesses the book cover.
+    // It's a promise, so we must use 'then()' so it displays properly
+    // We can also use the url as the src of an image element.
+    book.coverUrl().then(url => {
+      console.log(`Cover URL: ${url}`);
+      const bookCover = document.querySelector("#book-cover");
+      // bookCover.style.display = 'block';
+      bookCover.src = url;
+    });
+
+    // Get metadata from book
+    book.loaded.metadata.then(metadata => console.log(metadata));
+
+    /// END TEST FUNCTIONS ///
 
     rendition = book.renderTo("viewer", {
       width: "100%",
