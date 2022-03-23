@@ -22,10 +22,11 @@
 
 </head>
 <body>
-  <div id="title"><input type="file" id="input"></div>
+  <div id="title"><input type="file" id="input" multiple></div>
   <div id="viewer" class="spreads"></div>
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
+  <input type="button" id="clear">
 
   <br> <br>
   <img id="book-cover">
@@ -34,43 +35,53 @@
   <ul id="recently-opened-books"> </ul>
 
   <script>
+  // Utility function
+  // https://flaviocopes.com/how-to-list-object-methods-javascript/
+  const getMethods = (obj) => {
+    let properties = new Set()
+    let currentObj = obj
+    do {
+      Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+    } while ((currentObj = Object.getPrototypeOf(currentObj)))
+    return [...properties.keys()].filter(item => typeof obj[item] === 'function')
+  }
+
+  /// BEGIN MAIN CODE ///
 
   var book = ePub();
   var rendition;
 
   var inputElement = document.getElementById("input");
+  console.log(`Input Element Files`);
+  console.log(inputElement.files);
 
   const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
   // function pushToRecentlyOpenedBooks(book)
 
   inputElement.addEventListener('change', function (e) {
-        var file = e.target.files[0];
-        console.log(file);
+    var file = e.target.files[0];
+    console.log(e.target.files);
 
-        // const objectURL = window.URL.createObjectURL(file);
-        // console.log(objectURL);
+    var objectURL = window.URL.createObjectURL(file);
+    console.log(objectURL);
 
-
-        // console.log(`File: ${file}`);
-        if (window.FileReader) {
-            var reader = new FileReader();
-            reader.onload = openBook;
-            reader.readAsArrayBuffer(file);
-
-        }
-    });
+    openBook(objectURL);
+  });
 
 
-  function openBook(e){
-    console.log(`e: ${e.target}`);
+  function openBook(objURL) {
 
-    var bookData = e.target.result;
-    console.log(`Bookdata: ${bookData}`);
+    // Not needed? But it's in the sample so here it stays for now
     var title = document.getElementById("title");
     var next = document.getElementById("next");
     var prev = document.getElementById("prev");
 
-    book.open(bookData, "binary");
+    // Because we're using an object URL, we need to specify the "epub"
+    // parameter to the open method. If it were a FileReader, we'd use
+    // "binary"
+    book.open(objURL, "epub");
+    console.log(book);
+    // console.log(getMethods(book));
 
     /// TEST FUNCTIONS ///
 
@@ -101,14 +112,28 @@
     recentlyOpenedBooks.appendChild(listItem);
 
 
+
     /// END TEST FUNCTIONS ///
 
     rendition = book.renderTo("viewer", {
       width: "100%",
       height: 600
     });
+    // rendition.clear();
 
     rendition.display();
+
+    /// TEST FUNC ///
+
+    // Clear button to show new book
+    var clearButton = document.querySelector('#clear');
+    clearButton.value = "Clear";
+    clearButton.onclick = () => {
+          rendition.destroy();
+        }
+
+    /// END TEST FUNC ///
+
 	
 	var keyListener = function(e){
 
