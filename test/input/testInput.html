@@ -18,11 +18,22 @@
     #book-cover {
       display: none;
     }
+    #clear {
+      margin: 100px 25px 10px; /* Random margins */
+      display: inline-block;
+    }
+    #recently-opened-books {
+      color: blue;
+      text-decoration: underline;
+    }
+    #recently-opened-books:hover {
+      cursor: pointer;
+    }
   </style>
 
 </head>
 <body>
-  <div id="title"><input type="file" id="input" multiple></div>
+  <div id="title"><input type="file" id="input"></div>
   <div id="viewer" class="spreads"></div>
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
@@ -35,6 +46,8 @@
   <ul id="recently-opened-books"> </ul>
 
   <script>
+  var book = ePub();
+  var rendition;
   // Utility function
   // https://flaviocopes.com/how-to-list-object-methods-javascript/
   const getMethods = (obj) => {
@@ -46,24 +59,31 @@
     return [...properties.keys()].filter(item => typeof obj[item] === 'function')
   }
 
+  const changeBook = (objURL) => {
+    return function() {
+      book.destroy();
+      rendition.destroy();
+      openBook(objURL);
+    };
+  }
+
+  // const changeBook = (objURL, book, rendition) => {
+  //   book.destroy();
+  //   rendition.destroy();
+  //   openBook(objURL);
+  // }
+
   /// BEGIN MAIN CODE ///
 
-  var book = ePub();
-  var rendition;
 
   var inputElement = document.getElementById("input");
-  console.log(`Input Element Files`);
-  console.log(inputElement.files);
 
   const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
-  // function pushToRecentlyOpenedBooks(book)
 
   inputElement.addEventListener('change', function (e) {
     var file = e.target.files[0];
-    console.log(e.target.files);
 
     var objectURL = window.URL.createObjectURL(file);
-    console.log(objectURL);
 
     openBook(objectURL);
   });
@@ -71,45 +91,50 @@
 
   function openBook(objURL) {
 
-    // Not needed? But it's in the sample so here it stays for now
     var title = document.getElementById("title");
     var next = document.getElementById("next");
     var prev = document.getElementById("prev");
+
+    // We have to create a new 'book' object every time we load a new book
+    // this is because there is no way to unload the book; the book must be
+    // destroyed with 'book.destroy()'.
+    book = ePub();
+    // var rendition;
 
     // Because we're using an object URL, we need to specify the "epub"
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
     book.open(objURL, "epub");
+    book.opened.then(bk => { console.log(bk.key()) })
     console.log(book);
-    // console.log(getMethods(book));
 
     /// TEST FUNCTIONS ///
 
     // Accesses the book cover.
     // It's a promise, so we must use 'then()' so it displays properly
     // We can also use the url as the src of an image element.
+
     book.coverUrl().then(url => {
       console.log(`Cover URL: ${url}`);
       const bookCover = document.querySelector("#book-cover");
-      // bookCover.style.display = 'block';
       bookCover.src = url;
     });
 
 
     // Get metadata from book
     var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
-    // var bookMetadata = book.loaded.metadata.then(metadata => metadata);
     console.log(`Metadata: ${bookMetadata}`);
-
-    // const objectURL = window.URL.createObjectURL(file);
-    // console.log(objectURL);
 
     // Push to a list of recently opened books
     let listItem = document.createElement("li");
     bookMetadata.then(metadata => {
-      listItem.innerText = metadata.title;
-    }) // Must be in the 'then' function otherwise it will return promise
+      const linkItem = document.createElement("a");
+      linkItem.onclick = changeBook(objURL);
+      linkItem.innerHTML = metadata.title;
+      listItem.appendChild(linkItem);
+    }); // Must be in the 'then' function otherwise it will return promise
     recentlyOpenedBooks.appendChild(listItem);
+    console.log(recentlyOpenedBooks);
 
 
 
@@ -129,8 +154,10 @@
     var clearButton = document.querySelector('#clear');
     clearButton.value = "Clear";
     clearButton.onclick = () => {
-          rendition.destroy();
-        }
+      // NOTE: You must call book.destroy and rendition.destroy()
+      book.destroy();
+      rendition.destroy();
+    }
 
     /// END TEST FUNC ///
 
@@ -164,7 +191,6 @@
       e.preventDefault();
     }, false);
 
-    
 
 
     document.addEventListener("keyup", keyListener, false);
