@@ -22,6 +22,10 @@
       margin: 100px 25px 10px; /* Random margins */
       display: inline-block;
     }
+    #cleardb {
+      margin: 100px 25px 10px; /* Random margins */
+      display: none;
+    }
     #recently-opened-books {
       color: blue;
       text-decoration: underline;
@@ -42,12 +46,75 @@
   <br> <br>
   <img id="book-cover">
 
+  <br>
+  <input type="button" value="Clear Database" id = "cleardb">
+
+  <br>
+  <p id = "test-area"></p>
+
   <br> <br>
   <ul id="recently-opened-books"> </ul>
 
   <script>
+  let db = null;   // IndexedDB
+  let bookObjectStore = null; // Also indexedDB; needed cause async
+  let currentBook = {};
+
   var book = ePub();
   var rendition;
+
+  const testArea = document.querySelector('#test-area');
+
+  // Returns a request for using indexedDB
+  var openRequest = indexedDB.open("books");
+
+  openRequest.onupgradeneeded = e => {
+    window.alert(`Upgraded database!`);
+    // Triggers if client had no database
+    // or if the client's database is a lesser version
+    // Put initialization code here
+
+    e.target.result.createObjectStore('BOOKS', {keyPath: 'key'});
+  }
+
+  openRequest.onerror = e => {
+    window.alert(`Error: ${e.target.error}`);
+  }
+
+  openRequest.onsuccess = e => {
+    window.alert(`Loaded database!`);
+    db = e.target.result;
+    bookObjectStore = db.transaction('BOOKS', 'readwrite').objectStore('BOOKS');
+
+    let testBook = {
+      key: '123',
+      name: 'Something else',
+    };
+
+    let addRequest = bookObjectStore.put(testBook);
+    addRequest.onsuccess = e => {
+      console.log(`Added book ${e.target.result}`);
+    }
+    addRequest.onerror = e => {
+      console.log(`${e.target.error}`);
+    }
+
+
+    const dbClearButton = document.querySelector('#cleardb');
+    dbClearButton.style.display = 'block';
+
+    dbClearButton.onclick = () => {
+      indexedDB.deleteDatabase('books');
+    }
+
+    // console.log(bookObjectStore.get('123'));
+    bookObjectStore.get('123').onsuccess = e => {
+      console.log(e.target.result);
+      currentBook = e.target.result;
+      console.log(currentBook);
+    };
+  }
+
   // Utility function
   // https://flaviocopes.com/how-to-list-object-methods-javascript/
   const getMethods = (obj) => {
@@ -90,6 +157,7 @@
 
 
   function openBook(objURL) {
+    currentBook = {};
 
     var title = document.getElementById("title");
     var next = document.getElementById("next");
@@ -105,7 +173,9 @@
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
     book.open(objURL, "epub");
-    book.opened.then(bk => { console.log(bk.key()) })
+    book.opened.then(bk => {
+      curren
+    })
     console.log(book);
 
     /// TEST FUNCTIONS ///
@@ -122,8 +192,9 @@
 
 
     // Get metadata from book
+    // WARN: This is super jank, probably not correct at all tbh
     var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
-    console.log(`Metadata: ${bookMetadata}`);
+    // console.log(`Metadata: ${bookMetadata}`);
 
     // Push to a list of recently opened books
     let listItem = document.createElement("li");
