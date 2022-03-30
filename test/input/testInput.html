@@ -59,11 +59,15 @@
   let db = null;   // IndexedDB
   let bookObjectStore = null; // Also indexedDB; needed cause async
   let currentBook = {};
+  let settings = {};
+  let settingsStore = null;
 
-  var book = ePub();
+  var Book = ePub();
   var rendition;
 
   const testArea = document.querySelector('#test-area');
+  const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
+
 
   // Returns a request for using indexedDB
   var openRequest = indexedDB.open("books");
@@ -84,7 +88,9 @@
   openRequest.onsuccess = e => {
     window.alert(`Loaded database!`);
     db = e.target.result;
-    bookObjectStore = db.transaction('BOOKS', 'readwrite').objectStore('BOOKS');
+
+    let dbTransaction = db.transaction('BOOKS', 'readwrite');
+    bookObjectStore = dbTransaction.objectStore('BOOKS');
 
     let testBook = {
       key: '123',
@@ -92,8 +98,10 @@
     };
 
     let addRequest = bookObjectStore.put(testBook);
+
+    // Code to run when we update the database.
     addRequest.onsuccess = e => {
-      console.log(`Added book ${e.target.result}`);
+      updateRecentlyOpenedBookDisplay(e);
     }
     addRequest.onerror = e => {
       console.log(`${e.target.error}`);
@@ -107,12 +115,11 @@
       indexedDB.deleteDatabase('books');
     }
 
-    // console.log(bookObjectStore.get('123'));
-    bookObjectStore.get('123').onsuccess = e => {
-      console.log(e.target.result);
-      currentBook = e.target.result;
-      console.log(currentBook);
-    };
+    // bookObjectStore.get('123').onsuccess = e => {
+    //   console.log(e.target.result);
+    //   currentBook = e.target.result;
+    //   console.log(currentBook);
+    // };
   }
 
   // Utility function
@@ -128,10 +135,34 @@
 
   const changeBook = (objURL) => {
     return function() {
-      book.destroy();
+      Book.destroy();
       rendition.destroy();
       openBook(objURL);
     };
+  }
+
+  function pushToRecentBooks(book) {
+    // Push to a list of recently opened books
+    const listItem = document.createElement("li");
+    const linkItem = document.createElement("a");
+    linkItem.innerHTML = book.name;
+    listItem.appendChild(linkItem);
+    recentlyOpenedBooks.appendChild(listItem);
+  }
+
+  function removeChildrenFromElement(element) {
+    while (element.firstElementChild)
+      element.firstElementChild.remove();
+  }
+
+  function updateRecentlyOpenedBookDisplay(e) {
+    const getAllRequest = e.target.source.getAll();
+
+    getAllRequest.onsuccess = event => {
+      removeChildrenFromElement(recentlyOpenedBooks);
+      const arrOfBooks = event.target.result;
+      arrOfBooks.forEach(pushToRecentBooks);
+    }
   }
 
   // const changeBook = (objURL, book, rendition) => {
@@ -144,8 +175,6 @@
 
 
   var inputElement = document.getElementById("input");
-
-  const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
 
   inputElement.addEventListener('change', function (e) {
     var file = e.target.files[0];
@@ -166,17 +195,23 @@
     // We have to create a new 'book' object every time we load a new book
     // this is because there is no way to unload the book; the book must be
     // destroyed with 'book.destroy()'.
-    book = ePub();
-    // var rendition;
+    Book = ePub();
 
     // Because we're using an object URL, we need to specify the "epub"
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
-    book.open(objURL, "epub");
-    book.opened.then(bk => {
-      curren
+    Book.open(objURL, "epub");
+    Book.opened.then(bk => {
+      currentBook = bk;
+      console.log(currentBook);
+
+      // TODO: Get metadata's identifier for key with
+      // book
+      // console.log(`metadata`);
+      // console.log(currentBook.loaded.metadata.then);
     })
-    console.log(book);
+
+    // console.log(currentBook);
 
     /// TEST FUNCTIONS ///
 
@@ -184,7 +219,7 @@
     // It's a promise, so we must use 'then()' so it displays properly
     // We can also use the url as the src of an image element.
 
-    book.coverUrl().then(url => {
+    Book.coverUrl().then(url => {
       console.log(`Cover URL: ${url}`);
       const bookCover = document.querySelector("#book-cover");
       bookCover.src = url;
@@ -193,7 +228,7 @@
 
     // Get metadata from book
     // WARN: This is super jank, probably not correct at all tbh
-    var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
+    var bookMetadata = Book.loaded.metadata.then(metadata => { return metadata });
     // console.log(`Metadata: ${bookMetadata}`);
 
     // Push to a list of recently opened books
@@ -205,13 +240,12 @@
       listItem.appendChild(linkItem);
     }); // Must be in the 'then' function otherwise it will return promise
     recentlyOpenedBooks.appendChild(listItem);
-    console.log(recentlyOpenedBooks);
 
 
 
     /// END TEST FUNCTIONS ///
 
-    rendition = book.renderTo("viewer", {
+    rendition = Book.renderTo("viewer", {
       width: "100%",
       height: 600
     });
@@ -226,7 +260,7 @@
     clearButton.value = "Clear";
     clearButton.onclick = () => {
       // NOTE: You must call book.destroy and rendition.destroy()
-      book.destroy();
+      Book.destroy();
       rendition.destroy();
     }
 
