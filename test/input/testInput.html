@@ -65,7 +65,7 @@
 
   var Book = ePub();
   // var Book = ePub();
-  var rendition;
+  var rendition = null;
 
   const testArea = document.querySelector('#test-area');
   const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
@@ -188,7 +188,7 @@
     return book.packaging.metadata;
   }
 
-  function updateBookToDatabase(bookObjURL, metadata) {
+  function updateBookToDatabase(arrayBuffer, metadata) {
     if (!db) return;    // Check if the db has been loaded, which is a global variable
 
     const dbTransaction = db.transaction('BOOKS', 'readwrite');
@@ -198,7 +198,7 @@
     /* const */ bookObjectStore = dbTransaction.objectStore('BOOKS');
 
     // Create the object to add to DB
-    const bookData = new BookData(bookObjURL, metadata);
+    const bookData = new BookData(arrayBuffer, metadata);
 
     let addRequest = bookObjectStore.put(bookData);
 
@@ -224,14 +224,31 @@
   inputElement.addEventListener('change', function (e) {
     var file = e.target.files[0];
 
-    var objectURL = window.URL.createObjectURL(file);
+    // var objectURL = window.URL.createObjectURL(file);
+    if (window.FileReader) {
+      var reader = new FileReader();
+      reader.onload = openBook;
+      reader.readAsArrayBuffer(file);
+    }
 
-    openBook(objectURL);
+    // openBook(objectURL);
   });
 
+  // Clear button to show new book
+  var clearButton = document.querySelector('#clear');
+  clearButton.value = "Clear";
+  clearButton.onclick = () => {
+    // NOTE: You must call book.destroy and rendition.destroy()
+    Book.destroy();
+    rendition.destroy();
+  }
 
-  function openBook(objURL) {
-    console.log(`Objurl: ${objURL}`);
+
+  function openBook(arrayBuffer) {
+    console.log(`Objurl: ${arrayBuffer}`);
+    console.log(typeof arrayBuffer);
+
+    let BookData = arrayBuffer.target.result;
     currentBook = {};
 
     var title = document.getElementById("title");
@@ -243,15 +260,12 @@
     // destroyed with 'book.destroy()'.
     Book = ePub();
 
-    // Because we're using an object URL, we need to specify the "epub"
-    // parameter to the open method. If it were a FileReader, we'd use
-    // "binary"
-    Book.open(objURL, "epub");
+    Book.open(BookData, "binary");
     Book.opened.then(bk => {
       currentBook = bk;
 
       const bookMetadata = getMetadataFromBook(bk);
-      updateBookToDatabase(objURL, bookMetadata);
+      updateBookToDatabase(arrayBuffer, bookMetadata);
     });
 
 
@@ -261,11 +275,11 @@
     // It's a promise, so we must use 'then()' so it displays properly
     // We can also use the url as the src of an image element.
 
-    Book.coverUrl().then(url => {
-      console.log(`Cover URL: ${url}`);
-      const bookCover = document.querySelector("#book-cover");
-      bookCover.src = url;
-    });
+    // Book.coverUrl().then(url => {
+    //   console.log(`Cover URL: ${url}`);
+    //   const bookCover = document.querySelector("#book-cover");
+    //   bookCover.src = url;
+    // });
 
     /// END TEST FUNCTIONS ///
 
@@ -277,14 +291,6 @@
 
     /// TEST FUNC ///
 
-    // Clear button to show new book
-    var clearButton = document.querySelector('#clear');
-    clearButton.value = "Clear";
-    clearButton.onclick = () => {
-      // NOTE: You must call book.destroy and rendition.destroy()
-      Book.destroy();
-      rendition.destroy();
-    }
 
     /// END TEST FUNC ///
 
@@ -306,7 +312,7 @@
     rendition.on("keyup", keyListener);
     rendition.on("relocated", function(location){
       console.log(location);
-      console.log(`Current Page: ${location.start.cfi}`);
+      // console.log(`Current Page: ${location.start.cfi}`);
     });
 
     // next.removeEventListener("click");
