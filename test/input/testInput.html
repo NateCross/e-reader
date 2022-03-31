@@ -312,7 +312,10 @@
     rendition.on("keyup", keyListener);
     rendition.on("relocated", function(location){
       console.log(location);
-      // console.log(`Current Page: ${location.start.cfi}`);
+      var range = rendition.getRange(rendition.currentLocation().start.cfi);
+      var endRange = rendition.getRange(rendition.currentLocation().end.cfi);
+      range.setEnd(endRange.startContainer, endRange.startOffset);
+      console.log(range.toString()); // Current text on screen
     });
 
     // next.removeEventListener("click");
