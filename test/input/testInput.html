@@ -9,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EPUB.js Input Example</title>
 
+  <script src='../../js/models/BookData.js'></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
   <script src="../../modules/epub.min.js"></script>
 
@@ -63,6 +64,7 @@
   let settingsStore = null;
 
   var Book = ePub();
+  // var Book = ePub();
   var rendition;
 
   const testArea = document.querySelector('#test-area');
@@ -91,21 +93,21 @@
 
     let dbTransaction = db.transaction('BOOKS', 'readwrite');
     bookObjectStore = dbTransaction.objectStore('BOOKS');
-
-    let testBook = {
-      key: '123',
-      name: 'Something else',
-    };
-
-    let addRequest = bookObjectStore.put(testBook);
+    //
+    // let testBook = {
+    //   key: '123',
+    //   name: 'Something else',
+    // };
+    //
+    // let addRequest = bookObjectStore.put(testBook);
 
     // Code to run when we update the database.
-    addRequest.onsuccess = e => {
-      updateRecentlyOpenedBookDisplay(e);
-    }
-    addRequest.onerror = e => {
-      console.log(`${e.target.error}`);
-    }
+    // addRequest.onsuccess = e => {
+    //   updateRecentlyOpenedBookDisplay(e);
+    // }
+    // addRequest.onerror = e => {
+    //   console.log(`${e.target.error}`);
+    // }
 
 
     const dbClearButton = document.querySelector('#cleardb');
@@ -114,6 +116,8 @@
     dbClearButton.onclick = () => {
       indexedDB.deleteDatabase('books');
     }
+
+    updateRecentlyOpenedBookDisplay(bookObjectStore);
 
     // bookObjectStore.get('123').onsuccess = e => {
     //   console.log(e.target.result);
@@ -135,18 +139,31 @@
 
   const changeBook = (objURL) => {
     return function() {
-      Book.destroy();
-      rendition.destroy();
+      if (Book) Book.destroy();
+      if (rendition) rendition.destroy();
       openBook(objURL);
     };
   }
 
+  // function changeBook(objURL) {
+  //   Book.destroy();
+  //   rendition.destroy();
+  //   openBook(objURL);
+  // }
+
+  // function createBookLink(bookObjURL) {
+  //
+  // }
+
   function pushToRecentBooks(book) {
     // Push to a list of recently opened books
+    // requires global constant recentlyOpenedBooks
     const listItem = document.createElement("li");
     const linkItem = document.createElement("a");
-    linkItem.innerHTML = book.name;
+    linkItem.onclick = changeBook(book.bookObjURL);
+    linkItem.innerHTML = book.metadata.title;
     listItem.appendChild(linkItem);
+
     recentlyOpenedBooks.appendChild(listItem);
   }
 
@@ -155,13 +172,41 @@
       element.firstElementChild.remove();
   }
 
-  function updateRecentlyOpenedBookDisplay(e) {
-    const getAllRequest = e.target.source.getAll();
+  function updateRecentlyOpenedBookDisplay(objStore) {
+    const getAllRequest = objStore.getAll();
+    // const getAllRequest = e.target.source.getAll();
 
     getAllRequest.onsuccess = event => {
       removeChildrenFromElement(recentlyOpenedBooks);
       const arrOfBooks = event.target.result;
       arrOfBooks.forEach(pushToRecentBooks);
+    }
+  }
+
+  // Used after a book is open with Book.open().
+  function getMetadataFromBook(book) {
+    return book.packaging.metadata;
+  }
+
+  function updateBookToDatabase(bookObjURL, metadata) {
+    if (!db) return;    // Check if the db has been loaded, which is a global variable
+
+    const dbTransaction = db.transaction('BOOKS', 'readwrite');
+
+    // I don't know if bookObjectStore will be needed outside of a function,
+    // so I'm leaving a const there cause it would be better if it were there
+    /* const */ bookObjectStore = dbTransaction.objectStore('BOOKS');
+
+    // Create the object to add to DB
+    const bookData = new BookData(bookObjURL, metadata);
+
+    let addRequest = bookObjectStore.put(bookData);
+
+    addRequest.onsuccess = e => {
+      updateRecentlyOpenedBookDisplay(e.target.source);
+    }
+    addRequest.onerror = e => {
+      console.log(`${e.target.error}`);
     }
   }
 
@@ -186,6 +231,7 @@
 
 
   function openBook(objURL) {
+    console.log(`Objurl: ${objURL}`);
     currentBook = {};
 
     var title = document.getElementById("title");
@@ -203,15 +249,11 @@
     Book.open(objURL, "epub");
     Book.opened.then(bk => {
       currentBook = bk;
-      console.log(currentBook);
 
-      // TODO: Get metadata's identifier for key with
-      // book
-      // console.log(`metadata`);
-      // console.log(currentBook.loaded.metadata.then);
-    })
+      const bookMetadata = getMetadataFromBook(bk);
+      updateBookToDatabase(objURL, bookMetadata);
+    });
 
-    // console.log(currentBook);
 
     /// TEST FUNCTIONS ///
 
@@ -225,32 +267,12 @@
       bookCover.src = url;
     });
 
-
-    // Get metadata from book
-    // WARN: This is super jank, probably not correct at all tbh
-    var bookMetadata = Book.loaded.metadata.then(metadata => { return metadata });
-    // console.log(`Metadata: ${bookMetadata}`);
-
-    // Push to a list of recently opened books
-    let listItem = document.createElement("li");
-    bookMetadata.then(metadata => {
-      const linkItem = document.createElement("a");
-      linkItem.onclick = changeBook(objURL);
-      linkItem.innerHTML = metadata.title;
-      listItem.appendChild(linkItem);
-    }); // Must be in the 'then' function otherwise it will return promise
-    recentlyOpenedBooks.appendChild(listItem);
-
-
-
     /// END TEST FUNCTIONS ///
 
     rendition = Book.renderTo("viewer", {
       width: "100%",
       height: 600
     });
-    // rendition.clear();
-
     rendition.display();
 
     /// TEST FUNC ///
@@ -284,13 +306,16 @@
     rendition.on("keyup", keyListener);
     rendition.on("relocated", function(location){
       console.log(location);
+      console.log(`Current Page: ${location.start.cfi}`);
     });
 
+    // next.removeEventListener("click");
     next.addEventListener("click", function(e){
       rendition.next();
       e.preventDefault();
     }, false);
 
+    // prev.removeEventListener("click");
     prev.addEventListener("click", function(e){
       rendition.prev();
       e.preventDefault();
@@ -298,6 +323,7 @@
 
 
 
+    // document.removeEventListener("keyup");
     document.addEventListener("keyup", keyListener, false);
   }
 
