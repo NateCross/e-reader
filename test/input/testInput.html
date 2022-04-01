@@ -157,6 +157,8 @@
       // NOTE: You must call book.destroy and rendition.destroy()
       book.destroy();
       rendition.destroy();
+      next.removeEventListener("click", goNext);
+      prev.removeEventListener("click", goPrev);
     }
 
     /// END TEST FUNC ///
@@ -181,15 +183,25 @@
       console.log(location);
     });
 
-    next.addEventListener("click", function(e){
+    // We must define functions like this so we can remove
+    // the event listener when we clear
+    function goNext(e) {
       rendition.next();
       e.preventDefault();
-    }, false);
-
-    prev.addEventListener("click", function(e){
+    }
+    function goPrev(e) {
       rendition.prev();
       e.preventDefault();
-    }, false);
+    }
+
+    // next.addEventListener("click", function(e){
+    //   rendition.next();
+    //   e.preventDefault();
+    // }, false);
+
+    next.addEventListener("click", goNext, false);
+
+    prev.addEventListener("click", goPrev, false);
 
 
 
