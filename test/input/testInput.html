@@ -10,7 +10,10 @@
   <title>EPUB.js Input Example</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
-  <script src="../../modules/epub.min.js"></script>
+
+  <!-- New epub.js file which allows for jumps when you go next or prev -->
+  <script src="../../modules/epub.js"></script>
+  <!-- <script src="../../modules/epub.min.js"></script> -->
 
   <link rel="stylesheet" type="text/css" href="examples.css">
 
@@ -29,12 +32,19 @@
     #recently-opened-books:hover {
       cursor: pointer;
     }
+    #hidden-viewer {
+      display: none;
+    }
   </style>
 
 </head>
 <body>
   <div id="title"><input type="file" id="input"></div>
   <div id="viewer" class="spreads"></div>
+
+  <!-- Needed for total page calculation -->
+  <div id = "hidden-viewer"></div>
+
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
   <input type="button" id="clear">
@@ -46,8 +56,13 @@
   <ul id="recently-opened-books"> </ul>
 
   <script>
+  // Global variables tracking state
+  // NOTE: May need to make this its own class?
   var book = ePub();
   var rendition;
+  var currentPage;
+  var totalPages;
+
   // Utility function
   // https://flaviocopes.com/how-to-list-object-methods-javascript/
   const getMethods = (obj) => {
@@ -67,14 +82,9 @@
     };
   }
 
-  // const changeBook = (objURL, book, rendition) => {
-  //   book.destroy();
-  //   rendition.destroy();
-  //   openBook(objURL);
-  // }
-
   /// BEGIN MAIN CODE ///
 
+  // var pageListParser = new Pagelist();
 
   var inputElement = document.getElementById("input");
 
@@ -99,23 +109,36 @@
     // this is because there is no way to unload the book; the book must be
     // destroyed with 'book.destroy()'.
     book = ePub();
-    // var rendition;
 
     // Because we're using an object URL, we need to specify the "epub"
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
     book.open(objURL, "epub");
-    book.opened.then(bk => { console.log(bk.key()) })
-    console.log(book);
+    book.opened.then(bk => {
+      // console.log(bk.locations.generate(600));
+      // bk.locations.generate(600).then(loc => { console.log(loc) });
+      // console.log(bk.locations.length());
+      console.log(bk.key())
+    });
 
     /// TEST FUNCTIONS ///
+
+    // Get the sections from the spine
+    // LINK: https://github.com/futurepress/epub.js/issues/887
+    // book.loaded.spine.then((spine) => {
+    //   spine.each((item) => {
+    //     item.load(book.load.bind(book)).then((contents) => {
+    //       console.log(contents);
+    //     });
+    //   });
+    // });
+
 
     // Accesses the book cover.
     // It's a promise, so we must use 'then()' so it displays properly
     // We can also use the url as the src of an image element.
 
     book.coverUrl().then(url => {
-      console.log(`Cover URL: ${url}`);
       const bookCover = document.querySelector("#book-cover");
       bookCover.src = url;
     });
@@ -123,7 +146,7 @@
 
     // Get metadata from book
     var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
-    console.log(`Metadata: ${bookMetadata}`);
+    // console.log(`Metadata: ${bookMetadata}`);
 
     // Push to a list of recently opened books
     let listItem = document.createElement("li");
@@ -134,8 +157,6 @@
       listItem.appendChild(linkItem);
     }); // Must be in the 'then' function otherwise it will return promise
     recentlyOpenedBooks.appendChild(listItem);
-    console.log(recentlyOpenedBooks);
-
 
 
     /// END TEST FUNCTIONS ///
@@ -144,9 +165,50 @@
       width: "100%",
       height: 600
     });
-    // rendition.clear();
-
     rendition.display();
+
+    // Maybe get pages?
+    totalPages = 0;
+
+    var hiddenRendition = book.renderTo("hidden-viewer", {
+      width: "100%",
+      height: 600
+    });
+
+    hiddenRendition.display().then(rend => {
+      // console.log(rend);
+      var currentLoc = hiddenRendition.currentLocation();
+      console.log(currentLoc);
+      while (!currentLoc.atEnd) {
+        hiddenRendition.next();
+        currentLoc = hiddenRendition.currentLocation();
+        totalPages++;
+      }
+      console.log(totalPages);
+    });
+
+
+    // Maybe this gets the sections properly
+    // The full link has a way to display the TOC
+    // LINK: https://github.com/futurepress/epub.js/blob/master/examples/spreads.html
+    // book.loaded.navigation.then(function(toc){
+    //   // var hiddenRendition = document.querySelector('#hidden-viewer');
+    //   totalPages = 0;
+    //
+    //   // Ensure these settings are the same as rendition
+    //   var hiddenRendition = book.renderTo("hidden-viewer", {
+    //     width: "100%",
+    //     height: 600
+    //   });
+    //
+    //   hiddenRendition.on("relocated", function(location){
+    //     totalPages += location.start.displayed.total;
+    //   });
+    //
+    //   toc.forEach(function(chapter) {
+    //     hiddenRendition.display(chapter.href);
+    //   });
+    // });
 
     /// TEST FUNC ///
 
@@ -193,11 +255,6 @@
       rendition.prev();
       e.preventDefault();
     }
-
-    // next.addEventListener("click", function(e){
-    //   rendition.next();
-    //   e.preventDefault();
-    // }, false);
 
     next.addEventListener("click", goNext, false);
 
