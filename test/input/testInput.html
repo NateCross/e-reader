@@ -12,7 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
 
   <!-- New epub.js file which allows for jumps when you go next or prev -->
-  <script src="../../modules/epub.js"></script>
+  <script src="../../modules/epub.min.js"></script>
   <!-- <script src="../../modules/epub.min.js"></script> -->
 
   <link rel="stylesheet" type="text/css" href="examples.css">
@@ -35,6 +35,13 @@
     #hidden-viewer {
       display: none;
     }
+    .page-count {
+      color: grey;
+      display: none;
+      margin: 50px 25px 10px;
+      position: relative;
+      /* white-space: nowrap; Prevent span from linebreaking */
+    }
   </style>
 
 </head>
@@ -49,6 +56,15 @@
   <a id="next" href="#next" class="arrow">›</a>
   <input type="button" id="clear">
 
+  <br>
+
+  <div class="page-count">
+    <input type="text" name="Current Page" id="current-page" size="5">
+    <span id="percentage"></span>
+    <span>/</span>
+    <span id="total-pages"></span>
+  </div>
+
   <br> <br>
   <img id="book-cover">
 
@@ -60,8 +76,22 @@
   // NOTE: May need to make this its own class?
   var book = ePub();
   var rendition;
-  var currentPage;
-  var totalPages;
+  let savedLocation;
+
+  ////////////////////////
+  ///// DOM Elements /////
+  ////////////////////////
+  const PageCount = document.querySelector('.page-count');
+  const current_page = document.querySelector('#current-page');
+  const total_pages = document.querySelector('#total-pages');
+  const percentage = document.querySelector('#percentage');
+
+  current_page.onchange = e => {
+    const _pageCFI = book.locations.cfiFromLocation(e.target.value);
+    rendition.display(_pageCFI);
+  }
+
+  const locationBreakAfterXCharacters = 600;
 
   // Utility function
   // https://flaviocopes.com/how-to-list-object-methods-javascript/
@@ -114,8 +144,33 @@
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
     book.open(objURL, "epub");
+
+    // TODO: Find difference between these events: ready, opened, displayed
+
+    // Get the list of locations, which are essentially pages
+    // that break after a certain amount of characters
+    // here we have the arbitrary number 600, but it can be anything
+    // LINK: https://github.com/futurepress/epub.js/issues/744#issuecomment-492300092
+    book.ready.then(() => {
+      savedLocation = localStorage.getItem(`${book.key()}-currLoc`);
+
+      const storedLocations = localStorage.getItem(book.key() + '-locations');
+
+      console.log(`metadata: ${book.package.metadata}`);
+      if (storedLocations)
+        return book.locations.load(storedLocations);
+      else
+        return book.locations.
+              generate(locationBreakAfterXCharacters);
+    }).then(location => {
+      localStorage.setItem(book.key() + '-locations', book.locations.save());
+
+      PageCount.style.display = 'inline-block';
+      total_pages.innerHTML = book.locations.total;
+    });
+
     book.opened.then(bk => {
-      console.log(bk.key())
+      // console.log(bk.key())
     });
 
     /// TEST FUNCTIONS ///
@@ -162,10 +217,21 @@
       width: "100%",
       height: 600
     });
-    rendition.display();
+
+    // TODO: Make the parameter the book. Or make it a method in a class?
+    async function displaySavedLocation() {
+      await book.ready;
+      savedLocation = await localStorage.getItem(`${book.key()}-currLoc`);
+
+      if (savedLocation)
+        rendition.display(savedLocation);
+      else
+        rendition.display();
+    }
+
+    displaySavedLocation();
 
     // Maybe get pages?
-
 
     // The full link has a way to display the TOC
     // LINK: https://github.com/futurepress/epub.js/blob/master/examples/spreads.html
@@ -197,6 +263,10 @@
       // NOTE: You must call book.destroy and rendition.destroy()
       book.destroy();
       rendition.destroy();
+
+      // Need to remove event listeners as well
+      // or else it will duplicate, and trigger multiple
+      // times
       next.removeEventListener("click", goNext);
       prev.removeEventListener("click", goPrev);
     }
@@ -219,8 +289,41 @@
     };
 
     rendition.on("keyup", keyListener);
+
     rendition.on("relocated", function(location){
       console.log(location);
+
+      // Save current location to local storage
+      localStorage.setItem(`${book.key()}-currLoc`, location.start.cfi);
+
+      // Get percentage values
+      const _startPercent = (location.start.percentage * 100).toFixed(2);
+      let _endPercent = (location.end.percentage * 100).toFixed(2);
+
+      const _startPage = book.locations.locationFromCfi(location.start.cfi);
+
+      // End page is minus one so it doesn't overlap with the start of the next page
+      let _endPage = book.locations.locationFromCfi(location.end.cfi);
+      if (_endPercent != 100 && _startPage !== _endPage) {
+        --_endPage;
+        _endPercent = (_endPage / book.locations.total * 100).toFixed(2);
+      }
+
+
+      let _pageRange = null;
+      if (location.atStart)
+        _pageRange = `Cover`;
+      else if (_startPage === _endPage)
+        _pageRange = `${_startPage}`;
+      else
+        _pageRange = `${_startPage} - ${_endPage}`;
+
+      current_page.value = _pageRange;
+
+      if (_startPercent === _endPercent)
+        percentage.innerHTML = `(${_startPercent}%)`;
+      else
+        percentage.innerHTML = `(${_startPercent}% - ${_endPercent}%)`
     });
 
     // We must define functions like this so we can remove
