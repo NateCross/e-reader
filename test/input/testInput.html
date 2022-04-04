@@ -115,9 +115,6 @@
     // "binary"
     book.open(objURL, "epub");
     book.opened.then(bk => {
-      // console.log(bk.locations.generate(600));
-      // bk.locations.generate(600).then(loc => { console.log(loc) });
-      // console.log(bk.locations.length());
       console.log(bk.key())
     });
 
@@ -168,27 +165,8 @@
     rendition.display();
 
     // Maybe get pages?
-    totalPages = 0;
-
-    var hiddenRendition = book.renderTo("hidden-viewer", {
-      width: "100%",
-      height: 600
-    });
-
-    hiddenRendition.display().then(rend => {
-      // console.log(rend);
-      var currentLoc = hiddenRendition.currentLocation();
-      console.log(currentLoc);
-      while (!currentLoc.atEnd) {
-        hiddenRendition.next();
-        currentLoc = hiddenRendition.currentLocation();
-        totalPages++;
-      }
-      console.log(totalPages);
-    });
 
 
-    // Maybe this gets the sections properly
     // The full link has a way to display the TOC
     // LINK: https://github.com/futurepress/epub.js/blob/master/examples/spreads.html
     // book.loaded.navigation.then(function(toc){
