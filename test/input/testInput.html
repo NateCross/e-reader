@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
 
   <!-- New epub.js file which allows for jumps when you go next or prev -->
+  <!-- Nvm, we're back to the old one -->
   <script src="../../modules/epub.min.js"></script>
   <!-- <script src="../../modules/epub.min.js"></script> -->
 
@@ -32,8 +33,13 @@
     #recently-opened-books:hover {
       cursor: pointer;
     }
-    #hidden-viewer {
+    /* #hidden-viewer { */
+    /*   display: none; */
+    /* } */
+    #table-of-contents {
       display: none;
+      /* width: 50%; */
+      margin: 0 auto;
     }
     .page-count {
       color: grey;
@@ -47,10 +53,11 @@
 </head>
 <body>
   <div id="title"><input type="file" id="input"></div>
+  <select id="table-of-contents"></select>
   <div id="viewer" class="spreads"></div>
 
   <!-- Needed for total page calculation -->
-  <div id = "hidden-viewer"></div>
+  <!-- <div id = "hidden-viewer"></div> -->
 
   <a id="prev" href="#prev" class="arrow">‹</a>
   <a id="next" href="#next" class="arrow">›</a>
@@ -77,6 +84,8 @@
   var book = ePub();
   var rendition;
   let savedLocation;
+  let currSection;
+  let bookSections = [];
 
   ////////////////////////
   ///// DOM Elements /////
@@ -85,6 +94,7 @@
   const current_page = document.querySelector('#current-page');
   const total_pages = document.querySelector('#total-pages');
   const percentage = document.querySelector('#percentage');
+  const table_of_contents = document.querySelector('#table-of-contents');
 
   current_page.onchange = e => {
     const _pageCFI = book.locations.cfiFromLocation(e.target.value);
@@ -112,9 +122,21 @@
     };
   }
 
-  /// BEGIN MAIN CODE ///
+  function clearSelectElement(select) {
+    while (select.options.length)
+      select.remove(0);
+  }
 
-  // var pageListParser = new Pagelist();
+  // LINK: https://github.com/futurepress/epub.js/issues/986#issuecomment-538716885
+  const getCfiFromHref = async (href) => {
+    const id= href.split('#')[1]
+    const item = book.spine.get(href)
+    await item.load(book.load.bind(book))
+    const el = id ? item.document.getElementById(id) : item.document.body
+    return item.cfiFromElement(el)
+  }
+
+  /// BEGIN MAIN CODE ///
 
   var inputElement = document.getElementById("input");
 
@@ -156,7 +178,6 @@
 
       const storedLocations = localStorage.getItem(book.key() + '-locations');
 
-      console.log(`metadata: ${book.package.metadata}`);
       if (storedLocations)
         return book.locations.load(storedLocations);
       else
@@ -171,6 +192,7 @@
 
     book.opened.then(bk => {
       // console.log(bk.key())
+      loadTableOfContents();
     });
 
     /// TEST FUNCTIONS ///
@@ -229,7 +251,44 @@
         rendition.display();
     }
 
+    async function loadTableOfContents() {
+      bookTOC = await book.loaded.navigation;
+
+      // Using document fragments allow us to add a lot of options
+      // to the "select" element that is our table of contents
+      // in one go in a lightweight manner
+      const docFrag = document.createDocumentFragment();
+
+      bookSections = []; // Clear the current content
+      bookTOC.forEach(chapter => {
+        let option = document.createElement("option");
+        option.textContent = chapter.label;
+        option.ref = chapter.href;
+
+        // Add to the array of sections asynchronously
+        getCfiFromHref(chapter.href).then(cfi => {
+          bookSections.push(cfi)
+        })
+
+        docFrag.appendChild(option);
+      });
+
+      table_of_contents.appendChild(docFrag);
+      table_of_contents.style.display = "block";
+
+      table_of_contents.onchange = () => {
+        let index = table_of_contents.selectedIndex;
+        let url = table_of_contents.options[index].ref;
+        rendition.display(url);
+        return false;
+      };
+
+      return bookTOC;
+    }
+
     displaySavedLocation();
+
+    // loadTableOfContents();
 
     // Maybe get pages?
 
@@ -263,6 +322,7 @@
       // NOTE: You must call book.destroy and rendition.destroy()
       book.destroy();
       rendition.destroy();
+      clearSelectElement(table_of_contents);
 
       // Need to remove event listeners as well
       // or else it will duplicate, and trigger multiple
@@ -309,8 +369,9 @@
         _endPercent = (_endPage / book.locations.total * 100).toFixed(2);
       }
 
-
-      let _pageRange = null;
+      // Different stylings based on the current location.
+      // Can be modified without really breaking anything
+      let _pageRange;
       if (location.atStart)
         _pageRange = `Cover`;
       else if (_startPage === _endPage)
@@ -324,6 +385,18 @@
         percentage.innerHTML = `(${_startPercent}%)`;
       else
         percentage.innerHTML = `(${_startPercent}% - ${_endPercent}%)`
+
+      const cfiComparison = new ePub.CFI();
+
+      // Creates a copy and reverses the array so that it doesn't
+      // reverse in place, which is what "reverse()" does
+      const reversedSections = bookSections.slice().reverse();
+
+      const sectionIndex = reversedSections.findIndex(section =>
+        cfiComparison.compare(section, location.end.cfi) < 0
+      );
+
+      table_of_contents.selectedIndex = bookSections.length - sectionIndex - 1;
     });
 
     // We must define functions like this so we can remove
