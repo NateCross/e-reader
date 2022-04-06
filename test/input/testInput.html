@@ -48,6 +48,24 @@
       position: relative;
       /* white-space: nowrap; Prevent span from linebreaking */
     }
+    #hover-popup {
+      cursor: pointer;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+    }
+    #hover-popup::before {
+      background-color: grey;
+      color: white;
+      content: "Highlight";
+      display: block;
+      font-weight: bold;
+      margin-left: 37px;
+      margin-top: 6px;
+      padding: 2px;
+      width: max-content;
+      height: 20px;
+    }
   </style>
 
 </head>
@@ -78,14 +96,21 @@
   <br> <br>
   <ul id="recently-opened-books"> </ul>
 
+  <!-- Templates aren't rendered until added later with JS -->
+  <!-- So we can make this trigger when we select text -->
+  <template><span id="hover-popup"></span></template>
+
   <script>
   // Global variables tracking state
   // NOTE: May need to make this its own class?
-  var book = ePub();
-  var rendition;
+  let book = ePub();
+  let rendition;
   let savedLocation;
   let currSection;
   let bookSections = [];
+  let annotation;
+
+  let clearSelection;
 
   ////////////////////////
   ///// DOM Elements /////
@@ -129,12 +154,12 @@
 
   // LINK: https://github.com/futurepress/epub.js/issues/986#issuecomment-538716885
   const getCfiFromHref = async (href) => {
-    const id= href.split('#')[1]
+    const id = href.split('#')[1]
     const item = book.spine.get(href)
     await item.load(book.load.bind(book))
     const el = id ? item.document.getElementById(id) : item.document.body
     return item.cfiFromElement(el)
-  }
+  };
 
   /// BEGIN MAIN CODE ///
 
@@ -288,31 +313,6 @@
 
     displaySavedLocation();
 
-    // loadTableOfContents();
-
-    // Maybe get pages?
-
-    // The full link has a way to display the TOC
-    // LINK: https://github.com/futurepress/epub.js/blob/master/examples/spreads.html
-    // book.loaded.navigation.then(function(toc){
-    //   // var hiddenRendition = document.querySelector('#hidden-viewer');
-    //   totalPages = 0;
-    //
-    //   // Ensure these settings are the same as rendition
-    //   var hiddenRendition = book.renderTo("hidden-viewer", {
-    //     width: "100%",
-    //     height: 600
-    //   });
-    //
-    //   hiddenRendition.on("relocated", function(location){
-    //     totalPages += location.start.displayed.total;
-    //   });
-    //
-    //   toc.forEach(function(chapter) {
-    //     hiddenRendition.display(chapter.href);
-    //   });
-    // });
-
     /// TEST FUNC ///
 
     // Clear button to show new book
@@ -349,6 +349,64 @@
     };
 
     rendition.on("keyup", keyListener);
+
+    // Needed to fire selected event on mouseup instead of
+    // timeout
+    // LINK: https://github.com/johnfactotum/foliate/commit/6b5cef3a3273bc22c2f2241d51100212826bd3e9#diff-2e61bf0fc6ff9138dc0b5f414f34176dd833401069cdd1098f712551f023007b
+    let latestViewElement;
+
+    rendition.on("rendered", (section, view) => {
+        latestViewElement = view.element
+    })
+
+    let hover = document.importNode(document.querySelector('template').content, true).childNodes[0];
+
+
+    rendition.hooks.content.register((contents, view) => {
+
+      contents.document.onpointerdown = ()=> {
+        let popup = document.querySelector('#hover-popup');
+        if (popup !== null) {popup.remove();document.getSelection().removeAllRanges();}
+      }
+
+      contents.document.onmouseup = () => {
+        const selection = contents.window.getSelection();
+        const range = selection.getRangeAt(0);
+        if (range.collapsed) return;
+
+        // Replace next line characters with a blank space
+        const text = selection.toString().trim().replace(/\n/g, ' ');
+        if (text === '') return;
+
+        const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
+
+        const rect = selection.getRangeAt(0).getBoundingClientRect();
+        const viewElementRect = latestViewElement.getBoundingClientRect();
+
+        const left = (rect.left + rect.right) / 2 + viewElementRect.left;
+        const top = rect.top + viewElementRect.top;
+        const bottom = rect.bottom + viewElementRect.top;
+
+        hover.style.left = left;
+        hover.style.top = top;
+        hover.style.bottom = bottom;
+        // hover.style.top = `calc(${rect.top}px - 48px)`;
+        // hover.style.left = `calc(${rect.left}px + calc(${rect.width}px / 2) - 40px)`;
+        hover.text = text;
+
+        document.body.appendChild(hover);
+
+        // Apparently this is for lookups, so idk that
+        if (text.split(' ').length === 1) {
+          clearSelection = () => contents.window.getSelection().removeAllRanges();
+          annotation = { text, cfiRange };
+        } else {
+          annotation = { text, cfiRange };
+          // contents.window.getSelection();
+          // contents.window.getSelection().removeAllRanges();
+        }
+      };
+    });
 
     rendition.on("relocated", function(location){
       console.log(location);
