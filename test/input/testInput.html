@@ -1,4 +1,5 @@
 <!-- This is a sample page that browses for and reads an epub. -->
+
 <!-- From https://github.com/futurepress/epub.js/blob/master/examples/input.html -->
 <!-- Experiment with the input here. -->
 
@@ -74,7 +75,7 @@
       margin-top: 10px;
     }
     .temp-highlight {
-      color: red;
+      fill: red;
     }
   </style>
 
@@ -217,8 +218,8 @@
 
   function tempHighlightCFIRange(range) {
     rendition.annotations.highlight(range, {}, e => {
-      console.log("temp highlight");
-    }, '.temp-highlight');
+      console.log("temp highlight")
+    }, 'temp-highlight');
   }
 
   /// BEGIN MAIN CODE ///
