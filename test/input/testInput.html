@@ -33,9 +33,6 @@
     #recently-opened-books:hover {
       cursor: pointer;
     }
-    /* #hidden-viewer { */
-    /*   display: none; */
-    /* } */
     #table-of-contents {
       display: none;
       /* width: 50%; */
@@ -58,7 +55,7 @@
       background-color: grey;
       color: white;
       content: "Highlight";
-      display: block;
+      position: absolute;
       font-weight: bold;
       margin-left: 37px;
       margin-top: 6px;
@@ -66,12 +63,31 @@
       width: max-content;
       height: 20px;
     }
+    #search {
+      display: block;
+
+      /*
+        a margin of "0 auto", alongside display: block, centers the element
+        We override with margin-top to create space from the previous element
+      */
+      margin: 0 auto;
+      margin-top: 10px;
+    }
+    .temp-highlight {
+      color: red;
+    }
   </style>
 
 </head>
 <body>
   <div id="title"><input type="file" id="input"></div>
   <select id="table-of-contents"></select>
+  <input
+    type="search"
+    name="search-bar"
+    id="search"
+    placeholder="Search in book"
+  >
   <div id="viewer" class="spreads"></div>
 
   <!-- Needed for total page calculation -->
@@ -120,10 +136,38 @@
   const total_pages = document.querySelector('#total-pages');
   const percentage = document.querySelector('#percentage');
   const table_of_contents = document.querySelector('#table-of-contents');
+  const search_bar = document.querySelector('#search');
 
   current_page.onchange = e => {
-    const _pageCFI = book.locations.cfiFromLocation(e.target.value);
-    rendition.display(_pageCFI);
+    const targetValue = e.target.value;
+
+    // Check if displaying cover page, since it's not possible to get the cover
+    // when passing a value in rendition.display
+    if (typeof targetValue === 'string' && targetValue.toUpperCase() === 'COVER')
+      rendition.display();
+    else {
+      const _pageCFI = book.locations.cfiFromLocation(targetValue);
+      rendition.display(_pageCFI);
+    }
+  }
+
+  search_bar.onchange = async e => {
+    const result = await searchBook(e.target.value);
+    console.log(result);
+
+    // TODO: Make an error message
+    if (!result)
+      return;
+
+    // TODO: Make it display how many results were found
+    // TODO: Save the results to some global variable so other functions
+    //       can interact with it
+    // TODO: Also save the current result into a global variable
+    // TODO: Remove the highlight once the search is cleared or changed
+
+    // TODO: (Someday) Make it search regex
+    rendition.display(result[0].cfi);
+    tempHighlightCFIRange(result[0].cfi);
   }
 
   const locationBreakAfterXCharacters = 600;
@@ -160,6 +204,22 @@
     const el = id ? item.document.getElementById(id) : item.document.body
     return item.cfiFromElement(el)
   };
+
+  // LINK: https://github.com/futurepress/epub.js/wiki/Tips-and-Tricks-%28v0.3%29
+  // NOTE: This is meant to be used asynchronously, so use async/await or then
+  function searchBook(query) {
+    return Promise.all(
+      book.spine.spineItems.map(
+        item => item.load(book.load.bind(book)).then(item.find.bind(item, query)).
+        finally(item.unload.bind(item)))
+    ).then(results => Promise.resolve([].concat.apply([], results)));
+  }
+
+  function tempHighlightCFIRange(range) {
+    rendition.annotations.highlight(range, {}, e => {
+      console.log("temp highlight");
+    }, '.temp-highlight');
+  }
 
   /// BEGIN MAIN CODE ///
 
@@ -216,7 +276,6 @@
     });
 
     book.opened.then(bk => {
-      // console.log(bk.key())
       loadTableOfContents();
     });
 
@@ -293,7 +352,7 @@
         // Add to the array of sections asynchronously
         getCfiFromHref(chapter.href).then(cfi => {
           bookSections.push(cfi)
-        })
+        });
 
         docFrag.appendChild(option);
       });
@@ -332,7 +391,6 @@
     }
 
     /// END TEST FUNC ///
-
 	
 	var keyListener = function(e){
 
@@ -361,12 +419,27 @@
 
     let hover = document.importNode(document.querySelector('template').content, true).childNodes[0];
 
+    // hover.onpointerdown(oncontroldown, true);
 
+
+    // Handles text selection inside the epub viewer.
+    // There actually is an event in the rendition object that
+    // can handle selection, but for some reason it triggers after
+    // a timeout, and not when the mouse is released.
+    // This workaround is the next best thing
+
+    // TODO: Get the select popup to appear in the right place
     rendition.hooks.content.register((contents, view) => {
 
-      contents.document.onpointerdown = ()=> {
-        let popup = document.querySelector('#hover-popup');
-        if (popup !== null) {popup.remove();document.getSelection().removeAllRanges();}
+      let oncontroldown = () => void 0;
+
+      contents.document.onpointerdown = () => {
+        try {
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+        } finally {
+          let popup = document.querySelector('#hover-popup');
+          if (popup !== null) { popup.remove(); document.getSelection().removeAllRanges(); }
+        }
       }
 
       contents.document.onmouseup = () => {
@@ -405,9 +478,26 @@
           // contents.window.getSelection();
           // contents.window.getSelection().removeAllRanges();
         }
+
+        // function oncontroldown(event) {
+        oncontroldown = (event) => {
+          // console.log(event);
+          rendition.annotations.highlight(cfiRange, {}, (e) => {
+            console.log("highlight clicked", e.target);
+          });
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+          contents.window.getSelection().removeAllRanges();
+        }
+
+        hover.addEventListener('pointerdown', oncontroldown, true);
       };
     });
 
+    // This event fires when opening a new page
+    // also occurs when the epub is displayed
+    // So in this event, we need to update the current position in local storage
+    // as well as update the page values and percentages shown below.
+    // Also handles checking which section the user is in
     rendition.on("relocated", function(location){
       console.log(location);
 
@@ -445,6 +535,17 @@
         percentage.innerHTML = `(${_startPercent}% - ${_endPercent}%)`
 
       const cfiComparison = new ePub.CFI();
+
+      // Below is code for checking the current section.
+      // ePub.CFI.compare compares two CFI ranges, and checks
+      // which range is earlier (or if equal). But ideally,
+      // we would check the current and next section until the end
+      // to see if it falls within those ranges.
+
+      // The workaround is to search from the last section and
+      // get the first section where the current location's CFI is later.
+      // Because we searched in reverse and this is an array,
+      // we have to decrement the returned index by 1.
 
       // Creates a copy and reverses the array so that it doesn't
       // reverse in place, which is what "reverse()" does
