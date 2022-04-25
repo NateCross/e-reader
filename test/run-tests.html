@@ -14,9 +14,14 @@
     <script src="https://unpkg.com/chai/chai.js"></script>
     <script src="https://unpkg.com/mocha/mocha.js"></script>
 
+    <!-- Boilerplate for epub.js tests -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="../modules/epub.min.js"></script>
+
     <!-- Place JS scripts to test here -->
 
     <script src="./sumTwoNumbers.js"></script>
+    <script src="../modules/State.js"></script>
 
     <!-- JS test scripts end -->
 
@@ -25,7 +30,7 @@
       mocha.checkLeaks();
     </script>
 
-    <script src="./tests.js"></script>
+    <script src="./tests.js"></script> <!-- Write tests here -->
 
     <script class="mocha-exec">
       mocha.run();

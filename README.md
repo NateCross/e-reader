@@ -5,8 +5,16 @@ Aims to be a convenient and customizable way to view .epub files
 you have on your PC or mobile device.
 Uses [epub.js](https://github.com/futurepress/epub.js/).
 
+# DEVELOPING
+
+- Install [Node.js](https://nodejs.org/en/)
+- Clone this repository
+- Run `npm install --dev`
+- Run `npm run test`
+
 # TODO
 
+- [ ] Implement `Cypress` for end-to-end testing
 - [ ] Literally everything
 - [ ] Implement epub reader
   - [x] Use [epub.js](https://github.com/futurepress/epub.js/)

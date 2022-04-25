@@ -1,8 +1,11 @@
 const chai = window.chai;
+const assert = chai.assert;
 const expect = chai.expect;
 
-describe('sumTwoNumbers', () => {
-  it('Add 1 and 2 to get 3', () => {
-    expect(sumTwoNumbers(1, 2)).to.equal(3);
+describe('Load Moby Dick', function() {
+  it('should load Moby Dick', async function() {
+    const state = new State(ePub);
+    await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+    assert.isNotNull(state.metadata);
   });
 });
