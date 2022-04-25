@@ -28,3 +28,6 @@ Load the page `test/run-tests.html` to test.
 Add new scripts to test inside the designated area of `test/run-tests.html`.
 Write tests in `test/tests.js`.
 
+# Credits
+
+https://github.com/github/gitignore/blob/main/Node.gitignore - The .gitignore
