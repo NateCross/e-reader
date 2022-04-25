@@ -24,22 +24,31 @@ class State {
 
   // Returns a promise
   // Use in async/await stuff
+  // Can be passed to events or used as-is, with a url
   openBook(e) {
-    let returnVal;
+    let promise = null;
 
     this.book = this.ePubJS(); // Reset book
-    let bookData = e;
-    // let bookData = e.target.result || e;  // Either as exception or url
+
+    let bookData;
+
+    // Checks if the parameter is a url or an event
+    // The latter triggers when openBookEvent is used
+    if (e.target)
+      bookData = e.target.result;
+    else
+      bookData = e;
+
     try {
-      returnVal = this.book.open(bookData);
-      // this.book.open(bookData).then(promise => returnVal = promise);
+      promise = this.book.open(bookData);
     } catch (err) {
       console.log(`ERROR: ${err}`);
-      returnVal = null;
-    } finally {
-      console.log(returnVal);
-      return returnVal;
     }
+    return promise;
+  }
+
+  storeBookToLib(arrayBuffer) {
+
   }
 
   renderBook(viewer, width = "100%", height = 600) {
@@ -56,7 +65,15 @@ class State {
     }
   }
 
+  reset() {
+    if (this.book)
+      this.book.destroy();
+    if (this.rendition)
+      this.rendition.destroy();
+    // TODO: Insert code to remove inputs
+  }
+
   get metadata() {
     return this.book.packaging.metadata;
   }
-};
+}
