@@ -10,12 +10,11 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - Install [Node.js](https://nodejs.org/en/)
 - Clone this repository
 - Run `npm install --dev`
-- Run `npm run test`
+- Run `npm test`
 
 # TODO
 
 - [ ] Implement `Cypress` for end-to-end testing
-- [ ] Literally everything
 - [ ] Implement epub reader
   - [x] Use [epub.js](https://github.com/futurepress/epub.js/)
 - [ ] Implement epub file uploads
@@ -31,10 +30,9 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 # Tests
 
 This project uses [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
-Load the page `test/run-tests.html` to test.
+Load the page `tests/tests.html` with `live-server` to test.
 
-Add new scripts to test inside the designated area of `test/run-tests.html`.
-Write tests in `test/tests.js`.
+Write tests in `tests/tests.js`.
 
 # Credits
 
