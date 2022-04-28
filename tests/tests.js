@@ -7,18 +7,27 @@
 mocha.setup('bdd');
 mocha.checkLeaks();
 
-import State from "../modules/State.js";
+import State from "../src/State.js";
 
 const assert = chai.assert;
 // const expect = chai.expect;
 
-describe('Load Moby Dick', function() {
-
-  it('should load metadata', async function() {
-    const state = new State(ePub);
-    await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
-    assert.isNotNull(state.metadata);
+describe('epub.js', function() {
+  describe('State Manager', function() {
+    it('should create a State object', function() {
+      const state = new State();
+      assert.isObject(state);
+    });
   });
+
+  describe('Moby Dick', function() {
+    it('should load metadata', async function() {
+      const state = new State(ePub);
+      await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+      assert.isNotNull(state.metadata);
+    });
+  });
+
 });
 
 // Used for the 'library' functionality
