@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo Testing... && jest --watchAll --verbose --coverage"
+    "test": "echo Testing... && jest --watchAll --verbose --coverage",
+    "test-mocha": "mocha"
+
   },
   "repository": {
     "type": "git",
@@ -21,10 +23,12 @@
   },
   "homepage": "https://github.com/NateCross/e-reader#readme",
   "devDependencies": {
-    "jest": "^27.5.1"
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2"
   },
   "dependencies": {
     "epubjs": "^0.3.93",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "localforage": "^1.10.0"
   }
 }

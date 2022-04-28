@@ -4,11 +4,15 @@
 */
 // Defining global variables so eslint stops nagging me about it
 
+mocha.setup('bdd');
+mocha.checkLeaks();
+
+import State from "../modules/State.js";
+
 const assert = chai.assert;
 // const expect = chai.expect;
 
 describe('Load Moby Dick', function() {
-  this.timeout(5000);
 
   it('should load metadata', async function() {
     const state = new State(ePub);
@@ -29,3 +33,6 @@ describe('LocalForage', function() {
     assert.strictEqual(forageLength, 0);
   });
 });
+
+// IMPORTANT: Make sure to put this at the end so the tests actually run
+mocha.run();
