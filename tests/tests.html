@@ -1,0 +1,24 @@
+<!-- Boilerplate from https://mochajs.org/#running-mocha-in-the-browser -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests (Live Server)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+
+    <!-- The scripts that we will test -->
+    <script src="../node_modules/jszip/dist/jszip.min.js"></script>
+    <script src="../node_modules/localforage/dist/localforage.min.js"></script>
+    <script src="../node_modules/epubjs/dist/epub.min.js"></script>
+
+    <script type="module" src="./tests.js"></script> <!-- Write tests here -->
+  </body>
+</html>
