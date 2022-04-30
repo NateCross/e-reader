@@ -9,6 +9,8 @@ mocha.checkLeaks();
 
 import State from "../src/State.js";
 
+console.log(ePub);
+
 const assert = chai.assert;
 // const expect = chai.expect;
 

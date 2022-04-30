@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "live-server --open=tests/tests.html"
+    "test": "live-server --open=tests/tests.html",
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.js"
   },
   "repository": {
     "type": "git",
@@ -22,12 +24,13 @@
   "homepage": "https://github.com/NateCross/e-reader#readme",
   "devDependencies": {
     "chai": "^4.3.6",
-    "live-server": "^1.2.2",
-    "mocha": "^9.2.2"
+    "mocha": "^9.2.2",
+    "nodemon": "^2.0.16"
   },
   "dependencies": {
     "epubjs": "^0.3.93",
     "express": "^4.17.3",
+    "live-server": "^1.2.2",
     "localforage": "^1.10.0"
   }
 }

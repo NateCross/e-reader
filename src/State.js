@@ -55,7 +55,7 @@ export default class State {
   async openBook(e) {
     let promise = null;
 
-    this._book = this.ePubJS(); // Reset book
+    this._book = ePub(); // Reset book
 
     let bookData;
 
@@ -99,6 +99,21 @@ export default class State {
       this._rendition.destroy();
     // TODO: Insert code to remove inputs
   }
+
+  // Credit: @tony19
+  // https://stackoverflow.com/a/19183658
+  // _getBase64Image(img) {
+  //   var canvas = document.createElement("canvas");
+  //   canvas.width = img.width;
+  //   canvas.height = img.height;
+  //
+  //   var ctx = canvas.getContext("2d");
+  //   ctx.drawImage(img, 0, 0);
+  //
+  //   var dataURL = canvas.toDataURL("image/png");
+  //
+  //   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+  // }
 
   get metadata() {
     return this._book.packaging.metadata;
