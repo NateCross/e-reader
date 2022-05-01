@@ -6,13 +6,22 @@ const port = process.env.PORT || 3000;
 // Used for res.sendFile in app.get
 const path = require('path');
 
+// The node modules used in the app
+// Some module dist files have a different name,
+// so we use an associative array to denote this
+const moduleDists = {'jszip': 'jszip', 'epubjs': 'epub', 'localforage': 'localforage'};
+
 // Serving the node module scripts
-app.use('/scripts', express.static('./node_modules/jszip/dist/'));
-app.use('/scripts', express.static('./node_modules/epubjs/dist/'));
-app.use('/scripts', express.static('./node_modules/localforage/dist/'));
+// This is an abstracted way of serving all the needed scripts
+// thanks to using moduleDists
+Object.keys(moduleDists).forEach(key => {
+  app.get(`/scripts/${moduleDists[key]}.min.js`, function(req, res) {
+    res.sendFile(path.join(__dirname, `/node_modules/${key}/dist/${moduleDists[key]}.min.js`));
+  });
+});
 
 // Serving the css
-app.use('/css',express.static('.src/css/'));
+app.use('/css',express.static('./src/css/'));
 
 // Serving the main file, index.html
 app.get('/', (req, res) => {
