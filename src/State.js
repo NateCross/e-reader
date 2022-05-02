@@ -24,7 +24,7 @@ export default class State {
      *  bookLib can store either a URL string or an arraybuffer.
      *  This is going to be stored with localForage.
      */
-    this.bookLib = []; // NOTE: Try to use the localitemstorage here
+    // this.bookLib = []; // NOTE: Try to use the localitemstorage here
     this.bookSections = [];
 
     this.currentSection;
@@ -35,19 +35,32 @@ export default class State {
     this.locationBreakAfterXCharacters = 600;
   }
 
+  // TODO: Think of a better way to handle this without passing Library
   /**
-   * Call this function to load localforage upon start
-   * @function
+   * Hacky workaround to pass the array of books in the library
+   * to the individual book state.
+   * Use by executing the function when passed as
+   * parameter to an event "openBookEvent()"
+   * @param {Library} Library
+   * @type {HTMLElement} libraryElem
+   * @returns {Function}
    */
-  async init() {
-    this.bookLib = await this.getLibrary() || this.bookLib;
-  }
+  openBookEvent(Library) {
+    return e => {
+      if (!window.FileReader) return;
 
-  openBookEvent(e) {
-    const file = e.target.files[0];
-    if (window.FileReader) {
+      const file = e.target.files[0];
       let reader = new FileReader();
-      reader.onload = this.openBook;
+
+      reader.onload = bookData => {
+        this.storeBookToLib(bookData.target.result, Library.bookLib);
+        console.log(Library.bookLib);
+
+        // Need to execute the functions directly after uploading a book
+        Library.saveLibrary();
+        Library.refreshLibraryDisplay();
+      };
+
       reader.readAsArrayBuffer(file);
     }
   }
@@ -60,32 +73,19 @@ export default class State {
    * or used as-is with a link to a file
    * @param {ArrayBuffer|string}
    */
-  async openBook(e) {
+  async openBook(bookData) {
     let promise = null;
 
     this.book = ePub(); // Reset book
 
-    let bookData;
-
-    // Checks if the parameter is a url or an event
-    // The latter triggers when openBookEvent is used
-    if (e.target)
-      bookData = e.target.result;
-    else
-      bookData = e;
-
     try {
       promise = this.book.open(bookData);
-      this.storeBookToLib(bookData);
     } catch (err) {
       console.log(`ERROR: ${err}`);
     }
+
     return promise;
   }
-
-  // storeBookToLib(arrayBuffer) {
-  //
-  // }
 
   renderBook(viewer, width = "100%", height = 600) {
     // this.rendition = null;
@@ -101,10 +101,14 @@ export default class State {
     }
   }
 
-  storeBookToLib(bookData) {
+  /**
+   * @param {ArrayBuffer|String} bookData
+   * @param {Array} bookLib The global list of books in library
+   */
+  storeBookToLib(bookData, bookLib) {
     let itemToSave = new LibItem(bookData);
-    this.bookLib.push(itemToSave);
-    this.saveLibrary();
+    bookLib.push(itemToSave);
+    // this.saveLibrary();
   }
 
   reset() {
