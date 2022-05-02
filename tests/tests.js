@@ -9,8 +9,6 @@ mocha.checkLeaks();
 
 import State from "../src/State.js";
 
-console.log(ePub);
-
 const assert = chai.assert;
 // const expect = chai.expect;
 
@@ -28,8 +26,31 @@ describe('epub.js', function() {
       await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
       assert.isNotNull(state.metadata);
     });
+    it('should load the book\'s cover', async function() {
+      const state = new State(ePub);
+      await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+      const bookCover = await state.getBookCoverBase64();
+      console.log(bookCover);
+      assert.strictEqual(bookCover, 'YmxvYjpodHRwOi8vMTI3LjAuMC4xOjgwODAvOGIwMWVhMmEtOTMxYS00ZGI5LTllZjgtZDllMTNiYWE3ZDNi');
+    });
+    it('saves Moby Dick to bookLib[]', async function() {
+      const state = new State(ePub);
+      await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+      assert.strictEqual(state.bookLib[0].bookData, "https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+    });
+    it('saves bookLib[] to localforage', async function() {
+      const state = new State(ePub);
+      await state.openBook("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+      const lib = await state.getLibrary();
+      assert.strictEqual(lib[0].bookData, "https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+    });
+    it('loads bookLib[] from localforage', async function() {
+      const state = new State(ePub);
+      await state.init();
+      const lib = state.bookLib;
+      assert.strictEqual(lib[0].bookData, "https://s3.amazonaws.com/moby-dick/moby-dick.epub");
+    });
   });
-
 });
 
 // Used for the 'library' functionality

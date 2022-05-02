@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>E-Reader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  </head>
+  <body>
+    <h1>Test</h1>
+
+    <input
+      type        = "text"
+      class       = "storage-test"
+      placeholder = "Type something to save in local storage"
+    >
+
+    <br>
+
+    <div class="library"></div>
+
+    <!-- Unpack epub files -->
+    <script src="../scripts/jszip.min.js"></script>
+
+    <!-- Enhanced local storage, allows for objects -->
+    <script src="../scripts/localforage.min.js"></script>
+
+    <!-- Main library -->
+    <script src="../scripts/epub.min.js"></script>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

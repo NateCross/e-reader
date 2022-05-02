@@ -20,13 +20,21 @@ Object.keys(moduleDists).forEach(key => {
   });
 });
 
+// Serving the js
+app.use('/js', express.static(path.join(__dirname, '/src/')));
+
 // Serving the css
-app.use('/css',express.static('./src/css/'));
+app.use('/css',express.static(path.join(__dirname, '/src/css/')));
 
 // Serving the main file, index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './index.html'));
+  res.sendFile(path.join(__dirname, './src/index.html'));
 });
+
+app.get('/reader', (req, res) => {
+  res.sendFile(path.join(__dirname, './src/reader.html'));
+});
+
 
 // Redirects other URLs back to the index
 app.get('/*', (req, res) => {

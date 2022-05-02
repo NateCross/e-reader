@@ -1,3 +1,5 @@
+import LibItem from './LibItem.js';
+
 /**
  * Manages state of the entire app.
  * Load the epub.js and localforage script before this.
@@ -5,20 +7,18 @@
  * @param {ePub} ePubJS - the epub.js object
  */
 export default class State {
-  constructor(ePubJS) {
-    this.ePubJS = ePubJS;
-
+  constructor() {
     /**
      * Stores the current book.
      * @private
      */
-    this._book;
+    this.book;
 
     /**
      * Stores the current renderer.
      * @private
      */
-    this._rendition;
+    this.rendition;
 
     /**
      *  bookLib can store either a URL string or an arraybuffer.
@@ -33,6 +33,14 @@ export default class State {
     this.percentage;
 
     this.locationBreakAfterXCharacters = 600;
+  }
+
+  /**
+   * Call this function to load localforage upon start
+   * @function
+   */
+  async init() {
+    this.bookLib = await this.getLibrary() || this.bookLib;
   }
 
   openBookEvent(e) {
@@ -55,7 +63,7 @@ export default class State {
   async openBook(e) {
     let promise = null;
 
-    this._book = ePub(); // Reset book
+    this.book = ePub(); // Reset book
 
     let bookData;
 
@@ -67,7 +75,8 @@ export default class State {
       bookData = e;
 
     try {
-      promise = this._book.open(bookData);
+      promise = this.book.open(bookData);
+      this.storeBookToLib(bookData);
     } catch (err) {
       console.log(`ERROR: ${err}`);
     }
@@ -81,45 +90,94 @@ export default class State {
   renderBook(viewer, width = "100%", height = 600) {
     // this.rendition = null;
     try {
-      this._rendition = this._book.renderTo(viewer, {
+      this.rendition = this.book.renderTo(viewer, {
         width: width,
         height: height,
       });
 
-      this._rendition.display();
+      this.rendition.display();
     } catch (err) {
       console.log(`ERROR: ${err}`);
     }
   }
 
+  storeBookToLib(bookData) {
+    let itemToSave = new LibItem(bookData);
+    this.bookLib.push(itemToSave);
+    this.saveLibrary();
+  }
+
   reset() {
-    if (this._book)
-      this._book.destroy();
-    if (this._rendition)
-      this._rendition.destroy();
+    if (this.book)
+      this.book.destroy();
+    if (this.rendition)
+      this.rendition.destroy();
     // TODO: Insert code to remove inputs
   }
 
-  // Credit: @tony19
-  // https://stackoverflow.com/a/19183658
-  // _getBase64Image(img) {
-  //   var canvas = document.createElement("canvas");
-  //   canvas.width = img.width;
-  //   canvas.height = img.height;
-  //
-  //   var ctx = canvas.getContext("2d");
-  //   ctx.drawImage(img, 0, 0);
-  //
-  //   var dataURL = canvas.toDataURL("image/png");
-  //
-  //   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-  // }
-
   get metadata() {
-    return this._book.packaging.metadata;
+    return this.book.packaging.metadata;
   }
 
-  get currPage() {
-    return this.currentPage;
+  get bookCoverBlob() {
+    return this.book.coverUrl();
+  }
+
+  async getBookCoverBase64() {
+    const cover = await this.bookCoverBlob;
+    const blob = new Blob([cover], {type: 'image/png'});
+    let base64 = await this.blobToBase64(blob);
+    base64 = base64.substr(base64.indexOf(',') + 1);
+    console.log(base64)
+    return base64;
+  }
+
+  // https://stackoverflow.com/a/18650249
+  /**
+   * Used in converting bookCoverUrl to a base64 string
+   * allowing the image to be saved in localstorage
+   * @function
+   * @param {Blob} blob An image blob
+   * @returns {Promise} promise
+   */
+  blobToBase64(blob) {
+    // console.log(blob);
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+    // var reader = new FileReader();
+    // reader.readAsDataURL(blob);
+    // reader.onloadend = function() {
+    //   var base64data = reader.result;
+    // }
+  }
+
+  async saveLibrary() {
+    try {
+      const value = await localforage.setItem('Library', this.bookLib);
+      return value;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async getLibrary() {
+    try {
+      const value = await localforage.getItem('Library');
+      return value;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async clearLibrary() {
+    try {
+      const value = await localforage.removeItem('Library');
+      return value;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
