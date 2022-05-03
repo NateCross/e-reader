@@ -1,0 +1,500 @@
+<!-- This is a sample page that browses for and reads an epub. -->
+<!-- From https://github.com/futurepress/epub.js/blob/master/examples/input.html -->
+<!-- Experiment with the input here. -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E-Reader: Reader</title>
+
+  <script src="../scripts/jszip.min.js"></script>
+  <script src="../scripts/localforage.min.js"></script>
+  <script src="../scripts/epub.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="../css/examples.css">
+
+  <style>
+    #book-cover {
+      display: none;
+    }
+    #clear {
+      margin: 100px 25px 10px; /* Random margins */
+      display: inline-block;
+    }
+    #recently-opened-books {
+      color: blue;
+      text-decoration: underline;
+    }
+    #recently-opened-books:hover {
+      cursor: pointer;
+    }
+    /* #hidden-viewer { */
+    /*   display: none; */
+    /* } */
+    #table-of-contents {
+      display: none;
+      /* width: 50%; */
+      margin: 0 auto;
+    }
+    .page-count {
+      color: grey;
+      display: none;
+      margin: 50px 25px 10px;
+      position: relative;
+      /* white-space: nowrap; Prevent span from linebreaking */
+    }
+    #hover-popup {
+      cursor: pointer;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+    }
+    #hover-popup::before {
+      background-color: grey;
+      color: white;
+      content: "Highlight";
+      display: block;
+      font-weight: bold;
+      margin-left: 37px;
+      margin-top: 6px;
+      padding: 2px;
+      width: max-content;
+      height: 20px;
+    }
+  </style>
+
+</head>
+<body>
+  <div id="title"><input type="file" id="input"></div>
+  <select id="table-of-contents"></select>
+  <div id="viewer" class="spreads"></div>
+
+  <!-- Needed for total page calculation -->
+  <!-- <div id = "hidden-viewer"></div> -->
+
+  <a id="prev" href="#prev" class="arrow">‹</a>
+  <a id="next" href="#next" class="arrow">›</a>
+  <input type="button" id="clear">
+
+  <br>
+
+  <div class="page-count">
+    <input type="text" name="Current Page" id="current-page" size="5">
+    <span id="percentage"></span>
+    <span>/</span>
+    <span id="total-pages"></span>
+  </div>
+
+  <br> <br>
+  <img id="book-cover">
+
+  <br> <br>
+  <ul id="recently-opened-books"> </ul>
+
+  <!-- Templates aren't rendered until added later with JS -->
+  <!-- So we can make this trigger when we select text -->
+  <template><span id="hover-popup"></span></template>
+
+  <script>
+  // Global variables tracking state
+  // NOTE: May need to make this its own class?
+  let book = ePub();
+  let rendition;
+  let savedLocation;
+  let currSection;
+  let bookSections = [];
+  let annotation;
+
+  let clearSelection;
+
+  ////////////////////////
+  ///// DOM Elements /////
+  ////////////////////////
+  const PageCount = document.querySelector('.page-count');
+  const current_page = document.querySelector('#current-page');
+  const total_pages = document.querySelector('#total-pages');
+  const percentage = document.querySelector('#percentage');
+  const table_of_contents = document.querySelector('#table-of-contents');
+
+  current_page.onchange = e => {
+    const _pageCFI = book.locations.cfiFromLocation(e.target.value);
+    rendition.display(_pageCFI);
+  }
+
+  const locationBreakAfterXCharacters = 600;
+
+  // Utility function
+  // https://flaviocopes.com/how-to-list-object-methods-javascript/
+  const getMethods = (obj) => {
+    let properties = new Set()
+    let currentObj = obj
+    do {
+      Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+    } while ((currentObj = Object.getPrototypeOf(currentObj)))
+    return [...properties.keys()].filter(item => typeof obj[item] === 'function')
+  }
+
+  const changeBook = (objURL) => {
+    return function() {
+      book.destroy();
+      rendition.destroy();
+      openBook(objURL);
+    };
+  }
+
+  function clearSelectElement(select) {
+    while (select.options.length)
+      select.remove(0);
+  }
+
+  // LINK: https://github.com/futurepress/epub.js/issues/986#issuecomment-538716885
+  const getCfiFromHref = async (href) => {
+    const id = href.split('#')[1]
+    const item = book.spine.get(href)
+    await item.load(book.load.bind(book))
+    const el = id ? item.document.getElementById(id) : item.document.body
+    return item.cfiFromElement(el)
+  };
+
+  /// BEGIN MAIN CODE ///
+
+  var inputElement = document.getElementById("input");
+
+  const recentlyOpenedBooks = document.querySelector('#recently-opened-books');
+
+  inputElement.addEventListener('change', function (e) {
+    var file = e.target.files[0];
+
+    var objectURL = window.URL.createObjectURL(file);
+
+    openBook(objectURL);
+  });
+
+
+  function openBook(objURL) {
+
+    var title = document.getElementById("title");
+    var next = document.getElementById("next");
+    var prev = document.getElementById("prev");
+
+    // We have to create a new 'book' object every time we load a new book
+    // this is because there is no way to unload the book; the book must be
+    // destroyed with 'book.destroy()'.
+    book = ePub();
+
+    // Because we're using an object URL, we need to specify the "epub"
+    // parameter to the open method. If it were a FileReader, we'd use
+    // "binary"
+    book.open(objURL);
+    // book.open(objURL, "epub");
+
+    // TODO: Find difference between these events: ready, opened, displayed
+
+    // Get the list of locations, which are essentially pages
+    // that break after a certain amount of characters
+    // here we have the arbitrary number 600, but it can be anything
+    // LINK: https://github.com/futurepress/epub.js/issues/744#issuecomment-492300092
+    book.ready.then(() => {
+      savedLocation = localStorage.getItem(`${book.key()}-currLoc`);
+
+      const storedLocations = localStorage.getItem(book.key() + '-locations');
+
+      if (storedLocations)
+        return book.locations.load(storedLocations);
+      else
+        return book.locations.
+              generate(locationBreakAfterXCharacters);
+    }).then(location => {
+      localStorage.setItem(book.key() + '-locations', book.locations.save());
+
+      PageCount.style.display = 'inline-block';
+      total_pages.innerHTML = book.locations.total;
+    });
+
+    book.opened.then(bk => {
+      // console.log(bk.key())
+      loadTableOfContents();
+    });
+
+    /// TEST FUNCTIONS ///
+
+    // Get the sections from the spine
+    // LINK: https://github.com/futurepress/epub.js/issues/887
+    // book.loaded.spine.then((spine) => {
+    //   spine.each((item) => {
+    //     item.load(book.load.bind(book)).then((contents) => {
+    //       console.log(contents);
+    //     });
+    //   });
+    // });
+
+
+    // Accesses the book cover.
+    // It's a promise, so we must use 'then()' so it displays properly
+    // We can also use the url as the src of an image element.
+
+    book.coverUrl().then(url => {
+      const bookCover = document.querySelector("#book-cover");
+      bookCover.src = url;
+    });
+
+
+    // Get metadata from book
+    var bookMetadata = book.loaded.metadata.then(metadata => { return metadata });
+    // console.log(`Metadata: ${bookMetadata}`);
+
+    // Push to a list of recently opened books
+    let listItem = document.createElement("li");
+    bookMetadata.then(metadata => {
+      const linkItem = document.createElement("a");
+      linkItem.onclick = changeBook(objURL);
+      linkItem.innerHTML = metadata.title;
+      listItem.appendChild(linkItem);
+    }); // Must be in the 'then' function otherwise it will return promise
+    recentlyOpenedBooks.appendChild(listItem);
+
+
+    /// END TEST FUNCTIONS ///
+
+    rendition = book.renderTo("viewer", {
+      width: "100%",
+      height: 600,
+    });
+
+    // TODO: Make the parameter the book. Or make it a method in a class?
+    async function displaySavedLocation() {
+      await book.ready;
+      savedLocation = await localStorage.getItem(`${book.key()}-currLoc`);
+
+      if (savedLocation)
+        rendition.display(savedLocation);
+      else
+        rendition.display();
+    }
+
+    async function loadTableOfContents() {
+      bookTOC = await book.loaded.navigation;
+
+      // Using document fragments allow us to add a lot of options
+      // to the "select" element that is our table of contents
+      // in one go in a lightweight manner
+      const docFrag = document.createDocumentFragment();
+
+      bookSections = []; // Clear the current content
+      bookTOC.forEach(chapter => {
+        let option = document.createElement("option");
+        option.textContent = chapter.label;
+        option.ref = chapter.href;
+
+        // Add to the array of sections asynchronously
+        getCfiFromHref(chapter.href).then(cfi => {
+          bookSections.push(cfi)
+        })
+
+        docFrag.appendChild(option);
+      });
+
+      table_of_contents.appendChild(docFrag);
+      table_of_contents.style.display = "block";
+
+      table_of_contents.onchange = () => {
+        let index = table_of_contents.selectedIndex;
+        let url = table_of_contents.options[index].ref;
+        rendition.display(url);
+        return false;
+      };
+
+      return bookTOC;
+    }
+
+    displaySavedLocation();
+
+    /// TEST FUNC ///
+
+    // Clear button to show new book
+    var clearButton = document.querySelector('#clear');
+    clearButton.value = "Clear";
+    clearButton.onclick = () => {
+      // NOTE: You must call book.destroy and rendition.destroy()
+      book.destroy();
+      rendition.destroy();
+      clearSelectElement(table_of_contents);
+
+      // Need to remove event listeners as well
+      // or else it will duplicate, and trigger multiple
+      // times
+      next.removeEventListener("click", goNext);
+      prev.removeEventListener("click", goPrev);
+    }
+
+    /// END TEST FUNC ///
+
+	
+	var keyListener = function(e){
+
+      // Left Key
+      if ((e.keyCode || e.which) == 37) {
+        rendition.prev();
+      }
+
+      // Right Key
+      if ((e.keyCode || e.which) == 39) {
+        rendition.next();
+      }
+
+    };
+
+    rendition.on("keyup", keyListener);
+
+    // Needed to fire selected event on mouseup instead of
+    // timeout
+    // https://github.com/johnfactotum/foliate/commit/6b5cef3a3273bc22c2f2241d51100212826bd3e9#diff-2e61bf0fc6ff9138dc0b5f414f34176dd833401069cdd1098f712551f023007b
+    let latestViewElement;
+
+    rendition.on("rendered", (section, view) => {
+        latestViewElement = view.element
+    })
+
+    let hover = document.importNode(document.querySelector('template').content, true).childNodes[0];
+
+
+    rendition.hooks.content.register((contents, view) => {
+      contents.document.onpointerdown = () => {
+        try {
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+        } catch (err) {
+          console.log(`ERROR: ${err}`);
+        }
+        let popup = document.querySelector('#hover-popup');
+        if (popup !== null) {popup.remove();document.getSelection().removeAllRanges();}
+      }
+
+      contents.document.onmouseup = () => {
+        const selection = contents.window.getSelection();
+        const range = selection.getRangeAt(0);
+        if (range.collapsed) return;
+
+        // Replace next line characters with a blank space
+        const text = selection.toString().trim().replace(/\n/g, ' ');
+        if (text === '') return;
+
+        const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
+
+        const rect = selection.getRangeAt(0).getBoundingClientRect();
+        const viewElementRect = latestViewElement.getBoundingClientRect();
+
+        const left = (rect.left + rect.right) / 2 + viewElementRect.left;
+        const top = rect.top + viewElementRect.top;
+        const bottom = rect.bottom + viewElementRect.top;
+
+        hover.style.left = left;
+        hover.style.top = top;
+        hover.style.bottom = bottom;
+        // hover.style.top = `calc(${rect.top}px - 48px)`;
+        // hover.style.left = `calc(${rect.left}px + calc(${rect.width}px / 2) - 40px)`;
+        hover.text = text;
+
+        document.body.appendChild(hover);
+
+        // Apparently this is for lookups, so idk that
+        if (text.split(' ').length === 1) {
+          clearSelection = () => contents.window.getSelection().removeAllRanges();
+          annotation = { text, cfiRange };
+          console.log(annotation);
+        } else {
+          annotation = { text, cfiRange };
+          console.log(annotation);
+          // contents.window.getSelection();
+          // contents.window.getSelection().removeAllRanges();
+        }
+
+        // Adds the click-to-highlight thing on the hover popup
+        oncontroldown = (event) => {
+          // console.log(event);
+          rendition.annotations.highlight(cfiRange, {}, (e) => {
+            console.log("highlight clicked", e.target);
+          });
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+          contents.window.getSelection().removeAllRanges();
+        }
+
+        hover.addEventListener('pointerdown', oncontroldown, true);
+      };
+    });
+
+    rendition.on("relocated", function(location){
+      console.log(location);
+
+      // Save current location to local storage
+      localStorage.setItem(`${book.key()}-currLoc`, location.start.cfi);
+
+      // Get percentage values
+      const _startPercent = (location.start.percentage * 100).toFixed(2);
+      let _endPercent = (location.end.percentage * 100).toFixed(2);
+
+      const _startPage = book.locations.locationFromCfi(location.start.cfi);
+
+      // End page is minus one so it doesn't overlap with the start of the next page
+      let _endPage = book.locations.locationFromCfi(location.end.cfi);
+      if (_endPercent != 100 && _startPage !== _endPage) {
+        --_endPage;
+        _endPercent = (_endPage / book.locations.total * 100).toFixed(2);
+      }
+
+      // Different stylings based on the current location.
+      // Can be modified without really breaking anything
+      let _pageRange;
+      if (location.atStart)
+        _pageRange = `Cover`;
+      else if (_startPage === _endPage)
+        _pageRange = `${_startPage}`;
+      else
+        _pageRange = `${_startPage} - ${_endPage}`;
+
+      current_page.value = _pageRange;
+
+      if (_startPercent === _endPercent)
+        percentage.innerHTML = `(${_startPercent}%)`;
+      else
+        percentage.innerHTML = `(${_startPercent}% - ${_endPercent}%)`
+
+      const cfiComparison = new ePub.CFI();
+
+      // Creates a copy and reverses the array so that it doesn't
+      // reverse in place, which is what "reverse()" does
+      const reversedSections = bookSections.slice().reverse();
+
+      const sectionIndex = reversedSections.findIndex(section =>
+        cfiComparison.compare(section, location.end.cfi) < 0
+      );
+
+      table_of_contents.selectedIndex = bookSections.length - sectionIndex - 1;
+    });
+
+    // We must define functions like this so we can remove
+    // the event listener when we clear
+    function goNext(e) {
+      rendition.next();
+      e.preventDefault();
+    }
+    function goPrev(e) {
+      rendition.prev();
+      e.preventDefault();
+    }
+
+    next.addEventListener("click", goNext, false);
+
+    prev.addEventListener("click", goPrev, false);
+
+
+
+    document.addEventListener("keyup", keyListener, false);
+  }
+
+  </script>
+  <script type="module" src="../js/reader.js"></script>
+
+</body>
+</html>

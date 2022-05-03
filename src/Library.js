@@ -50,12 +50,14 @@ export default class Library {
   }
 
   async clearLibrary() {
+    let value = null;
     try {
-      const value = await localforage.removeItem('Library');
-      return value;
+      value = await localforage.removeItem('Library');
     } catch (err) {
       console.log(err);
     }
+    await this.refreshLibraryDisplay();
+    return value;
   }
 
   // TODO: Make this function populate the div with contents of bookLib
@@ -66,7 +68,15 @@ export default class Library {
    * @type {HTMLElement} libraryElement
    */
   async refreshLibraryDisplay(libraryElement = this.libraryEl) {
-    if (this.bookLib.length === 0) return;
+    this.refreshStorageDisplay();
+
+    if (this.bookLib.length === 0) {
+      // Putting these functions up here and below, after the list is created,
+      // achieves a 'seamless' refresh and allows for it to update
+      // as well in case we clear bookLib
+      libraryElement.innerHTML = "";
+      return;
+    }
 
     // We use a docfrag to add elements in a performant way
     const docFrag = new DocumentFragment();
@@ -106,7 +116,6 @@ export default class Library {
     // It's put here so that it appears to change instantly
     libraryElement.innerHTML = "";
     libraryElement.appendChild(docFrag);
-    this.refreshStorageDisplay();
   }
 
   /**
@@ -138,7 +147,7 @@ export default class Library {
     // We return a function here as a workaround to pass parameters
     return async () => {
       try {
-        await localforage.setItem('OpenedBookLibIndex', storageIndex);
+        await localStorage.setItem('OpenedBookLibIndex', storageIndex);
         // TODO: Change this from the 'js/' dir to... somewhere else
         window.location.href = "/reader";
       } catch (err) {
