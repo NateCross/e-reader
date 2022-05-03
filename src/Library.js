@@ -1,15 +1,26 @@
 import State from "./State.js";
-import { openBook, elementFactory } from "./Utils.js";
+import { elementFactory, getIndexedDBUsage, asyncForEach } from "./Utils.js";
 
 /**
  * @type {HTMLElement} libraryElement The div element to display each book in the library
+ * @type {HTMLElement} storageQuotaEl
+ * @type {HTMLElement} storageUsageEl
+ * @type {HTMLElement} storagePercentEl
  */
 export default class Library {
-  constructor(libraryElement = null) {
+  constructor(
+    libraryEl = null,
+    storageUsageEl = null,
+    storageQuotaEl = null,
+    storagePercentEl = null,
+  ) {
     this.bookLib = [];
-    this.libraryElement = libraryElement;
 
-    this.openBook = openBook;
+    // HTML elements
+    this.libraryEl = libraryEl;
+    this.storageUsageEl = storageUsageEl;
+    this.storageQuotaEl = storageQuotaEl;
+    this.storagePercentEl = storagePercentEl;
   }
 
   /**
@@ -54,7 +65,7 @@ export default class Library {
    * Call after updating this.bookLib.
    * @type {HTMLElement} libraryElement
    */
-  async refreshLibraryDisplay(libraryElement = this.libraryElement) {
+  async refreshLibraryDisplay(libraryElement = this.libraryEl) {
     if (this.bookLib.length === 0) return;
 
     // We use a docfrag to add elements in a performant way
@@ -62,14 +73,32 @@ export default class Library {
 
     const listParent = elementFactory('ul');
 
-    for (const book of this.bookLib) {
+    // Iterate over this.bookLib and create list elements
+    this.bookLib.forEach(async (book, index) => {
       const state = new State();
       await state.openBook(book.bookData);
+
+      // Creating and modifying the list element
       const bookElement = elementFactory('li', {
       });
       bookElement.innerHTML = state.metadata.title;
+      bookElement.onclick = this.openReaderEvent(index);
+
       listParent.appendChild(bookElement);
-    }
+    });
+
+    // NOTE: Has worse performance than regular version
+    // asyncForEach(this.bookLib, async (book, index) => {
+    //   const state = new State();
+    //   await state.openBook(book.bookData);
+    //
+    //   // Creating and modifying the list element
+    //   const bookElement = elementFactory('li', {
+    //   });
+    //   bookElement.innerHTML = state.metadata.title;
+    //
+    //   listParent.appendChild(bookElement);
+    // });
 
     docFrag.append(listParent);
 
@@ -77,11 +106,44 @@ export default class Library {
     // It's put here so that it appears to change instantly
     libraryElement.innerHTML = "";
     libraryElement.appendChild(docFrag);
+    this.refreshStorageDisplay();
+  }
+
+  /**
+   * Updates the storage display.
+   * Should be done after refreshing library
+   */
+  async refreshStorageDisplay() {
+    const storage = await getIndexedDBUsage();
+    this.storageQuotaEl.innerHTML = storage.quota;
+    this.storageUsageEl.innerHTML = storage.usage;
+    this.storagePercentEl.innerHTML = storage.percent;
+
   }
 
   storeBookToLib(bookData) {
     let itemToSave = new LibItem(bookData);
     this.bookLib.push(itemToSave);
     this.saveLibrary();
+  }
+
+  /**
+   * Stores the index of the clicked book in localstorage,
+   * then goes to the 'reader.html' which opens the book in the
+   * stored index. Use this as the event on click for the library
+   * items.
+   * @param {Number} storageIndex Index of book to be opened in the 'Library' key in localstorage/IndexedDB
+   */
+  openReaderEvent(storageIndex) {
+    // We return a function here as a workaround to pass parameters
+    return async () => {
+      try {
+        await localforage.setItem('OpenedBookLibIndex', storageIndex);
+        // TODO: Change this from the 'js/' dir to... somewhere else
+        window.location.href = "/reader";
+      } catch (err) {
+        console.log(`ERROR: ${err}`);
+      }
+    }
   }
 }

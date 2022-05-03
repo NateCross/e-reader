@@ -6,10 +6,12 @@ import LibItem from './LibItem.js';
 import * as Utils from './Utils.js';
 
 const $library = document.querySelector('#library');
-const $testRender = document.querySelector('#testRender');
-const $fileUpload = document.querySelector('#file-upload');
+const $file_upload = document.querySelector('#file-upload');
+const $storage_usage = document.querySelector('#usage');
+const $storage_quota = document.querySelector('#quota');
+const $storage_percent = document.querySelector('#percent');
 
-const Lib = new Library($library);
+const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 // Load the books from storage and populate the library div
 (async () => {
@@ -19,7 +21,7 @@ const Lib = new Library($library);
 
 const FileUploadState = new State();
 
-$fileUpload.onchange = FileUploadState.openBookEvent(Lib);
+$file_upload.onchange = FileUploadState.openBookEvent(Lib);
 
 
 

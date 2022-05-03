@@ -48,6 +48,7 @@ export default class State {
   openBookEvent(Library) {
     return e => {
       if (!window.FileReader) return;
+      if (e.target.files.length === 0) return;
 
       const file = e.target.files[0];
       let reader = new FileReader();
@@ -108,7 +109,6 @@ export default class State {
   storeBookToLib(bookData, bookLib) {
     let itemToSave = new LibItem(bookData);
     bookLib.push(itemToSave);
-    // this.saveLibrary();
   }
 
   reset() {
@@ -125,37 +125,6 @@ export default class State {
 
   get bookCoverBlob() {
     return this.book.coverUrl();
-  }
-
-  async getBookCoverBase64() {
-    const cover = await this.bookCoverBlob;
-    const blob = new Blob([cover], {type: 'image/png'});
-    let base64 = await this.blobToBase64(blob);
-    base64 = base64.substr(base64.indexOf(',') + 1);
-    console.log(base64)
-    return base64;
-  }
-
-  // https://stackoverflow.com/a/18650249
-  /**
-   * Used in converting bookCoverUrl to a base64 string
-   * allowing the image to be saved in localstorage
-   * @function
-   * @param {Blob} blob An image blob
-   * @returns {Promise} promise
-   */
-  blobToBase64(blob) {
-    // console.log(blob);
-    return new Promise((resolve, _) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-    // var reader = new FileReader();
-    // reader.readAsDataURL(blob);
-    // reader.onloadend = function() {
-    //   var base64data = reader.result;
-    // }
   }
 
   async saveLibrary() {

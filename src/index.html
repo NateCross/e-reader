@@ -19,14 +19,16 @@
 
     <label for="file-upload">Upload an epub file</label>
     <input
-      type  = "file"
-      id    = "file-upload"
-      name  = "file-upload"
+      type   = "file"
+      id     = "file-upload"
+      name   = "file-upload"
+      accept = ".epub"
     >
 
     <div id="library"></div>
-
-    <div id="testRender"></div>
+    <div id="storage">
+      <p>Storage: <output id="usage"></output> / <output id="quota"></output> (<output id="percent"></output>%)</p>
+    </div>
 
     <!-- Unpack epub files -->
     <script src="../scripts/jszip.min.js"></script>
