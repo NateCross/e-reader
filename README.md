@@ -10,7 +10,8 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - Install [Node.js](https://nodejs.org/en/)
 - Clone this repository
 - Run `npm install --dev`
-- Run `npm test`
+- Run `npm run dev` to start nodemon
+- Run `npm test` to start the tests with the live server
 
 # TODO
 
