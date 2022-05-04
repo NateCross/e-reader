@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>E-Reader: Reader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- TODO: Insert CSS here -->
+  </head>
+  <body>
+    <!-- Book Title -->
+    <header id="title"></header>
+
+    <select name="table-of-contents" id="table-of-contents"></select>
+
+    <!-- Render the book here -->
+    <div id="viewer" class="spreads"></div>
+
+    <!-- Arrows for going back/forwards one page -->
+    <a href="#prev" id="prev" class="arrow">‹</a>
+    <a href="#next" id="next" class="arrow">›</a>
+
+    <div class="page-count">
+      <input type="text" id="current-page" size="5">
+      <span id="percentage"></span>
+      /
+      <span id="total-pages"></span>
+    </div>
+
+    <!-- SCRIPTS -->
+
+    <!-- Unpack epub files -->
+    <script src="../scripts/jszip.min.js"></script>
+
+    <!-- Enhanced local storage, allows for objects -->
+    <script src="../scripts/localforage.min.js"></script>
+
+    <!-- Main reader library -->
+    <script src="../scripts/epub.min.js"></script>
+
+    <script type="module" src="../js/reader.js"></script>
+  </body>
+</html>

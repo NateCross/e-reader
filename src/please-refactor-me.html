@@ -7,16 +7,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EPUB.js Input Example</title>
+  <title>E-Reader: Reader</title>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+  <script src="../scripts/jszip.min.js"></script>
+  <script src="../scripts/localforage.min.js"></script>
+  <script src="../scripts/epub.min.js"></script>
 
-  <!-- New epub.js file which allows for jumps when you go next or prev -->
-  <!-- Nvm, we're back to the old one -->
-  <script src="../../modules/epub.min.js"></script>
-  <!-- <script src="../../modules/epub.min.js"></script> -->
-
-  <link rel="stylesheet" type="text/css" href="examples.css">
+  <link rel="stylesheet" type="text/css" href="../css/examples.css">
 
   <style>
     #book-cover {
@@ -190,7 +187,8 @@
     // Because we're using an object URL, we need to specify the "epub"
     // parameter to the open method. If it were a FileReader, we'd use
     // "binary"
-    book.open(objURL, "epub");
+    book.open(objURL);
+    // book.open(objURL, "epub");
 
     // TODO: Find difference between these events: ready, opened, displayed
 
@@ -262,7 +260,7 @@
 
     rendition = book.renderTo("viewer", {
       width: "100%",
-      height: 600
+      height: 600,
     });
 
     // TODO: Make the parameter the book. Or make it a method in a class?
@@ -352,7 +350,7 @@
 
     // Needed to fire selected event on mouseup instead of
     // timeout
-    // LINK: https://github.com/johnfactotum/foliate/commit/6b5cef3a3273bc22c2f2241d51100212826bd3e9#diff-2e61bf0fc6ff9138dc0b5f414f34176dd833401069cdd1098f712551f023007b
+    // https://github.com/johnfactotum/foliate/commit/6b5cef3a3273bc22c2f2241d51100212826bd3e9#diff-2e61bf0fc6ff9138dc0b5f414f34176dd833401069cdd1098f712551f023007b
     let latestViewElement;
 
     rendition.on("rendered", (section, view) => {
@@ -363,8 +361,12 @@
 
 
     rendition.hooks.content.register((contents, view) => {
-
-      contents.document.onpointerdown = ()=> {
+      contents.document.onpointerdown = () => {
+        try {
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+        } catch (err) {
+          console.log(`ERROR: ${err}`);
+        }
         let popup = document.querySelector('#hover-popup');
         if (popup !== null) {popup.remove();document.getSelection().removeAllRanges();}
       }
@@ -400,11 +402,25 @@
         if (text.split(' ').length === 1) {
           clearSelection = () => contents.window.getSelection().removeAllRanges();
           annotation = { text, cfiRange };
+          console.log(annotation);
         } else {
           annotation = { text, cfiRange };
+          console.log(annotation);
           // contents.window.getSelection();
           // contents.window.getSelection().removeAllRanges();
         }
+
+        // Adds the click-to-highlight thing on the hover popup
+        oncontroldown = (event) => {
+          // console.log(event);
+          rendition.annotations.highlight(cfiRange, {}, (e) => {
+            console.log("highlight clicked", e.target);
+          });
+          hover.removeEventListener('pointerdown', oncontroldown, true);
+          contents.window.getSelection().removeAllRanges();
+        }
+
+        hover.addEventListener('pointerdown', oncontroldown, true);
       };
     });
 
@@ -477,9 +493,8 @@
     document.addEventListener("keyup", keyListener, false);
   }
 
-
-
   </script>
+  <script type="module" src="../js/reader.js"></script>
 
 </body>
 </html>
