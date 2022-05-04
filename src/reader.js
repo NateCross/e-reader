@@ -15,25 +15,7 @@ const $page_percent = document.querySelector('#percentage');
 
 // TODO: Add buttons for other features
 
-// NOTE: These events must be made outside of the class since
-// the event cannot access 'this.' from within the class
-
-const AppState = new State(
-  $page_current,
-  $page_total,
-  $page_percent,
-  $title,
-  $toc,
-  $viewer,
-  $prev,
-  $next,
-);
-
-$page_current.onchange = e => {
-  AppState.rendition.display(
-    AppState.book.locations.cfiFromLocation(e.target.value)
-  );
-};
+const AppState = new State();
 
 ///// MAIN /////
 (async () => {
@@ -53,18 +35,63 @@ $page_current.onchange = e => {
   // TODO: Refactor stuff in the html to the js
   // openBook(Library[openedBook].bookData);
 
+  // Performing initialization operations
   await AppState.openBook(Library[openedBook].bookData);
-  await AppState.renderBook()
+  AppState.renderBook($viewer);
+  AppState.updateBookTitle($title);
+  AppState.getStoredLocations($page_total);
+  AppState.loadTableOfContents($toc);
 
-  AppState.updateBookTitle();
-  AppState.getStoredLocations();
-  AppState.updateStoredLocations();
-  AppState.loadTableOfContents();
-  AppState.renderSavedLocation();
+  attachKeyboardInput();
+  attachClickButtonInput();
+
+  AppState.attachRelocatedEvent($page_current, $page_percent, $toc);
+  $page_current.onchange = e => {
+    AppState.rendition.display(
+      AppState.book.locations.cfiFromLocation(e.target.value)
+    );
+  };
 
   // Update the page title
+  // Must be done after book is loaded
   document.title = `E-Reader: ${AppState.metadata.title}`;
 })();
 
 console.log(AppState);
 console.log('Loaded reader');
+
+/**
+ * Helper function used in attachKeyboardInput.
+ * Requires AppState to be initialized.
+ * @param {Event} e
+ */
+function keyListener(e) {
+  switch (e.key) {
+    case "ArrowLeft":
+      AppState.prevPage();
+      break;
+    case "ArrowRight":
+      AppState.nextPage();
+      break;
+  }
+}
+
+/**
+ * Execute function to enable keyboard input.
+ * Must be called after book is rendered in a rendition.
+ * @param {State} State The AppState object
+ */
+function attachKeyboardInput() {
+  // Allows for keyboard input with left and right arrow
+  // Both must be called here, else, it would not work
+  // NOTE: For some reason, the AppState.rendition.on line
+  // only works if you render the book with the
+  // 'allowScriptedContent' option set to true
+  AppState.rendition.on('keydown', keyListener);
+  document.addEventListener('keydown', keyListener, false);
+}
+
+function attachClickButtonInput() {
+  $next.addEventListener("click", () => AppState.nextPage(), false);
+  $prev.addEventListener("click", () => AppState.prevPage(), false);
+}

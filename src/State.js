@@ -1,4 +1,3 @@
-import LibItem from './LibItem.js';
 import { elementFactory } from './Utils.js';
 
 /**
@@ -8,20 +7,7 @@ import { elementFactory } from './Utils.js';
  * @param {ePub} ePubJS - the epub.js object
  */
 export default class State {
-  savedLocation;
-  storedLocations;
-
-
-  constructor(
-    $page_current = null,
-    $page_total = null,
-    $page_percent = null,
-    $title = null,
-    $toc = null,
-    $viewer,
-    $prev,
-    $next,
-  ) {
+  constructor() {
     /**
      * Stores the current book.
      * @private
@@ -40,18 +26,20 @@ export default class State {
      */
     // this.bookLib = []; // NOTE: Try to use the localitemstorage here
     this.bookSections = [];
+    // Needed for syncing the table of contents
+    // this.reversedSections;
 
     this.currentSection;
     this.percentage;
 
-    this.$page_total = $page_total;
-    this.$page_current = $page_current;
-    this.$page_percent = $page_percent;
-    this.$title = $title;
-    this.$toc = $toc;
-    this.$viewer = $viewer;
-    this.$prev = $prev;
-    this.$next = $next;
+    this.storedLocations;
+    this.savedLocation;
+
+    this.Keybinds = {
+      'ArrowLeft': this.prevPage,
+      'ArrowRight': this.nextPage,
+    };
+
 
     this.locationBreakAfterXCharacters = 600;
   }
@@ -78,18 +66,23 @@ export default class State {
     return promise;
   }
 
-  renderBook(viewer = this.$viewer, width = "100%", height = 600) {
-    // this.rendition = null;
+  renderBook(viewer, width = "100%", height = 600) {
+    // allowScriptedContent is set to true to fix a weird bug
+    // where clicking on the rendition would not allow you to
+    // use the left and right arrow keys to go prev/next
     try {
       this.rendition = this.book.renderTo(viewer, {
         width: width,
         height: height,
+        allowScriptedContent: true,
       });
 
-      this.rendition.display();
+      this.renderSavedLocation();
+
     } catch (err) {
       console.log(`ERROR: ${err}`);
     }
+
   }
 
   reset() {
@@ -118,30 +111,32 @@ export default class State {
     return item.cfiFromElement(el)
   };
 
-  updateBookTitle() {
-    this.$title.innerHTML = this.metadata.title;
+  updateBookTitle($title) {
+    $title.innerHTML = this.metadata.title;
   }
 
   /** Chain this and updateStoredLocations */
-  getStoredLocations() {
+  async getStoredLocations($page_total) {
     this.savedLocation = localStorage.getItem(`${this.book.key()}-currLoc`);
     this.storedLocations = localStorage.getItem(`${this.book.key()}-locations`);
 
     if (this.storedLocations)
-      this.book.locations.load(this.storedLocations);
+      await this.book.locations.load(this.storedLocations);
     else
-      this.book.locations.generate(
+      await this.book.locations.generate(
         this.locationBreakAfterXCharacters
       );
+
+    this.updateStoredLocations($page_total);
   }
 
-  updateStoredLocations() {
+  updateStoredLocations($page_total) {
     localStorage.setItem(
       `${this.book.key()}-locations`,
       this.book.locations.save()
     );
 
-    this.$page_total.innerHTML = this.book.locations.total;
+    $page_total.innerHTML = this.book.locations.total;
   }
 
   renderSavedLocation() {
@@ -153,15 +148,15 @@ export default class State {
       this.rendition.display();
   }
 
-  async loadTableOfContents() {
-    const toc = await this.book.loaded.navigation;
+  async loadTableOfContents($toc) {
+    const tocArr = await this.book.loaded.navigation;
 
       // Using document fragments allow us to add a lot of options
       // to the "select" element that is our table of contents
       // in one go in a lightweight manner
     const docFrag = new DocumentFragment();
 
-    toc.forEach(chapter => {
+    tocArr.forEach(chapter => {
       let option = elementFactory('option', {
       });
       option.ref = chapter.href;
@@ -173,14 +168,128 @@ export default class State {
 
       docFrag.appendChild(option);
     });
+    // this.reversedSections = this.bookSections.slice().reverse();
+    // console.log(this.reversedSections);
 
-    this.$toc.appendChild(docFrag);
+    $toc.appendChild(docFrag);
 
-    this.$toc.onchange = () => {
-      const index = this.$toc.selectedIndex;
-      const url = this.$toc.options[index].ref;
+    $toc.onchange = e => {
+      const index = $toc.selectedIndex;
+      const url = $toc.options[index].ref;
       this.rendition.display(url);
-      // return false;
+      e.preventDefault();
     }
+  }
+
+  nextPage(e) {
+    this.rendition.next();
+    if (e)
+      e.preventDefault();
+  }
+
+  prevPage(e) {
+    this.rendition.prev();
+    if (e)
+      e.preventDefault();
+  }
+
+  /**
+   * Saves current location as a link in localstorage
+   * @param {Location} location The location returned from the 'relocated' rendition event
+   */
+  saveCurrentLocation(location) {
+    if (!window.localStorage) return;
+
+    localStorage.setItem(`${this.book.key()}-currLoc`, location.start.cfi);
+  }
+
+  /**
+   * Updates current page display.
+   * Due to the unique nature of epubs only really containing text,
+   * the amount of pages in a book varies per user.
+   * That is why this returns a string depicting page ranges.
+   * The page ranges are calibrated so that going to the pages
+   * work properly; they do not work like this normally in the library
+   * @param {Location} location The location returned from the 'relocated' rendition event
+   * @type {HTMLElement} $page_current
+   * @type {HTMLElement} $page_percent
+   */
+  updateCurrentPageRange(location, $page_current, $page_percent) {
+
+    // Get percent values
+    const startPercent = (location.start.percentage * 100).toFixed(2);
+    let endPercent = (location.end.percentage * 100).toFixed(2);
+
+    const startPage = this.book.locations.locationFromCfi(location.start.cfi);
+
+    // Subtracts endPage by 1 so it doesn't overlap with the start of the next page
+    // However, so the pagination makes sense, it doesn't do this
+    // for the last page
+    let endPage = this.book.locations.locationFromCfi(location.end.cfi);
+    if (endPercent != 100 && startPage !== endPage) {
+      --endPage;
+      endPercent = (endPage / this.book.locations.total * 100).toFixed(2);
+    }
+
+    // Different stylings based on the current location.
+    // Can be modified without really breaking anything
+    let pageRange;
+    if (location.atStart)
+      pageRange = `Cover`;
+    else if (startPage === endPage)
+      pageRange = `${startPage}`;
+    else
+      pageRange = `${startPage} - ${endPage}`;
+
+    $page_current.value = pageRange;
+
+    if (startPercent === endPercent)
+      $page_percent.innerHTML = `(${startPercent}%)`;
+    else
+      $page_percent.innerHTML = `(${startPercent}% - ${endPercent}%)`
+  }
+
+  /**
+   * A jury rigged way to sync current section with the TOC.
+   * The location returned from the 'relocated' event does not
+   * actually return which section the reader is in.
+   * To achieve this, we want to compare cfis with each
+   * section generated in the book. We want to get the first index
+   * that fails to be earlier, but as far as I know, findIndex
+   * does not work this way. So we invert the condition and reverse
+   * the section array so we can essentially do findIndex in reverse.
+   * All this to say, we want to get the last section where
+   * the end cfi is not earlier than the section's start.
+   * This way, we get the first section where the end cfi is earlier.
+   * @param {Location} location The location returned from the 'relocated' rendition event
+   * @type {HTMLElement} $toc <select> with multiple <option> inside
+   */
+  updateCurrentSection(location, $toc) {
+    const reversedSections = this.bookSections.slice().reverse();
+    const cfiComparison = new ePub.CFI();
+    const sectionIndex = reversedSections.findIndex(section =>
+      cfiComparison.compare(section, location.end.cfi) < 0
+    );
+    $toc.selectedIndex = this.bookSections.length - sectionIndex - 1;
+  }
+
+  /**
+   * Execute this to initialize the relocation functions
+   * This updates the current page of the HTML elements passed as parameters,
+   * updates the saved location in localstorage, and
+   * gets the current section
+   * @type {HTMLElement} $page_current
+   * @type {HTMLElement} $page_percent
+   */
+  attachRelocatedEvent($page_current, $page_percent, $toc) {
+    this.rendition.on('relocated', location => {
+      console.log(location);
+
+      this.saveCurrentLocation(location);
+
+      this.updateCurrentPageRange(location, $page_current, $page_percent);
+
+      this.updateCurrentSection(location, $toc);
+    });
   }
 }
