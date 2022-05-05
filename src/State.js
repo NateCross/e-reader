@@ -1,5 +1,7 @@
 import { elementFactory } from './Utils.js';
 
+// TODO: Error messages for the try catch
+
 /**
  * Manages state of the entire app.
  * Load the epub.js and localforage script before this.
@@ -10,26 +12,19 @@ export default class State {
   constructor() {
     /**
      * Stores the current book.
-     * @private
      */
     this.book;
 
     /**
      * Stores the current renderer.
-     * @private
      */
     this.rendition;
 
-    /**
-     *  bookLib can store either a URL string or an arraybuffer.
-     *  This is going to be stored with localForage.
-     */
-    // this.bookLib = []; // NOTE: Try to use the localitemstorage here
     this.bookSections = [];
     // Needed for syncing the table of contents
     // this.reversedSections;
 
-    this.currentSection;
+    this.currentLocation;
     this.percentage;
 
     this.storedLocations;
@@ -40,8 +35,56 @@ export default class State {
       'ArrowRight': this.nextPage,
     };
 
+    /**
+     * Stores the currently selected text inside the rendition
+     * so it is easier to manipulate with other functions
+     * Is cleared on the mousedown event inside rendition.
+     * This means that clicking outside will not clear;
+     * this is intentional.
+     */
+    this.currentSelectionText = "";
 
+    /**
+     * Stores the currently selected CFI
+     * so it is easier to manipulate with other functions
+     * Is cleared on the mousedown event inside rendition.
+     * This means that clicking outside will not clear;
+     * this is intentional.
+     */
+
+    this.currentSelectionCFI = "";
+
+    /**
+     * An arbitrary value used when paginating.
+     * Higher number means more characters per 'page'
+     */
     this.locationBreakAfterXCharacters = 600;
+
+    /**
+     * Current page range. Used to restore in case the user
+     * deletes the page range value
+     */
+    this.currentPageRange = "";
+
+    /**
+     * Stores the user's highlights as an epub CFI. Retrieved with localforage.
+     * Given a CFI, we can extract info from it.
+     */
+    this.highlights = [];
+
+    /**
+     * Stores the user's bookmarks. Retrieved with localforage.
+     * A bookmark is basically just an epub CFI.
+     * We can get data about it with other functions here.
+     */
+    this.bookmarks = [];
+
+    /**
+     * Stores the user's highlights. Retrieved with localforage
+     */
+    this.searchResults = [];
+    this.currentSearchResult;
+    this.currentSearchResultCFI = "";
   }
 
   // Returns a promise
@@ -66,6 +109,12 @@ export default class State {
     return promise;
   }
 
+  /**
+   * Function to render the book to a div.
+   * @type {HTMLElement} viewer Div to render the book to
+   * @param {String} width Percent value
+   * @param {String|Number} height Can be a percent value
+   */
   renderBook(viewer, width = "100%", height = 600) {
     // allowScriptedContent is set to true to fix a weird bug
     // where clicking on the rendition would not allow you to
@@ -139,6 +188,18 @@ export default class State {
     $page_total.innerHTML = this.book.locations.total;
   }
 
+  /**
+   * Deletes the currently open book's locations in localstorage,
+   * then generates again to be saved
+   * @type {HTMLElement} $page_total
+   */
+  resetStoredLocations($page_total) {
+    localStorage.removeItem(`${this.book.key()}-locations`);
+
+    this.getStoredLocations($page_total);
+  }
+
+
   renderSavedLocation() {
     this.savedLocation = localStorage.getItem(`${this.book.key()}-currLoc`);
 
@@ -203,6 +264,26 @@ export default class State {
     localStorage.setItem(`${this.book.key()}-currLoc`, location.start.cfi);
   }
 
+  resetCurrentLocation() {
+    localStorage.removeItem(`${this.book.key()}-currLoc`);
+  }
+
+  /**
+   * Resets the open book's current page, locations
+   * @type {HTMLElement} $viewer We pass the viewer div to refresh it after
+   * @type {HTMLElement} $page_total Passed to resetStoredLocations
+   */
+  resetCurrentBookUserData($viewer, $page_total) {
+    this.resetStoredLocations($page_total);
+    this.resetCurrentLocation();
+
+    // TODO: these functions
+    // this.resetHighlights();
+    // this.resetBookmarks();
+
+    this.renderBook($viewer);
+  }
+
   /**
    * Updates current page display.
    * Due to the unique nature of epubs only really containing text,
@@ -242,6 +323,7 @@ export default class State {
       pageRange = `${startPage} - ${endPage}`;
 
     $page_current.value = pageRange;
+    this.currentPageRange = pageRange;
 
     if (startPercent === endPercent)
       $page_percent.innerHTML = `(${startPercent}%)`;
@@ -284,6 +366,7 @@ export default class State {
   attachRelocatedEvent($page_current, $page_percent, $toc) {
     this.rendition.on('relocated', location => {
       console.log(location);
+      this.currentLocation = location;
 
       this.saveCurrentLocation(location);
 
@@ -291,5 +374,269 @@ export default class State {
 
       this.updateCurrentSection(location, $toc);
     });
+  }
+
+  /**
+   * Execute to allow grabbing the selected contents
+   * inside the renderer. We can get events here with
+   * 'contents.document.<event>', like
+   * 'contents.document.onmouseup' to select properly
+   * without the weird debounce of the library
+   */
+  attachContentsSelectionHook() {
+    this.rendition.hooks.content.register((contents, view) => {
+      this.#attachMouseDownEvent(contents);
+      this.#attachMouseUpEvent(contents);
+    });
+  }
+
+  /**
+   * Use this to clear text and other popups from mouseup
+   * NOTE: May not be necessary?
+   * @private
+   * @param {Contents} contents Contents from rendition.hooks.content.register
+   */
+  #attachMouseDownEvent(contents) {
+    contents.document.onmousedown = () => {
+      if (!contents.window.getSelection) return;
+
+      // Clears current selection
+      contents.window.getSelection().empty();
+      this.currentSelectionText = "";
+      this.currentSelectionCFI = "";
+
+      // console.log(this);
+    };
+  }
+
+  /**
+   * Handles getting the text and CFI of currently selected
+   * text
+   * @private
+   * @param {Contents} contents Contents from rendition.hooks.content.register
+   */
+  #attachMouseUpEvent(contents) {
+    contents.document.onmouseup = () => {
+      const { text, range } = this.#mouseUpEventGetText(contents);
+
+      if (!text || !range) return;
+
+      const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
+
+      this.currentSelectionText = text;
+      this.currentSelectionCFI = cfiRange;
+
+      // console.log(this);
+    };
+  }
+
+  #mouseUpEventGetText(contents) {
+    const selection = contents.window.getSelection();
+    const range = selection.getRangeAt(0);
+    if (range.collapsed) return {};
+
+    // Replace next line characters with a blank space
+    const text = selection.toString().trim().replace(/\n/g, ' ');
+    return { text, range };
+  }
+
+  pushSelectionToHighlights($highlight_list) {
+    this.highlights.push(this.currentSelectionCFI);
+    this.updateHighlightList($highlight_list);
+    this.saveHighlights();
+  }
+
+  saveHighlights() {
+    try {
+      localforage.setItem(`${this.book.key()}-highlights`, this.highlights);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  /**
+   * @type {HTMLElement} $highlight_list
+   */
+  async getStoredHighlights($highlight_list) {
+    try {
+      this.highlights = await localforage.getItem(`${this.book.key()}-highlights`) || [];
+      if (this.highlights) {
+        this.highlights.forEach(highlight => {
+          this.rendition.annotations.add(
+            "highlight",
+            highlight,
+            {},
+          );
+        });
+        this.updateHighlightList($highlight_list);
+      }
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  async getStoredBookmarks($bookmark_list) {
+    try {
+      this.bookmarks = await localforage.getItem(`${this.book.key()}-bookmarks`) || [];
+      if (!this.bookmarks) return;
+
+      this.updateBookmarkList($bookmark_list);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  /**
+   * @type {HTMLElement} $highlight_list
+   */
+  updateHighlightList($highlight_list) {
+    const docFrag = new DocumentFragment();
+
+    const list = elementFactory('ul');
+
+    this.highlights.forEach(highlight => {
+      let li = elementFactory('li');
+      let text = elementFactory('p');
+      let pageNum = elementFactory('a');
+      let remove = elementFactory('a');
+
+      this.book.getRange(highlight).then(range => {
+        text.textContent = range.toString();
+
+        pageNum.textContent = this.book.locations.locationFromCfi(highlight);
+        pageNum.onclick = () => {
+          this.book.rendition.display(highlight)
+        }
+
+        remove.textContent = 'Remove Highlight';
+        remove.onclick = () => {
+          this.removeHighlight($highlight_list, highlight);
+        };
+
+        li.appendChild(pageNum);
+        li.appendChild(text);
+        li.appendChild(remove);
+        list.appendChild(li);
+      });
+    });
+    docFrag.appendChild(list);
+    $highlight_list.innerHTML = "";
+    $highlight_list.appendChild(docFrag);
+  }
+
+  removeHighlight($highlight_list, cfi) {
+    this.rendition.annotations.remove(cfi, 'highlight');
+    const indexToRemove = this.highlights.indexOf(cfi);
+    this.highlights.splice(indexToRemove, 1);
+
+    this.saveHighlights();
+    this.updateHighlightList($highlight_list);
+  }
+
+  /**
+   * @type {HTMLElement} $bookmark_list
+   */
+  pushCurrentLocationToBookmarks($bookmark_list) {
+    if (this.bookmarks.includes(this.currentLocation.start.cfi)) return;
+
+    this.bookmarks.push(this.currentLocation.start.cfi);
+    this.updateBookmarkList($bookmark_list);
+    this.saveBookmarks();
+  }
+
+  removeBookmark($bookmark_list, cfi) {
+    const indexToRemove = this.bookmarks.indexOf(cfi);
+    this.bookmarks.splice(indexToRemove, 1);
+
+    this.saveBookmarks();
+    this.updateBookmarkList($bookmark_list);
+  }
+
+  saveBookmarks() {
+    try {
+      localforage.setItem(`${this.book.key()}-bookmarks`, this.bookmarks);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  /**
+   * @type {HTMLElement} $bookmark_list
+   */
+  updateBookmarkList($bookmark_list) {
+    const docFrag = new DocumentFragment();
+
+    const list = elementFactory('ul');
+
+    this.bookmarks.forEach(bookmark => {
+      let li = elementFactory('li');
+      // let text = elementFactory('p');
+      let pageNum = elementFactory('a');
+      let remove = elementFactory('a');
+
+      // this.book.getRange(bookmark).then(range => {
+      //   text.textContent = range.toString();
+
+      pageNum.textContent = this.book.locations.locationFromCfi(bookmark);
+      pageNum.onclick = () => {
+        this.book.rendition.display(bookmark)
+      }
+
+      remove.textContent = 'Remove Bookmark';
+      remove.onclick = () => {
+        this.removeBookmark($bookmark_list, bookmark);
+      };
+
+      li.appendChild(pageNum);
+      // li.appendChild(text);
+      li.appendChild(remove);
+      list.appendChild(li);
+    });
+    docFrag.appendChild(list);
+    $bookmark_list.innerHTML = ""; // Clear before appending
+    $bookmark_list.appendChild(docFrag);
+  }
+
+  // https://github.com/futurepress/epub.js/wiki/Tips-and-Tricks-%28v0.3%29#searching-the-entire-book
+  doSearch(q) {
+    // this.currentSearchResult = 0;
+    return Promise.all(
+      this.book.spine.spineItems.map(item => item.load(this.book.load.bind(this.book)).then(item.find.bind(item, q)).finally(item.unload.bind(item)))
+    ).then(results => Promise.resolve([].concat.apply([], results)));
+  };
+
+  /**
+   * doSearch returns an array of CFIs with an excerpt.
+   * This function handles jumping to an index within that array
+   */
+  jumpToSearchCFI(resultNumber = 0, $search_results_current) {
+    if (this.currentSearchResultCFI)
+      this.removeSearchHighlight();
+
+    const cfiToJump = this.searchResults[resultNumber].cfi;
+    if (!cfiToJump) {
+      $search_results_current.value = 0;
+      throw 'Unable to find search result.';
+    }
+
+    this.rendition.display(cfiToJump);
+    this.highlightSearchResult(cfiToJump);
+    this.currentSearchResultCFI = cfiToJump;
+    $search_results_current.value = 1;
+  }
+
+  /**
+   * We remove the search highlight with a different function
+   * compared to the other highlight function so that it does
+   * not save into our localstorage.
+   */
+  removeSearchHighlight(cfi = this.currentSearchResultCFI) {
+    this.rendition.annotations.remove(cfi, 'highlight');
+  }
+
+  highlightSearchResult(cfi) {
+    // NOTE: This applies the 'searchResult' CSS class to
+    // the result. So, the searchResult class must be styled.
+    this.rendition.annotations.highlight(cfi, {}, {}, 'searchResult');
   }
 }

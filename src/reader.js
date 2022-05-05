@@ -13,6 +13,18 @@ const $page_current = document.querySelector('#current-page');
 const $page_total = document.querySelector('#total-pages');
 const $page_percent = document.querySelector('#percentage');
 
+const $highlight = document.querySelector('#highlight');
+const $highlight_remove_all = document.querySelector('#highlight-remove-all');
+const $highlight_list = document.querySelector('#highlight-list');
+
+const $bookmark = document.querySelector('#bookmark');
+const $bookmark_remove_all = document.querySelector('#bookmark-remove-all');
+const $bookmark_list = document.querySelector('#bookmark-list');
+
+const $search_bar = document.querySelector('#search-bar');
+const $search_results_current = document.querySelector('#results-current');
+const $search_results_total = document.querySelector('#results-total');
+
 // TODO: Add buttons for other features
 
 const AppState = new State();
@@ -41,16 +53,35 @@ const AppState = new State();
   AppState.updateBookTitle($title);
   AppState.getStoredLocations($page_total);
   AppState.loadTableOfContents($toc);
+  AppState.getStoredHighlights($highlight_list);
+  AppState.getStoredBookmarks($bookmark_list);
 
+  // TODO: Refactor to go inside AppState
   attachKeyboardInput();
   attachClickButtonInput();
 
   AppState.attachRelocatedEvent($page_current, $page_percent, $toc);
+
   $page_current.onchange = e => {
+    if (!e.target.value) {
+      $page_current.value = AppState.currentPageRange;
+      return;
+    }
+
     AppState.rendition.display(
       AppState.book.locations.cfiFromLocation(e.target.value)
     );
   };
+
+  $highlight.onclick = highlightCurrentTextSelection;
+  $highlight_remove_all.onclick = resetHighlights;
+  $bookmark.onclick = bookmarkCurrentPage;
+  $bookmark_remove_all.onclick = resetBookmarks;
+  $search_bar.onchange = searchInBook;
+  $search_results_current.onchange = jumpToSearchResult;
+  
+
+  AppState.attachContentsSelectionHook();
 
   // Update the page title
   // Must be done after book is loaded
@@ -79,7 +110,6 @@ function keyListener(e) {
 /**
  * Execute function to enable keyboard input.
  * Must be called after book is rendered in a rendition.
- * @param {State} State The AppState object
  */
 function attachKeyboardInput() {
   // Allows for keyboard input with left and right arrow
@@ -94,4 +124,92 @@ function attachKeyboardInput() {
 function attachClickButtonInput() {
   $next.addEventListener("click", () => AppState.nextPage(), false);
   $prev.addEventListener("click", () => AppState.prevPage(), false);
+}
+
+function highlightCurrentTextSelection(e) {
+
+  // Hacky way to deselect the highlighted text
+  // TODO: Find a cleaner way to do this
+  e.view[0].getSelection().empty();
+
+  if (!AppState.currentSelectionText || !AppState.currentSelectionCFI)
+    throw 'Unable to highlight selected text.';
+
+  AppState.rendition.annotations.highlight(
+    AppState.currentSelectionCFI,
+    {},
+    e => {
+      console.log(`Highlight Clicked: ${e.target}`);
+      console.log(AppState.rendition.annotations._annotations);
+    }
+  );
+
+  AppState.pushSelectionToHighlights($highlight_list);
+}
+
+function resetHighlights() {
+  AppState.highlights.forEach(highlight => {
+    AppState.rendition.annotations.remove(highlight, "highlight");
+  });
+
+  try {
+    localforage.removeItem(`${AppState.book.key()}-highlights`);
+  } catch (err) {
+    console.log(err);
+  }
+
+  AppState.highlights = [];
+
+  AppState.updateHighlightList($highlight_list);
+}
+
+function bookmarkCurrentPage() {
+  AppState.pushCurrentLocationToBookmarks($bookmark_list);
+}
+
+function resetBookmarks() {
+  try {
+    localforage.removeItem(`${AppState.book.key()}-bookmarks`);
+  } catch (err) {
+    console.log(err);
+  }
+
+  AppState.bookmarks = [];
+
+  AppState.updateBookmarkList($bookmark_list);
+}
+
+async function searchInBook(e) {
+
+  // Removing previous highlights if there were any
+  if (AppState.currentSearchResultCFI) {
+    AppState.removeSearchHighlight();
+    AppState.currentSearchResultCFI = "";
+    AppState.searchResults = [];
+  }
+
+  const query = await AppState.doSearch(e.target.value);
+  if (query.length === 0) {
+    $search_results_current.value = null;
+    $search_results_total.textContent = '-';
+    throw 'No results found.'
+  };
+
+  // Storing the results inside AppState so that the results are easier
+  // to manipulate and use with other functions
+  AppState.searchResults = query;
+
+  $search_results_total.textContent = query.length;
+  $search_results_current.max = query.length;
+
+  AppState.jumpToSearchCFI(0, $search_results_current);
+}
+
+function jumpToSearchResult(e) {
+  // We subtract by 1 because the results, being an array, start at 0
+  // but it makes more sense to most users to start at 1
+  // so we subtract to compensate for that
+  const result = e.target.value - 1;
+
+  AppState.jumpToSearchCFI(result);
 }

@@ -160,7 +160,7 @@
           remove.textContent = "remove";
           remove.href = "#" + cfiRange;
           remove.onclick = function () {
-            rendition.annotations.remove(cfiRange);
+            rendition.annotations.remove(cfiRange, "highlight");
             return false;
           };
 

@@ -5,26 +5,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- TODO: Insert CSS here -->
+    <style>
+      /* Class to be used for the highlighted search result */
+      /* Using highlights allows us to directly apply a CSS class */
+      /* to a range of text, so we use something like this */
+      /* TODO: Remove and place inside a separate CSS document! */
+      .searchResult {
+        fill: blue;
+      }
+    </style>
   </head>
   <body>
+    <a href="/"><input type="button" id="back-to-index" value="Back"></a>
+
     <!-- Book Title -->
     <header id="title"></header>
 
-    <select name="table-of-contents" id="table-of-contents"></select>
+    <select
+      name  = "table-of-contents"
+      id    = "table-of-contents"
+      title = "Table of Contents"
+    ></select>
 
     <!-- Render the book here -->
     <div id="viewer" class="spreads"></div>
 
     <!-- Arrows for going back/forwards one page -->
-    <a href="#prev" id="prev" class="arrow">‹</a>
-    <a href="#next" id="next" class="arrow">›</a>
+    <a href="#prev" id="prev" class="arrow" title="Previous Page">‹</a>
+    <a href="#next" id="next" class="arrow" title="Next Page">›</a>
 
     <div class="page-count">
-      <input type="text" id="current-page" size="5">
+      <input
+        type    = "text"
+        onFocus = "this.select();"
+        id      = "current-page"
+        size    = "5"
+        title   = "Currently Displayed Pages"
+      >
       <span id="percentage"></span>
       /
       <span id="total-pages"></span>
     </div>
+
+    <input type="button" id="highlight" value="Highlight Selected Text">
+    <input type="button" id="highlight-remove-all" value="Remove All Highlights">
+    <input type="button" id="bookmark" value="Bookmark Current Page">
+    <input type="button" id="bookmark-remove-all" value="Remove All Bookmarks">
+
+    <div class="search">
+      <label for="search-bar">Search in Book</label>
+      <input type="text" id="search-bar">
+
+      <label for="results-current">Search Results</label>
+      <input type="number" id="results-current" min=1>
+      /
+      <span id="results-total"></span>
+    </div>
+
+    <h1>Highlights</h1>
+    <div id="highlight-list"></div>
+
+    <h1>Bookmarks</h1>
+
+    <div id="bookmark-list"></div>
 
     <!-- SCRIPTS -->
 
