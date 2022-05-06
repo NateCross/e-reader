@@ -35,8 +35,8 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - [ ] Customizable options
   - [x] The functionality that lets you select these
   - [ ] More themes that aren't samples
-  - [ ] Fonts
-  - [ ] Speech options
+  - [x] Fonts
+  - [x] Speech options
 - [x] Table of Contents
 - [ ] Jump to a given page
   - [x] Jump with page number
@@ -48,9 +48,9 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - [ ] Search
   - [x] Search in book
   - [ ] Search for a book using metadata
-- [ ] Library Organization
-  - [ ] Favorites
-  - [ ] Categories
+- [x] Library Organization
+  - [x] Favorites
+  - [ ] Categories _sorta?_
   - [ ] Custom tags
 - [ ] Modals for alerts?
 - [x] Text to Speech
