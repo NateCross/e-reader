@@ -13,20 +13,48 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - Run `npm run dev` to start nodemon
 - Run `npm test` to start the tests with the live server
 
+## THEMES
+
+- Themes can be defined in src/css/themes.css.
+- They can be added to the selection by adding its class name to `settingOptions` in State.js.
+
 # TODO
 
 - [ ] Implement `Cypress` for end-to-end testing
-- [ ] Implement epub reader
+- [x] Implement epub reader
   - [x] Use [epub.js](https://github.com/futurepress/epub.js/)
 - [ ] Implement epub file uploads
-  - [ ] **Check for specifically epub files with proper format**
+  - [x] **Check for specifically epub files with proper format**
   - [ ] Drag-and-drop
   - [x] Upload button (HTML)
-  - [ ] Grab from a direct link to an epub file
-    - May not be possible? Needs further research.
 - [x] Get book metadata
-- [ ] Store list of previously opened books
-  - [ ] Use local storage
+- [x] Store list of previously opened books
+  - [x] Use local storage
+- [x] Highlights
+- [x] Bookmarks
+- [ ] Customizable options
+  - [x] The functionality that lets you select these
+  - [ ] More themes that aren't samples
+  - [ ] Fonts
+  - [ ] Speech options
+- [x] Table of Contents
+- [ ] Jump to a given page
+  - [x] Jump with page number
+  - [ ] Page slider
+- [x] Remember last read page
+- [ ] Reading Progress
+  - [x] Percent
+  - [ ] Reading Time
+- [ ] Search
+  - [x] Search in book
+  - [ ] Search for a book using metadata
+- [ ] Library Organization
+  - [ ] Favorites
+  - [ ] Categories
+  - [ ] Custom tags
+- [ ] Modals for alerts?
+- [x] Text to Speech
+
 
 # Tests
 

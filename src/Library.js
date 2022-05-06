@@ -14,7 +14,7 @@ export default class Library {
     storageQuotaEl = null,
     storagePercentEl = null,
   ) {
-    this.bookLib = [];
+    this.bookLib = {};
 
     // HTML elements
     this.libraryEl = libraryEl;
@@ -28,7 +28,7 @@ export default class Library {
    * @function
    */
   async init() {
-    this.bookLib = await this.getLibrary() || [];
+    this.bookLib = await this.getLibrary() || {};
   }
 
   async getLibrary() {
@@ -70,51 +70,86 @@ export default class Library {
   async refreshLibraryDisplay(libraryElement = this.libraryEl) {
     this.refreshStorageDisplay();
 
-    if (this.bookLib.length === 0) {
+    // console.log(Object.keys(this.bookLib));
+    if (Object.keys(this.bookLib).length === 0) {
       // Putting these functions up here and below, after the list is created,
       // achieves a 'seamless' refresh and allows for it to update
       // as well in case we clear bookLib
       libraryElement.innerHTML = "";
-      return;
+      throw 'Library is empty.';
     }
 
     // We use a docfrag to add elements in a performant way
     const docFrag = new DocumentFragment();
+    // Using a special docfrag so favorites will always be first
+    const favoriteDocFrag = new DocumentFragment();
 
-    const listParent = elementFactory('ul');
 
     // Iterate over this.bookLib and create list elements
-    this.bookLib.forEach(async (book, index) => {
-      const state = new State();
-      await state.openBook(book.bookData);
+    // Because we have multiple categories, we iterate through them this way
+    for (const category in this.bookLib) {
 
-      // Creating and modifying the list element
-      const bookElement = elementFactory('li', {
+      // NOTE: This could be cut. It might be less intuitive with this in
+      // This essentially skips printing a category if it does not have
+      // any books inside it.
+      if (this.bookLib[category].length === 0)
+        continue;
+
+      const categoryTitle = document.createElement('h3');
+      categoryTitle.textContent = category;
+
+      const listParent = elementFactory('ul');
+
+      this.bookLib[category].forEach(async (book, index) => {
+        const state = new State();
+        await state.openBook(book.bookData);
+
+        const bookLink = document.createElement('a');
+        bookLink.textContent = state.metadata.title;
+        bookLink.onclick = this.openReaderEvent(index, category);
+
+        const moveCategory = document.createElement('input');
+        moveCategory.type = 'button';
+
+        switch (category) {
+          case 'Library':
+            moveCategory.title = 'Move to favorites';
+            moveCategory.value = 'Move to favorites';
+            moveCategory.onclick = this.moveBookToCategory(book);
+            break;
+          case 'Favorites':
+            moveCategory.title = 'Remove from favorites';
+            moveCategory.value = 'Remove from favorites';
+            moveCategory.onclick = this.moveBookToCategory(book, 'Favorites', 'Library');
+            break;
+        }
+
+        // Creating and modifying the list element
+        // TODO: Rework the display here
+        const bookElement = elementFactory('li', {
+        }, bookLink);
+        // bookElement.innerHTML = state.metadata.title;
+        // bookElement.onclick = this.openReaderEvent(index);
+
+        listParent.appendChild(bookElement);
+        listParent.appendChild(moveCategory);
       });
-      bookElement.innerHTML = state.metadata.title;
-      bookElement.onclick = this.openReaderEvent(index);
 
-      listParent.appendChild(bookElement);
-    });
+      // categoryTitle.appendChild(listParent);
+      if (category !== 'Favorites') {
+        docFrag.append(categoryTitle);
+        docFrag.append(listParent);
+      } else {
+        favoriteDocFrag.append(categoryTitle);
+        favoriteDocFrag.append(listParent);
+      }
+    }
 
-    // NOTE: Has worse performance than regular version
-    // asyncForEach(this.bookLib, async (book, index) => {
-    //   const state = new State();
-    //   await state.openBook(book.bookData);
-    //
-    //   // Creating and modifying the list element
-    //   const bookElement = elementFactory('li', {
-    //   });
-    //   bookElement.innerHTML = state.metadata.title;
-    //
-    //   listParent.appendChild(bookElement);
-    // });
-
-    docFrag.append(listParent);
-
+    // console.log(docFrag.children);
     // Clear element before appending
     // It's put here so that it appears to change instantly
     libraryElement.innerHTML = "";
+    libraryElement.appendChild(favoriteDocFrag);
     libraryElement.appendChild(docFrag);
   }
 
@@ -143,16 +178,31 @@ export default class Library {
    * items.
    * @param {Number} storageIndex Index of book to be opened in the 'Library' key in localstorage/IndexedDB
    */
-  openReaderEvent(storageIndex) {
+  openReaderEvent(storageIndex, category) {
     // We return a function here as a workaround to pass parameters
-    return async () => {
+    return () => {
       try {
-        await localStorage.setItem('OpenedBookLibIndex', storageIndex);
+        localStorage.setItem('OpenedBookLibIndex', storageIndex);
+        localStorage.setItem('OpenedBookLibCategory', category);
         // TODO: Change this from the 'js/' dir to... somewhere else
         window.location.href = "/reader";
       } catch (err) {
         console.log(`ERROR: ${err}`);
       }
+    }
+  }
+
+  /** Use with a button attached to the bookLib elements */
+  moveBookToCategory(book, oldCategory = "Library", newCategory = "Favorites") {
+    return () => {
+      this.bookLib[oldCategory].splice(this.bookLib[oldCategory].indexOf(book), 1);
+
+      if (!this.bookLib[newCategory])
+        this.bookLib[newCategory] = [];
+
+      this.bookLib[newCategory].push(book);
+      this.refreshLibraryDisplay();
+      this.saveLibrary();
     }
   }
 }

@@ -8,9 +8,13 @@ import * as Utils from './Utils.js';
  * @param {ArrayBuffer|String} bookData
  * @param {Array} bookLib The global list of books in library
  */
-function storeBookToLib(bookData, bookLib) {
+function storeBookToLib(bookData, bookLib, category) {
   const itemToSave = new LibItem(bookData);
-  bookLib.push(itemToSave);
+  if (!bookLib[category])
+    bookLib[category] = [];
+
+  bookLib[category].push(itemToSave);
+  console.log(bookLib);
 }
 
 /**
@@ -31,7 +35,7 @@ function openBookEvent(Library) {
 
     // Executes after readAsArrayBuffer finishes
     reader.onload = bookData => {
-      storeBookToLib(bookData.target.result, Library.bookLib);
+      storeBookToLib(bookData.target.result, Library.bookLib, "Library");
 
       // Need to execute the functions directly after uploading a book
       // Async await does not work here, apparently, so we use 'then'
