@@ -25,6 +25,10 @@ const $search_bar = document.querySelector('#search-bar');
 const $search_results_current = document.querySelector('#results-current');
 const $search_results_total = document.querySelector('#results-total');
 
+const $voices = document.querySelector('#voices');
+const $speech_start = document.querySelector('#speech-start');
+const $speech_stop = document.querySelector('#speech-stop');
+
 // TODO: Add buttons for other features
 
 const AppState = new State();
@@ -49,12 +53,14 @@ const AppState = new State();
 
   // Performing initialization operations
   await AppState.openBook(Library[openedBook].bookData);
+  await AppState.getStoredSettings();
   AppState.renderBook($viewer);
   AppState.updateBookTitle($title);
   AppState.getStoredLocations($page_total);
   AppState.loadTableOfContents($toc);
   AppState.getStoredHighlights($highlight_list);
   AppState.getStoredBookmarks($bookmark_list);
+  AppState.initializeSpeech($voices);
 
   // TODO: Refactor to go inside AppState
   attachKeyboardInput();
@@ -79,9 +85,12 @@ const AppState = new State();
   $bookmark_remove_all.onclick = resetBookmarks;
   $search_bar.onchange = searchInBook;
   $search_results_current.onchange = jumpToSearchResult;
-  
+  $voices.onchange = changeVoice;
+  $speech_start.onclick = startSpeech;
+  $speech_stop.onclick = stopSpeech;
+ 
 
-  AppState.attachContentsSelectionHook();
+  AppState.attachContentsSelectionHook($viewer);
 
   // Update the page title
   // Must be done after book is loaded
@@ -130,7 +139,8 @@ function highlightCurrentTextSelection(e) {
 
   // Hacky way to deselect the highlighted text
   // TODO: Find a cleaner way to do this
-  e.view[0].getSelection().empty();
+  // NOTE: Doesn't work on Firefox
+  // e.view[0].getSelection().empty();
 
   if (!AppState.currentSelectionText || !AppState.currentSelectionCFI)
     throw 'Unable to highlight selected text.';
@@ -179,6 +189,10 @@ function resetBookmarks() {
   AppState.updateBookmarkList($bookmark_list);
 }
 
+/**
+ * Called as an event attached to the search bar
+ * TODO: Make it search from current position
+ */
 async function searchInBook(e) {
 
   // Removing previous highlights if there were any
@@ -188,6 +202,7 @@ async function searchInBook(e) {
     AppState.searchResults = [];
   }
 
+  // Resetting search values
   $search_results_current.value = null;
   $search_results_total.textContent = 'Searching...'
 
@@ -221,4 +236,22 @@ function jumpToSearchResult(e) {
   const result = e.target.value - 1;
 
   AppState.jumpToSearchCFI(result);
+}
+
+function changeVoice(e) {
+  AppState.speech.voice = AppState.voices[e.target.value];
+}
+
+/** Reads the selected text, but if not, reads whole page */
+function startSpeech() {
+  if (AppState.currentSelectionText)
+    AppState.speech.text = AppState.currentSelectionText;
+  else
+    AppState.speech.text = AppState.currentPageText;
+
+  window.speechSynthesis.speak(AppState.speech);
+}
+
+function stopSpeech() {
+  window.speechSynthesis.cancel();
 }

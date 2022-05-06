@@ -1,4 +1,5 @@
 import { elementFactory } from './Utils.js';
+// import { defaultOptions } from './Options.js';
 
 // TODO: Error messages for the try catch
 
@@ -85,6 +86,44 @@ export default class State {
     this.searchResults = [];
     this.currentSearchResult;
     this.currentSearchResultCFI = "";
+    this.currentPageText = "";
+
+    // Text to speech
+    this.speech;
+    this.activateTextToSpeech = false;
+    this.voices = [];
+
+    this.coverURL = "";
+
+    this.settingsDefault = {
+      flow: 'paginated',
+      width: '100%',
+      height: 600,
+    }
+    this.settingsOptions = {
+      flow: ['paginated', 'scrolled-doc'],
+    }
+    this.settings = {};
+  }
+
+  async storeSettings() {
+    let value;
+    try {
+      value = await localforage.setItem('Settings', this.settings);
+      console.log('Stored user settings');
+    } catch (err) {
+      console.log(err);
+    }
+    return value;
+  }
+
+  async getStoredSettings() {
+    try {
+      this.settings = await localforage.getItem('Settings') || this.settingsDefault;
+      console.log('Loaded user settings');
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // Returns a promise
@@ -115,17 +154,30 @@ export default class State {
    * @param {String} width Percent value
    * @param {String|Number} height Can be a percent value
    */
-  renderBook(viewer, width = "100%", height = 600) {
+  renderBook(viewer) {
     // allowScriptedContent is set to true to fix a weird bug
     // where clicking on the rendition would not allow you to
     // use the left and right arrow keys to go prev/next
     try {
       this.rendition = this.book.renderTo(viewer, {
-        width: width,
-        height: height,
+        // manager: "continuous",
+        flow: this.settings.flow,
+        width: this.settings.width,
+        height: this.settings.height,
         allowScriptedContent: true,
+        snap: true,
       });
+      /*
+      *  NOTE: On rendition stuff:
+      * - If the manager: 'continuous', the arrow keys inside
+      *   the rendition break. However, it works okay if outside.
+      * - It seems ideal to combine method: 'continuous' and
+      *   flow: 'scrolled',
+      * - Actually, manager: 'continuous' breaks everything so
+      *   we shall refrain from using it
+      */
 
+      this.bookCoverBlob();
       this.renderSavedLocation();
 
     } catch (err) {
@@ -146,8 +198,10 @@ export default class State {
     return this.book.packaging.metadata;
   }
 
-  get bookCoverBlob() {
-    return this.book.coverUrl();
+  bookCoverBlob() {
+    this.book.coverUrl().then(e => {
+      this.coverURL = e;
+    });
   }
 
   // https://github.com/futurepress/epub.js/issues/986#issuecomment-538716885
@@ -373,6 +427,8 @@ export default class State {
       this.updateCurrentPageRange(location, $page_current, $page_percent);
 
       this.updateCurrentSection(location, $toc);
+
+      this.currentPageText = this.getCurrentPageText(location);
     });
   }
 
@@ -383,11 +439,59 @@ export default class State {
    * 'contents.document.onmouseup' to select properly
    * without the weird debounce of the library
    */
-  attachContentsSelectionHook() {
+  attachContentsSelectionHook($viewer) {
     this.rendition.hooks.content.register((contents, view) => {
       this.#attachMouseDownEvent(contents);
       this.#attachMouseUpEvent(contents);
+      this.#attachTouchEvents(contents, $viewer);
     });
+  }
+
+  // https://github.com/futurepress/epub.js/wiki/Tips-and-Tricks-(v0.3)#swipe-to-turn-pages-with-touchevents
+  /** Adds swipe to turn functionality */
+  #attachTouchEvents(contents, $viewer) {
+    const el = contents.document.documentElement;
+
+    if (!el) return;
+
+    let start, end;
+
+    el.addEventListener('touchstart', e => {
+      start = e.changedTouches[0];
+
+      if (!contents.window.getSelection) return;
+
+      contents.window.getSelection().empty();
+      this.currentSelectionText = "";
+      this.currentSelectionCFI = "";
+    });
+
+    el.addEventListener('touchend', e => {
+      end = e.changedTouches[0];
+
+      // Handling the swipe to turn page
+      const bound = $viewer.getBoundingClientRect();
+      const hr = (end.screenX - start.screenX) / bound.width;
+      const vr = Math.abs((end.screenY - start.screenY) / bound.height);
+      if (hr > 0.25 && vr < 0.1)
+        return this.rendition.prev();
+      if (hr < -0.25 && vr < 0.1)
+        return this.rendition.next();
+
+      // Fixes highlights and getting text on mobile
+      // FIX: Having it in a separate function does not work
+      // this.getCurrentSelectionTextAndCFI(contents);
+      const { text, range } = this.#mouseUpEventGetText(contents);
+
+      if (!text || !range) return;
+
+      const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
+
+      this.currentSelectionText = text;
+      this.currentSelectionCFI = cfiRange;
+
+    });
+
   }
 
   /**
@@ -417,17 +521,19 @@ export default class State {
    */
   #attachMouseUpEvent(contents) {
     contents.document.onmouseup = () => {
-      const { text, range } = this.#mouseUpEventGetText(contents);
-
-      if (!text || !range) return;
-
-      const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
-
-      this.currentSelectionText = text;
-      this.currentSelectionCFI = cfiRange;
-
-      // console.log(this);
+      this.getCurrentSelectionTextAndCFI(contents);
     };
+  }
+
+  getCurrentSelectionTextAndCFI(contents) {
+    const { text, range } = this.#mouseUpEventGetText(contents);
+
+    if (!text || !range) return;
+
+    const cfiRange = new ePub.CFI(range, contents.cfiBase).toString();
+
+    this.currentSelectionText = text;
+    this.currentSelectionCFI = cfiRange;
   }
 
   #mouseUpEventGetText(contents) {
@@ -622,7 +728,11 @@ export default class State {
     this.rendition.display(cfiToJump);
     this.highlightSearchResult(cfiToJump);
     this.currentSearchResultCFI = cfiToJump;
-    $search_results_current.value = 1;
+
+    // Only triggers when a new search is made, from 'searchInBook'
+    // of reader.js. Makes the search results more intuitive.
+    if ($search_results_current)
+      $search_results_current.value = 1;
   }
 
   /**
@@ -638,5 +748,50 @@ export default class State {
     // NOTE: This applies the 'searchResult' CSS class to
     // the result. So, the searchResult class must be styled.
     this.rendition.annotations.highlight(cfi, {}, {}, 'searchResult');
+  }
+
+  // https://github.com/futurepress/epub.js/issues/777
+  /**
+   * Gets all the text on the page. Note that some filtering could be needed.
+   * Used for assistive technologies, especially text-to-speech.
+   * @param {Location} location The location returned in the 'relocated' rendition event
+   */
+  getCurrentPageText(location) {
+    const startRange = this.rendition.getRange(location.start.cfi);
+    const endRange = this.rendition.getRange(location.end.cfi);
+    startRange.setEnd(endRange.startContainer, endRange.startOffset);
+    return startRange.toString();
+  }
+
+  initializeSpeech($voices) {
+    this.speech = new SpeechSynthesisUtterance();
+    // this.speech = window.speechSynthesis;
+
+    // TODO: Make these options
+    this.speech.lang = "en";  // en is default
+    this.speech.volume = 1;   // Range from 0 to 1
+    this.speech.rate = 1;     // Range from 0.1 to 10
+    this.speech.pitch = 1;    // Range from 0 to 2
+
+    // Triggers when voices are loaded
+    window.speechSynthesis.onvoiceschanged = () => {
+      this.voices = window.speechSynthesis.getVoices();
+      if (this.voices.length === 0){
+        throw 'Unable to load voices for Speech Synthesis.'
+      }
+
+      console.log('Speech is ready');
+      this.speech.voice = voices[0];
+
+      const docFrag = new DocumentFragment();
+      this.voices.forEach(voice => {
+        const option = elementFactory('option');
+        option.textContent = voice.name;
+
+        docFrag.appendChild(option);
+      });
+
+      $voices.appendChild(docFrag);
+    };
   }
 }

@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- TODO: Insert CSS here -->
+    <link rel="stylesheet" href="./css/app.css">
     <style>
-      /* Class to be used for the highlighted search result */
-      /* Using highlights allows us to directly apply a CSS class */
-      /* to a range of text, so we use something like this */
-      /* TODO: Remove and place inside a separate CSS document! */
+      /*
+       * For some reason, the .searchResult class only works
+       * when declared in style, so here it shall stay
+       */
       .searchResult {
         fill: blue;
       }
@@ -19,7 +20,7 @@
     <a href="/"><input type="button" id="back-to-index" value="Back"></a>
 
     <!-- Book Title -->
-    <header id="title"></header>
+    <h1 id="title"></h1>
 
     <select
       name  = "table-of-contents"
@@ -56,17 +57,25 @@
       <label for="search-bar">Search in Book</label>
       <input type="text" id="search-bar">
 
-      <label for="results-current">Search Results</label>
+      <label for="results-current">List of Search Results</label>
       <input type="number" id="results-current" min=1>
       /
-      <span id="results-total"></span>
+      <span id="results-total">-</span>
     </div>
+
+    <div class="speech">
+      <select name="Voices" id="voices" title="Text-to-Speech Voices"></select>
+      <input type="button" id="speech-start" value="Start Speech">
+      <input type="button" id="speech-stop" value="Stop Speech">
+    </div>
+
+    <h1>Options</h1>
+    <div class="options"></div>
 
     <h1>Highlights</h1>
     <div id="highlight-list"></div>
 
     <h1>Bookmarks</h1>
-
     <div id="bookmark-list"></div>
 
     <!-- SCRIPTS -->

@@ -1,0 +1,17 @@
+body {
+  min-height: 100vh;
+  /* background-color: #333; */
+};
+
+#viewer {
+  width: 400px;
+  height: 100vh;
+  margin: 0 auto;
+}
+
+/* Class to be used for the highlighted search result */
+/* Using highlights allows us to directly apply a CSS class */
+/* to a range of text, so we use something like this */
+.searchResult {
+  fill: blue;
+}
