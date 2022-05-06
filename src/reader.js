@@ -188,9 +188,18 @@ async function searchInBook(e) {
     AppState.searchResults = [];
   }
 
+  $search_results_current.value = null;
+  $search_results_total.textContent = 'Searching...'
+
+  // Fixes a massive memory leak when you empty the search string.
+  // Without this, clearing the search bar will basically crash the app.
+  if (!e.target.value) {
+    $search_results_total.textContent = '-'
+    throw 'Search is empty.'
+  }
+
   const query = await AppState.doSearch(e.target.value);
   if (query.length === 0) {
-    $search_results_current.value = null;
     $search_results_total.textContent = '-';
     throw 'No results found.'
   };
