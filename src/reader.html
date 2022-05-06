@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- TODO: Insert CSS here -->
     <link rel="stylesheet" href="./css/app.css">
+
+    <!-- Used in previewing the themes, do not use in the actual file-->
+    <link rel="stylesheet" href="./css/themes.css">
     <style>
       /*
        * For some reason, the .searchResult class only works
@@ -70,7 +73,46 @@
     </div>
 
     <h1>Options</h1>
-    <div class="options"></div>
+    <div class="options">
+      <input type="button" id="settings-remove" value="Restore Settings to Default">
+      <ul class="options-list">
+        <li>
+          <label for="options-flow">View Mode</label>
+          <select name="Flow" id="options-flow" title="View Mode">
+            <option value="paginated">Paginated</option>
+            <option value="scrolled-doc">Scroll</option>
+          </select>
+        </li>
+        <li>
+          <label for="settings-theme">Theme</label>
+          <select name="Theme" id="settings-theme" title="Theme"></select>
+        </li>
+        <li>
+          <label for="settings-font">Font</label>
+          <select name="Font" id="settings-font" title="Font"></select>
+        </li>
+        <li>
+          <label for="settings-font-size">Font Size</label>
+          <input type="number" id="settings-font-size" title="Font Size" min=15>
+          <span>(Min. 15)</span>
+        </li>
+        <li>
+          <div class="speech-sliders">
+            <label for="speech-volume">Volume</label>
+            <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
+            <span id="speech-volume-val"></span>
+
+            <label for="speech-rate">Rate</label>
+            <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1"step="0.1">
+            <span id="speech-rate-val"></span>
+
+            <label for="speech-pitch">Pitch</label>
+            <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1"step="0.1">
+            <span id="speech-pitch-val"></span>
+          </div>
+        </li>
+      </ul>
+    </div>
 
     <h1>Highlights</h1>
     <div id="highlight-list"></div>

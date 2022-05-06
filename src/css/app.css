@@ -9,9 +9,13 @@ body {
   margin: 0 auto;
 }
 
+/* #voices, #speech-start, #speech-stop { */
+/*   display: none; */
+/* } */
+
 /* Class to be used for the highlighted search result */
 /* Using highlights allows us to directly apply a CSS class */
 /* to a range of text, so we use something like this */
-.searchResult {
-  fill: blue;
-}
+/* .searchResult { */
+/*   fill: blue; */
+/* } */

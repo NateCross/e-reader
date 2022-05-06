@@ -99,9 +99,19 @@ export default class State {
       flow: 'paginated',
       width: '100%',
       height: 600,
+      fontSize: 15,
+      font: 'Times New Roman',
+      theme: 'Light',
+      speech: {
+        volume: 1,
+        rate: 1,
+        pitch: 1,
+      },
     }
     this.settingsOptions = {
       flow: ['paginated', 'scrolled-doc'],
+      font: ['Times New Roman', 'Arial', 'Helvetica', 'Verdana', 'Garamond', 'Georgia'],
+      theme: ['Light', 'Dark', 'Tan'],
     }
     this.settings = {};
   }
@@ -121,6 +131,15 @@ export default class State {
     try {
       this.settings = await localforage.getItem('Settings') || this.settingsDefault;
       console.log('Loaded user settings');
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async removeStoredSettings() {
+    try {
+      this.settings = this.settingsDefault;
+      await this.storeSettings();
     } catch (err) {
       console.log(err);
     }
@@ -763,7 +782,7 @@ export default class State {
     return startRange.toString();
   }
 
-  initializeSpeech($voices) {
+  async initializeSpeech($voices) {
     this.speech = new SpeechSynthesisUtterance();
     // this.speech = window.speechSynthesis;
 
@@ -780,6 +799,8 @@ export default class State {
         throw 'Unable to load voices for Speech Synthesis.'
       }
 
+      // $voices.style.display = 'inline';
+
       console.log('Speech is ready');
       this.speech.voice = voices[0];
 
@@ -793,5 +814,27 @@ export default class State {
 
       $voices.appendChild(docFrag);
     };
+  }
+
+  /**
+   * Handles changing font size. Using a num here so it's more intuitive
+   */
+  setRenditionFontSize() {
+    this.rendition.themes.fontSize(`${this.settings.fontSize}px`);
+  }
+
+  setRenditionFont() {
+    this.rendition.themes.font(this.settings.font);
+  }
+
+  /** The themes must be registered first like this according to the epubjs docs */
+  initializeThemes() {
+    this.settingsOptions.theme.forEach(theme => {
+      this.rendition.themes.register(theme, "./css/themes.css");
+    });
+  }
+
+  setRenditionTheme() {
+    this.rendition.themes.select(this.settings.theme);
   }
 }

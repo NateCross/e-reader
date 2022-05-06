@@ -1,0 +1,17 @@
+/*
+ * TODO: Tweak sample themes
+ */
+.Dark {
+	background: #000;
+	color: #fff
+}
+
+.Light {
+	background: #fff;
+	color: #000;
+}
+
+.Tan {
+	background: tan;
+	color: #ccc;
+}

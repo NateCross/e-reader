@@ -29,22 +29,38 @@ const $voices = document.querySelector('#voices');
 const $speech_start = document.querySelector('#speech-start');
 const $speech_stop = document.querySelector('#speech-stop');
 
+const $settings_remove = document.querySelector('#settings-remove');
+// TODO: Change it to settings
+const $options_flow = document.querySelector('#options-flow');
+const $settings_font_size = document.querySelector('#settings-font-size');
+const $settings_font = document.querySelector('#settings-font');
+const $settings_theme = document.querySelector('#settings-theme');
+
+const $settings_speech_volume = document.querySelector('#speech-volume');
+const $settings_speech_rate = document.querySelector('#speech-rate');
+const $settings_speech_pitch = document.querySelector('#speech-pitch');
+
+const $settings_speech_volume_val = document.querySelector('#speech-volume-val');
+const $settings_speech_rate_val = document.querySelector('#speech-rate-val');
+const $settings_speech_pitch_val = document.querySelector('#speech-pitch-val');
+
 // TODO: Add buttons for other features
 
 const AppState = new State();
 
 ///// MAIN /////
-(async () => {
+const Initialize = async () => {
 
   // Library is in localforage -- or indexedDB -- because it
   // can store objects. The opened book index is stored in
   // localStorage since it is just a simple number
-  const Library = await localforage.getItem('Library');
+  const Lib = await localforage.getItem('Library');
   const openedBook = localStorage.getItem('OpenedBookLibIndex');
+  const category = localStorage.getItem('OpenedBookLibCategory');
 
   // If we cannot find a book to open, go back to the index
   // TODO: Throw proper error message then go back
-  if (!openedBook || !Library || !Library[openedBook])
+  if (!openedBook || !Lib || !Lib[category][openedBook])
     window.location.href = '/';
 
   // NOTE: This is still here for testing purposes.
@@ -52,7 +68,7 @@ const AppState = new State();
   // openBook(Library[openedBook].bookData);
 
   // Performing initialization operations
-  await AppState.openBook(Library[openedBook].bookData);
+  await AppState.openBook(Lib[category][openedBook].bookData);
   await AppState.getStoredSettings();
   AppState.renderBook($viewer);
   AppState.updateBookTitle($title);
@@ -61,6 +77,9 @@ const AppState = new State();
   AppState.getStoredHighlights($highlight_list);
   AppState.getStoredBookmarks($bookmark_list);
   AppState.initializeSpeech($voices);
+  attachSettingsOptions('font', $settings_font);
+  attachSettingsOptions('theme', $settings_theme);
+  initSettingsDisplay();
 
   // TODO: Refactor to go inside AppState
   attachKeyboardInput();
@@ -81,13 +100,25 @@ const AppState = new State();
 
   $highlight.onclick = highlightCurrentTextSelection;
   $highlight_remove_all.onclick = resetHighlights;
+
   $bookmark.onclick = bookmarkCurrentPage;
   $bookmark_remove_all.onclick = resetBookmarks;
+
   $search_bar.onchange = searchInBook;
   $search_results_current.onchange = jumpToSearchResult;
+
   $voices.onchange = changeVoice;
   $speech_start.onclick = startSpeech;
   $speech_stop.onclick = stopSpeech;
+
+  $settings_remove.onclick = restoreSettingsToDefault;
+  $options_flow.onchange = changeSettingsFlow;
+  $settings_font_size.onchange = changeFontSize;
+  $settings_font.onchange = changeFont;
+  $settings_theme.onchange = changeTheme;
+  $settings_speech_volume.oninput = changeSpeechVolume;
+  $settings_speech_rate.oninput = changeSpeechRate;
+  $settings_speech_pitch.oninput = changeSpeechPitch;
  
 
   AppState.attachContentsSelectionHook($viewer);
@@ -95,7 +126,7 @@ const AppState = new State();
   // Update the page title
   // Must be done after book is loaded
   document.title = `E-Reader: ${AppState.metadata.title}`;
-})();
+};
 
 console.log(AppState);
 console.log('Loaded reader');
@@ -255,3 +286,118 @@ function startSpeech() {
 function stopSpeech() {
   window.speechSynthesis.cancel();
 }
+
+/**
+ * We are changing all the settings, so it is not feasible to
+ * set them all one by one. Refreshing works better in this case.
+ */
+async function restoreSettingsToDefault() {
+  await AppState.removeStoredSettings();
+  refreshRendition();
+}
+
+/** Registers the settings so they take effect */
+function initSettingsDisplay() {
+  if (AppState.settings.flow === 'paginated')
+    $options_flow.selectedIndex = 0;
+  else
+    $options_flow.selectedIndex = 1;
+
+  $settings_font_size.value = AppState.settings.fontSize;
+  AppState.setRenditionFontSize();
+
+  $settings_font.selectedIndex = AppState.settingsOptions.font.indexOf(
+    AppState.settings.font
+  );
+  AppState.setRenditionFont();
+
+  $settings_theme.selectedIndex = AppState.settingsOptions.theme.indexOf(
+    AppState.settings.theme
+  );
+  AppState.initializeThemes();
+  AppState.setRenditionTheme();
+
+  $settings_speech_volume.value = AppState.settings.speech.volume;
+  $settings_speech_volume_val.textContent = AppState.settings.speech.volume;
+  $settings_speech_pitch.value = AppState.settings.speech.pitch;
+  $settings_speech_pitch_val.textContent = AppState.settings.speech.pitch;
+  $settings_speech_rate.value = AppState.settings.speech.rate;
+  $settings_speech_rate_val.textContent = AppState.settings.speech.rate;
+}
+
+async function changeSettingsFlow(e) {
+  AppState.settings.flow = e.target.value;
+  await AppState.storeSettings();
+  refreshRendition();
+}
+
+async function changeFontSize(e) {
+  AppState.settings.fontSize = e.target.value;
+  AppState.setRenditionFontSize();
+  await AppState.storeSettings();
+  refreshRendition();
+}
+
+function attachSettingsOptions(optionName, htmlElement) {
+  const docFrag = new DocumentFragment();
+  AppState.settingsOptions[optionName].forEach(opt => {
+    const option = document.createElement('option');
+    option.textContent = opt;
+    option.value = opt;
+
+    if (optionName === 'font')
+      option.style['font-family'] = opt;
+
+    if (optionName === 'theme')
+      option.classList.add(opt);
+
+    docFrag.appendChild(option);
+  });
+  htmlElement.innerHTML = "";
+  htmlElement.appendChild(docFrag);
+}
+
+async function changeFont(e) {
+  AppState.settings.font = e.target.value;
+  AppState.setRenditionFont();
+  await AppState.storeSettings();
+  refreshRendition();
+}
+
+async function changeTheme(e) {
+  AppState.settings.theme = e.target.value;
+  AppState.setRenditionTheme();
+  await AppState.storeSettings();
+  refreshRendition();
+}
+
+async function changeSpeechVolume(e) {
+  AppState.speech.volume = e.target.value;
+  AppState.settings.speech.volume = e.target.value;
+  $settings_speech_volume_val.textContent = e.target.value;
+  await AppState.storeSettings();
+}
+
+async function changeSpeechRate(e) {
+  AppState.speech.rate = e.target.value;
+  AppState.settings.speech.rate = e.target.value;
+  $settings_speech_rate_val.textContent = e.target.value;
+  await AppState.storeSettings();
+}
+
+async function changeSpeechPitch(e) {
+  AppState.speech.pitch = e.target.value;
+  AppState.settings.speech.pitch = e.target.value;
+  $settings_speech_pitch_val.textContent = e.target.value;
+  await AppState.storeSettings();
+}
+
+/**
+ * Call this after every time a setting is changed.
+ */
+function refreshRendition() {
+  $viewer.innerHTML = ""; // TODO: Insert a loading image indicator or GIF
+  Initialize();
+}
+
+Initialize();
