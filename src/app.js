@@ -1,12 +1,13 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
-import * as Utils from './Utils.js';
+// import * as Utils from './Utils.js';
 
 ///// FUNCTIONS /////
 
 /**
  * @param {ArrayBuffer|String} bookData
  * @param {Array} bookLib The global list of books in library
+ * @param {String} category The inserted book's category ('Library', 'Favorites', etc.)
  */
 function storeBookToLib(bookData, bookLib, category) {
   const itemToSave = new LibItem(bookData);
@@ -61,6 +62,15 @@ const $storage_clear = document.querySelector('#clear-storage');
 ///// MAIN /////
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
+$file_upload.onchange = openBookEvent(Lib);
+$storage_clear.onclick = clearLibrary;
+
+// Load the books from storage and populate the library div
+(async () => {
+  await Lib.init();
+  Lib.refreshLibraryDisplay($library);
+})();
+
 async function clearLibrary() {
   let value = null;
 
@@ -75,14 +85,5 @@ async function clearLibrary() {
 
   return value;
 }
-
-$file_upload.onchange = openBookEvent(Lib);
-$storage_clear.onclick = clearLibrary;
-
-// Load the books from storage and populate the library div
-(async () => {
-  await Lib.init();
-  Lib.refreshLibraryDisplay($library);
-})();
 
 console.log('Loaded index');

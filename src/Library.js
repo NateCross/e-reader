@@ -1,5 +1,5 @@
 import State from "./State.js";
-import { elementFactory, getIndexedDBUsage, asyncForEach } from "./Utils.js";
+import { elementFactory, getIndexedDBUsage } from "./Utils.js";
 
 /**
  * @type {HTMLElement} libraryElement The div element to display each book in the library
@@ -82,6 +82,7 @@ export default class Library {
     // We use a docfrag to add elements in a performant way
     const docFrag = new DocumentFragment();
     // Using a special docfrag so favorites will always be first
+    // This must be appended first
     const favoriteDocFrag = new DocumentFragment();
 
 
@@ -124,6 +125,13 @@ export default class Library {
             break;
         }
 
+        const removeBook = document.createElement('input');
+        removeBook.type = 'button';
+        removeBook.title = 'Remove Book';
+        removeBook.value = 'Remove Book';
+        removeBook.onclick = this.removeBookFromLib(index, category);
+
+
         // Creating and modifying the list element
         // TODO: Rework the display here
         const bookElement = elementFactory('li', {
@@ -133,6 +141,7 @@ export default class Library {
 
         listParent.appendChild(bookElement);
         listParent.appendChild(moveCategory);
+        listParent.appendChild(removeBook);
       });
 
       // categoryTitle.appendChild(listParent);
@@ -145,7 +154,6 @@ export default class Library {
       }
     }
 
-    // console.log(docFrag.children);
     // Clear element before appending
     // It's put here so that it appears to change instantly
     libraryElement.innerHTML = "";
@@ -172,6 +180,19 @@ export default class Library {
   }
 
   /**
+   * Attached to a button to remove the book passed as a parameter
+   * @param {Number} Index The book's index in storage. You can get this in the refreshLibraryDisplay method.
+   * @param {String} category Name of the category, like 'Favorites', 'Library'
+   */
+  removeBookFromLib(index, category) {
+    return async () => {
+      this.bookLib[category].splice(index, 1);
+      await this.saveLibrary();
+      this.refreshLibraryDisplay();
+    }
+  }
+
+  /**
    * Stores the index of the clicked book in localstorage,
    * then goes to the 'reader.html' which opens the book in the
    * stored index. Use this as the event on click for the library
@@ -194,15 +215,15 @@ export default class Library {
 
   /** Use with a button attached to the bookLib elements */
   moveBookToCategory(book, oldCategory = "Library", newCategory = "Favorites") {
-    return () => {
+    return async () => {
       this.bookLib[oldCategory].splice(this.bookLib[oldCategory].indexOf(book), 1);
 
       if (!this.bookLib[newCategory])
         this.bookLib[newCategory] = [];
 
       this.bookLib[newCategory].push(book);
+      await this.saveLibrary();
       this.refreshLibraryDisplay();
-      this.saveLibrary();
     }
   }
 }
