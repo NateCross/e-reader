@@ -68,7 +68,7 @@ export default class Library {
    * @type {HTMLElement} libraryElement
    */
   async refreshLibraryDisplay(libraryElement = this.libraryEl) {
-    this.refreshStorageDisplay();
+    await this.refreshStorageDisplay();
 
     // console.log(Object.keys(this.bookLib));
     if (Object.keys(this.bookLib).length === 0) {
@@ -170,7 +170,6 @@ export default class Library {
     this.storageQuotaEl.innerHTML = storage.quota;
     this.storageUsageEl.innerHTML = storage.usage;
     this.storagePercentEl.innerHTML = storage.percent;
-
   }
 
   storeBookToLib(bookData) {
@@ -222,8 +221,8 @@ export default class Library {
         this.bookLib[newCategory] = [];
 
       this.bookLib[newCategory].push(book);
-      await this.saveLibrary();
       this.refreshLibraryDisplay();
+      await this.saveLibrary();
     }
   }
 }

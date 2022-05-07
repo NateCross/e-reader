@@ -1,21 +1,81 @@
-body {
-  min-height: 100vh;
-  /* background-color: #333; */
-};
-
-#viewer {
-  width: 400px;
-  height: 100vh;
-  margin: 0 auto;
+:root {
+  --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
 }
 
-/* #voices, #speech-start, #speech-stop { */
-/*   display: none; */
+body {
+  min-height: 100vh; /* See https://www.freecodecamp.org/news/html-page-width-height/ */
+  /* background-color: #333; */
+}
+
+/* #viewer > iframe { */
+/*   color: blue; */
+/*   text-decoration: inherit; */
+/*   /* Turns off the red highlight on hover */
+/*   /* inside the book */
 /* } */
 
-/* Class to be used for the highlighted search result */
-/* Using highlights allows us to directly apply a CSS class */
-/* to a range of text, so we use something like this */
-/* .searchResult { */
-/*   fill: blue; */
+/*
+ * See https://stackoverflow.com/a/25825731
+ * on styling buttons
+ * TODO: Probably add an animation when switching classes
+ */
+.file-upload-container {
+  background-color: #007bff !important;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  font-family: Arial;
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+}
+
+.file-upload-container:after {
+  content: '⬆ Upload EPUB File';
+}
+
+.file-upload-container:hover {
+  background-color: #1459A3 !important;
+}
+
+/*
+ * Added when a file is dragged onto the body of the
+ * index.html.
+ */
+.file-upload-file-is-hovered {
+  background-color: #28A745 !important;
+
+}
+
+.file-upload-file-is-hovered:after {
+  content: '⬆ Drop EPUB File Here';
+}
+
+/*
+ * Hides the actual file upload button so we can style
+ * file-upload-container instead
+ */
+input[type="file"] {
+    display: none;
+}
+
+/* NOTE: Not needed */
+.drop-zone {
+  color: red;
+  position: fixed;
+  height: 95%;
+  width: 95%;
+  margin: 0;
+  border-style: solid;
+  border-width: 1px;
+  pointer-events: none; /* Makes it unclickable */
+  /* min-width: 100%; */
+  z-index: 0;
+}
+
+/* #viewer { */
+/*   width: 400px; */
+/*   height: 100vh; */
+/*   margin: 0 auto; */
 /* } */

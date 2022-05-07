@@ -6,6 +6,11 @@
 	color: #fff
 }
 
+.Dark::hover {
+  color: cyan;
+  text-decoration: none;
+}
+
 .Light {
 	background: #fff;
 	color: #000;
