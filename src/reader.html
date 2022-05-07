@@ -49,6 +49,7 @@
       <span id="percentage"></span>
       /
       <span id="total-pages"></span>
+      <input type="range" id="page-slider" min='0' max='100' step='1'>
     </div>
 
     <input type="button" id="highlight" value="Highlight Selected Text">
@@ -72,8 +73,12 @@
       <input type="button" id="speech-stop" value="Stop Speech">
     </div>
 
-    <h1>Options</h1>
+    <!-- FIXME: Remove me after testing -->
+    <input type="button" id='test-button' value="Modal Test">
+    <input type="button" id='metadata' value="Get Book Metadata">
+
     <div class="options">
+      <h1>Options</h1>
       <input type="button" id="settings-remove" value="Restore Settings to Default">
       <ul class="options-list">
         <li>
@@ -120,6 +125,21 @@
     <h1>Bookmarks</h1>
     <div id="bookmark-list"></div>
 
+    <div class="modal" id="modal-container">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-close">&times;</span>
+          <h2 class="modal-header-content">Modal Header</h2>
+        </div>
+        <div class="modal-body">
+          <p>Test</p>
+        </div>
+        <div class="modal-footer">
+          <h3 class="modal-footer-content">Modal Footer</h3>
+        </div>
+      </div>
+    </div>
+
     <!-- SCRIPTS -->
 
     <!-- Unpack epub files -->
@@ -130,6 +150,9 @@
 
     <!-- Main reader library -->
     <script src="../scripts/epub.min.js"></script>
+
+    <!-- For displaying toast messages -->
+    <script src="../scripts/toastify.js"></script>
 
     <script type="module" src="../js/reader.js"></script>
   </body>

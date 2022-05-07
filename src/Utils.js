@@ -142,3 +142,53 @@ export var debounce = function (fn) {
 	}
 
 };
+
+/**
+ * Automatically attaches events to modal elements
+ * @param {String} containerElementId A string of the id of the modal container
+ * @param {String} closeButtonClass A string of the class of the modal close button
+ */
+export function initializeModals(containerElementId = 'modal-container', closeButtonClass = 'modal-close') {
+  const modal = document.querySelector(`#${containerElementId}`);
+  const close = document.querySelector(`.${closeButtonClass}`);
+
+  close.onclick = () => {
+    modal.style.display = 'none';
+  }
+
+  window.onclick = e => {
+    if (e.target === modal)
+      modal.style.display = 'none';
+  }
+}
+
+/**
+ * Adds content to modal and attaches it to event
+ * @param {String, String, String} header, content, footer Text in the modal
+ * @param {String} containerElementId Used for query selection
+ * @param {Function} callback Callback to be executed after modal is displayed
+ */
+export function attachModal(
+  {header, content, footer},
+  containerElementId = 'modal-container',
+  callback = function() { return }
+) {
+  return () => {
+    const modal = document.querySelector(`#${containerElementId}`);
+
+    const modalHeader = document.querySelector('.modal-header');
+
+    const modalContent = document.querySelector('.modal-body');
+
+    const modalFooter = document.querySelector('.modal-footer');
+
+    modalHeader.children[1].innerHTML = header;
+    modalContent.innerHTML = content;
+    modalFooter.innerHTML = footer;
+
+    modal.style.display = 'block';
+
+    callback(modalHeader.children[1], modalContent, modalFooter);
+
+  }
+}

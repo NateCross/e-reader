@@ -10,6 +10,9 @@ const path = require('path');
 // Some module dist files have a different name,
 // so we use an associative array to denote this
 const moduleDists = {'jszip': 'jszip', 'epubjs': 'epub', 'localforage': 'localforage'};
+// As above, but the files are in a src folder
+const moduleSrc = {'toastify-js': 'toastify'};
+// const cssSrc = {'toastify-js': 'toastify-js/src/toastify.css'}
 
 // Serving the node module scripts
 // This is an abstracted way of serving all the needed scripts
@@ -20,11 +23,22 @@ Object.keys(moduleDists).forEach(key => {
   });
 });
 
+for (module in moduleSrc) {
+  console.log(moduleSrc[module]);
+  app.get(`/scripts/${moduleSrc[module]}.js`, function (req, res) {
+    res.sendFile(path.join(__dirname, `/node_modules/${module}/src/${moduleSrc[module]}.js`));
+  });
+}
+
 // Serving the js
 app.use('/js', express.static(path.join(__dirname, '/src/')));
 
 // Serving the css
 app.use('/css',express.static(path.join(__dirname, '/src/css/')));
+// Also serving this css file
+app.get('/css/toastify.css', function(req, res) {
+  res.sendFile(path.join(__dirname, '/node_modules/toastify-js/src/toastify.css'));
+});
 
 // Serving the main file, index.html
 app.get('/', (req, res) => {

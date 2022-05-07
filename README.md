@@ -1,8 +1,8 @@
 # E-Reader
 
 EPUB reader written in vanilla JavaScript.
-Aims to be a convenient and customizable way to view .epub files
-you have on your PC or mobile device.
+Aims to be a convenient way to view .epub files
+you have on your device.
 Uses [epub.js](https://github.com/futurepress/epub.js/).
 
 # DEVELOPING
@@ -23,9 +23,9 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - [ ] Implement `Cypress` for end-to-end testing
 - [x] Implement epub reader
   - [x] Use [epub.js](https://github.com/futurepress/epub.js/)
-- [ ] Implement epub file uploads
+- [x] Implement epub file uploads
   - [x] **Check for specifically epub files with proper format**
-  - [ ] Drag-and-drop
+  - [x] Drag-and-drop
   - [x] Upload button (HTML)
 - [x] Get book metadata
 - [x] Store list of previously opened books
@@ -38,9 +38,9 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
   - [x] Fonts
   - [x] Speech options
 - [x] Table of Contents
-- [ ] Jump to a given page
+- [x] Jump to a given page
   - [x] Jump with page number
-  - [ ] Page slider
+  - [x] Page slider
 - [x] Remember last read page
 - [ ] Reading Progress
   - [x] Percent
@@ -52,7 +52,7 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
   - [x] Favorites
   - [ ] Categories _sorta?_
   - [ ] Custom tags
-- [ ] Modals for alerts?
+- [x] Modals for alerts?
 - [x] Text to Speech
 
 

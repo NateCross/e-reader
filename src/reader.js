@@ -1,4 +1,6 @@
 import State from './State.js';
+import { LoremIpsum, Metadata } from './ModalTextContent.js';
+import { attachModal, initializeModals } from './Utils.js';
 
 /// HTML Elements ///
 const $title = document.querySelector('#title');
@@ -12,6 +14,7 @@ const $next = document.querySelector('#next');
 const $page_current = document.querySelector('#current-page');
 const $page_total = document.querySelector('#total-pages');
 const $page_percent = document.querySelector('#percentage');
+const $page_slider = document.querySelector('#page-slider');
 
 const $highlight = document.querySelector('#highlight');
 const $highlight_remove_all = document.querySelector('#highlight-remove-all');
@@ -43,6 +46,8 @@ const $settings_speech_pitch = document.querySelector('#speech-pitch');
 const $settings_speech_volume_val = document.querySelector('#speech-volume-val');
 const $settings_speech_rate_val = document.querySelector('#speech-rate-val');
 const $settings_speech_pitch_val = document.querySelector('#speech-pitch-val');
+
+const $metadata_button = document.querySelector('#metadata');
 
 // TODO: Add buttons for other features
 
@@ -80,12 +85,13 @@ const Initialize = async () => {
   attachSettingsOptions('font', $settings_font);
   attachSettingsOptions('theme', $settings_theme);
   initSettingsDisplay();
+  initializeModals('modal-container');
 
   // TODO: Refactor to go inside AppState
   attachKeyboardInput();
   attachClickButtonInput();
 
-  AppState.attachRelocatedEvent($page_current, $page_percent, $toc);
+  AppState.attachRelocatedEvent($page_current, $page_percent, $toc, $page_slider);
 
   $page_current.onchange = e => {
     if (!e.target.value) {
@@ -97,6 +103,7 @@ const Initialize = async () => {
       AppState.book.locations.cfiFromLocation(e.target.value)
     );
   };
+  $page_slider.onchange = pageSlider;
 
   $highlight.onclick = highlightCurrentTextSelection;
   $highlight_remove_all.onclick = resetHighlights;
@@ -119,7 +126,8 @@ const Initialize = async () => {
   $settings_speech_volume.oninput = changeSpeechVolume;
   $settings_speech_rate.oninput = changeSpeechRate;
   $settings_speech_pitch.oninput = changeSpeechPitch;
- 
+
+  $metadata_button.onclick = attachModal(Metadata, 'modal-container', getMetadata);
 
   AppState.attachContentsSelectionHook($viewer);
 
@@ -390,6 +398,33 @@ async function changeSpeechPitch(e) {
   AppState.settings.speech.pitch = e.target.value;
   $settings_speech_pitch_val.textContent = e.target.value;
   await AppState.storeSettings();
+}
+
+/**
+ * Used with attachModal. The elements and their ids are found in
+ * the object 'Metadata' of ModalTextContent.js.
+ */
+function getMetadata() {
+  const title = document.querySelector('#metadata-title');
+  const author = document.querySelector('#metadata-author');
+  const description = document.querySelector('#metadata-description');
+  const pubdate = document.querySelector('#metadata-pubdate');
+  const publisher = document.querySelector('#metadata-publisher');
+  const rights = document.querySelector('#metadata-rights');
+  const identifier = document.querySelector('#metadata-identifier');
+
+  title.textContent = AppState.metadata.title;
+  author.textContent = `Author: ${AppState.metadata.creator || '-'}`;
+  description.textContent = `Description: ${AppState.metadata.description || '-'}`;
+  pubdate.textContent = `Publication Date: ${AppState.metadata.pubdate || '-'}`;
+  publisher.textContent = `Publisher: ${AppState.metadata.publisher || '-'}`;
+  rights.textContent = `Rights: ${AppState.metadata.rights || '-'}`;
+  identifier.textContent = AppState.metadata.identifier || '-';
+}
+
+function pageSlider(e) {
+  const cfi = AppState.book.locations.cfiFromPercentage(e.target.value / 100);
+  AppState.rendition.display(cfi);
 }
 
 /**

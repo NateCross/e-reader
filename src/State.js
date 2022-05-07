@@ -435,8 +435,10 @@ export default class State {
    * gets the current section
    * @type {HTMLElement} $page_current
    * @type {HTMLElement} $page_percent
+   * @type {HTMLElement} $toc
+   * @type {HTMLElement} $page_slider
    */
-  attachRelocatedEvent($page_current, $page_percent, $toc) {
+  attachRelocatedEvent($page_current, $page_percent, $toc, $page_slider) {
     this.rendition.on('relocated', location => {
       console.log(location);
       this.currentLocation = location;
@@ -448,6 +450,8 @@ export default class State {
       this.updateCurrentSection(location, $toc);
 
       this.currentPageText = this.getCurrentPageText(location);
+
+      $page_slider.value = location.end.percentage * 100;
     });
   }
 

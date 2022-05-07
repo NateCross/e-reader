@@ -132,19 +132,19 @@ export default class Library {
         removeBook.onclick = this.removeBookFromLib(index, category);
 
 
-        // Creating and modifying the list element
-        // TODO: Rework the display here
-        const bookElement = elementFactory('li', {
+        const bookElement = elementFactory('a', {
         }, bookLink);
-        // bookElement.innerHTML = state.metadata.title;
-        // bookElement.onclick = this.openReaderEvent(index);
 
-        listParent.appendChild(bookElement);
-        listParent.appendChild(moveCategory);
-        listParent.appendChild(removeBook);
+        const divParent = elementFactory('div', {
+          class: 'library-book',
+        }, bookElement, moveCategory, removeBook);
+
+        const listChild = elementFactory('li', {},
+        divParent);
+
+        listParent.appendChild(listChild);
       });
 
-      // categoryTitle.appendChild(listParent);
       if (category !== 'Favorites') {
         docFrag.append(categoryTitle);
         docFrag.append(listParent);

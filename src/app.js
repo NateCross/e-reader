@@ -1,6 +1,19 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
-import { debounce } from './Utils.js';
+import { initializeModals, attachModal, debounce } from './Utils.js';
+
+const toast = Toastify({
+  text: "Loaded Library.",
+  duration: 3000,
+  close: true,
+  gravity: "top",
+  position: "center",
+  style: {
+    background: "black",
+    color: "white",
+    "font-family": "Arial, sans-serif",
+  },
+});
 
 ///// FUNCTIONS /////
 
@@ -37,6 +50,7 @@ function openBookEvent(Library) {
 
 //// HTML ELEMENTS /////
 
+const $modal = document.querySelector('#modal');
 const $library = document.querySelector('#library');
 const $file_upload = document.querySelector('#file-upload');
 const $file_upload_container = document.querySelector('.file-upload-container');
@@ -64,6 +78,7 @@ initDragAndDrop();
 (async () => {
   await Lib.init();
   Lib.refreshLibraryDisplay($library);
+  toast.showToast();
 })();
 
 async function clearLibrary() {
@@ -77,6 +92,9 @@ async function clearLibrary() {
   }
 
   Lib.refreshLibraryDisplay();
+
+  toast.options.text = 'Library cleared.';
+  toast.showToast();
 
   return value;
 }
@@ -140,14 +158,18 @@ function loadFileAsEpub(file) {
     // Need to execute the functions directly after uploading a book
     // Async await does not work here, apparently, so we use 'then'
     // to make these async functions execute one after the other
-    Lib.saveLibrary().then( () => {
+    Lib.saveLibrary().then(() => {
       Lib.refreshLibraryDisplay();
     });
+    toast.options.text = 'Added book to library.';
+    toast.showToast();
   };
 
   reader.readAsArrayBuffer(file);
 
 }
 
+initializeModals('modal-container', 'modal-close');
 
 console.log('Loaded index');
+
