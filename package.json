@@ -2,14 +2,14 @@
   "name": "e-reader",
   "version": "1.0.0",
   "description": "EPUB reader written in vanilla JavaScript.\r Aims to be a convenient and customizable way to view .epub files\r you have on your PC or mobile device.\r Uses [epub.js](https://github.com/futurepress/epub.js/).",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "tests": "tests"
   },
   "scripts": {
     "test": "live-server --open=tests/tests.html",
-    "start": "node ./index.js",
-    "dev": "nodemon ./index.js"
+    "start": "node ./server.js",
+    "dev": "nodemon ./server.js"
   },
   "repository": {
     "type": "git",

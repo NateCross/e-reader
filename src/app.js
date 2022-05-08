@@ -77,7 +77,7 @@ async function clearLibrary() {
   try {
     value = await localforage.removeItem('Library');
     Lib.bookLib = [];
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 
@@ -155,4 +155,3 @@ function loadFileAsEpub(file) {
 initializeModals('modal-container', 'modal-close');
 
 console.log('Loaded index');
-
