@@ -336,10 +336,12 @@ function startSpeech() {
     AppState.speech.text = AppState.currentPageText;
 
   window.speechSynthesis.speak(AppState.speech);
+  showToast('Speaking...');
 }
 
 function stopSpeech() {
   window.speechSynthesis.cancel();
+  showToast('Stopped speaking.');
 }
 
 /**
@@ -453,6 +455,7 @@ async function changeSpeechPitch(e) {
  */
 function getMetadata() {
   const title = document.querySelector('#metadata-title');
+  const cover = document.querySelector('#metadata-cover');
   const author = document.querySelector('#metadata-author');
   const description = document.querySelector('#metadata-description');
   const pubdate = document.querySelector('#metadata-pubdate');
@@ -461,6 +464,7 @@ function getMetadata() {
   const identifier = document.querySelector('#metadata-identifier');
 
   title.textContent = AppState.metadata.title;
+  cover.src = AppState.coverURL;
   author.textContent = `Author: ${AppState.metadata.creator || '-'}`;
   description.textContent = `Description: ${AppState.metadata.description || '-'}`;
   pubdate.textContent = `Publication Date: ${AppState.metadata.pubdate || '-'}`;

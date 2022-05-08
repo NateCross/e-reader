@@ -67,8 +67,10 @@ export const Metadata = {
   header: `
     <h2 id='metadata-title'>Metadata</h2>
   `,
+  // TODO: Set a static size for the book cover image
   content: `
     <ul class='metadata-container'>
+      <img id='metadata-cover' alt='Book Cover' height='15%' width='15%'></li>
       <li id='metadata-author'></li>
       <li id='metadata-description'></li>
       <li id='metadata-pubdate'></li>
