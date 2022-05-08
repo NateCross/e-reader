@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>E-Reader</title>
+    <title>Lorem Ipsum E-Reader</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./css/app.css">
     <link rel="stylesheet" href="./css/toastify.css">
     <!-- TODO: Insert CSS here -->
+    <link rel="stylesheet" href="css/style.css">
+
   </head>
   <body>
-    <!-- <div class="drop-zone">Test</div> -->
+    <div class="banner">
+      <div class="navbar">
+        <img src="css/imgs/logo3.png" class="logo">
+        <ul>
+            <li><a href="#"> Home </a></li>
+            <li><a href="#"> About Us </a></li>
+            <li><a href="#"> Contact Us </a></li>
+            <li><a href="#"> Site Map </a></li>
+            <li><a href="#"> FAQ </a></li>
+        </ul>
+      </div>
 
-    <h1>Insert Catchy E-Reader Name Here</h1>
-
-    <!-- We use this roundabout way of making a file upload button -->
-    <!-- So that it can be properly styled -->
-    <label for="file-upload" class='file-upload-container'>
-      <input
-        type   = "file"
-        id     = "file-upload"
-        name   = "file-upload"
-        accept = ".epub"
-        title  = "Upload an epub file"
-      >
-      <!-- <span>Upload an epub file</span> -->
-    </label>
+      <div class="content">
+        <h1>READ ANY E-PUB FOR FREE</h1>
+        <p>Upload any e-pub file you have on hand by pressing the button below. <br>Happy reading!</p>
+        <div>
+          <label for="file-upload">Upload an EPUB File</label>
+          <input
+            type   = "file"
+            id     = "file-upload"
+            name   = "file-upload"
+            accept = ".epub"
+          >
+        </div>
+      </div>
+      <h1 class="projTitle">Lorem Ipsum E-Reader</h1>
+    </div>
+    
+    
 
     <div id="library"></div>
 
