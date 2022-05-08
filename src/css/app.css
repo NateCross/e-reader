@@ -1,23 +1,11 @@
+/* Could be useful? */
 :root {
   --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
 }
 
-body {
-  min-height: 100vh; /* See https://www.freecodecamp.org/news/html-page-width-height/ */
-  /* background-color: #333; */
-}
-
-/* #viewer > iframe { */
-/*   color: blue; */
-/*   text-decoration: inherit; */
-/*   /* Turns off the red highlight on hover */
-/*   /* inside the book */
-/* } */
-
 /*
  * See https://stackoverflow.com/a/25825731
  * on styling buttons
- * TODO: Probably add an animation when switching classes
  */
 .file-upload-container {
   background-color: #007bff !important;
@@ -57,21 +45,7 @@ body {
  * file-upload-container instead
  */
 input[type="file"] {
-    display: none;
-}
-
-/* NOTE: Not needed */
-.drop-zone {
-  color: red;
-  position: fixed;
-  height: 95%;
-  width: 95%;
-  margin: 0;
-  border-style: solid;
-  border-width: 1px;
-  pointer-events: none; /* Makes it unclickable */
-  /* min-width: 100%; */
-  z-index: 0;
+  display: none;
 }
 
 /*
@@ -94,17 +68,26 @@ input[type="file"] {
 
 /* The Modal (background) */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  padding-top: 100px;
+  /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
   font-family: 'Arial', 'sans-serif';
 }
 
@@ -116,7 +99,7 @@ input[type="file"] {
   padding: 0;
   border: 1px solid #888;
   width: 80%;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
@@ -125,13 +108,27 @@ input[type="file"] {
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
-  from {top:-300px; opacity:0} 
-  to {top:0; opacity:1}
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
 }
 
 @keyframes animatetop {
-  from {top:-300px; opacity:0}
-  to {top:0; opacity:1}
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
 }
 
 /* The Close Button */
@@ -155,7 +152,9 @@ input[type="file"] {
   color: white;
 }
 
-.modal-body {padding: 2px 16px;}
+.modal-body {
+  padding: 2px 16px;
+}
 
 .modal-footer {
   padding: 2px 16px;
@@ -163,3 +162,10 @@ input[type="file"] {
   color: white;
 }
 
+/*
+ * Alternate class for modal-header and modal-footer
+ * in case of a warning or error.
+ */
+.modal-warning {
+  background-color: #F02C2C;
+}

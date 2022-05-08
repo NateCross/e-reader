@@ -1,7 +1,5 @@
-import { elementFactory } from './Utils.js';
+import { elementFactory, showToast } from './Utils.js';
 // import { defaultOptions } from './Options.js';
-
-// TODO: Error messages for the try catch
 
 /**
  * Manages state of the entire app.
@@ -131,6 +129,7 @@ export default class State {
     try {
       this.settings = await localforage.getItem('Settings') || this.settingsDefault;
       console.log('Loaded user settings');
+      return this.settings;
     } catch (err) {
       console.log(err);
     }
@@ -745,7 +744,8 @@ export default class State {
     const cfiToJump = this.searchResults[resultNumber].cfi;
     if (!cfiToJump) {
       $search_results_current.value = 0;
-      throw 'Unable to find search result.';
+      showToast('Unable to find search result.');
+      return;
     }
 
     this.rendition.display(cfiToJump);
@@ -786,11 +786,9 @@ export default class State {
     return startRange.toString();
   }
 
-  async initializeSpeech($voices) {
+  async initializeSpeech($voices, $speech) {
     this.speech = new SpeechSynthesisUtterance();
-    // this.speech = window.speechSynthesis;
 
-    // TODO: Make these options
     this.speech.lang = "en";  // en is default
     this.speech.volume = 1;   // Range from 0 to 1
     this.speech.rate = 1;     // Range from 0.1 to 10
@@ -800,12 +798,13 @@ export default class State {
     window.speechSynthesis.onvoiceschanged = () => {
       this.voices = window.speechSynthesis.getVoices();
       if (this.voices.length === 0){
-        throw 'Unable to load voices for Speech Synthesis.'
+        showToast('Unable to load voices for Speech Synthesis.', 'warning');
+        $speech.style.display = 'none';
+        return;
       }
 
-      // $voices.style.display = 'inline';
-
       console.log('Speech is ready');
+      showToast('Speech Synthesis is ready.');
       this.speech.voice = voices[0];
 
       const docFrag = new DocumentFragment();
