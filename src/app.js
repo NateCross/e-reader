@@ -1,19 +1,6 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
-import { initializeModals, attachModal, debounce } from './Utils.js';
-
-const toast = Toastify({
-  text: "Loaded Library.",
-  duration: 3000,
-  close: true,
-  gravity: "top",
-  position: "center",
-  style: {
-    background: "black",
-    color: "white",
-    "font-family": "Arial, sans-serif",
-  },
-});
+import { initializeModals, attachModal, showToast } from './Utils.js';
 
 ///// FUNCTIONS /////
 
@@ -40,8 +27,14 @@ function storeBookToLib(bookData, bookLib, category) {
  */
 function openBookEvent(Library) {
   return e => {
-    if (!window.FileReader) return null;
-    if (e.target.files.length === 0) return null;
+    if (!window.FileReader) {
+      showToast('Unable to use the browser\'s File Reader.', 'warning');
+      return null;
+    }
+    if (e.target.files.length === 0) {
+      showToast('No files uploaded.', 'warning');
+      return null;
+    }
 
     const file = e.target.files[0];
     loadFileAsEpub(file, Library);
@@ -61,9 +54,6 @@ const $storage_percent = document.querySelector('#percent');
 const $storage_clear = document.querySelector('#clear-storage');
 
 // const $drop_zone = document.querySelector('.drop-zone');
-const $body = document.body;
-let dragTimeoutFunction;
-const dragTimeoutCounter = 3000;
 
 ///// MAIN /////
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
@@ -78,7 +68,7 @@ initDragAndDrop();
 (async () => {
   await Lib.init();
   Lib.refreshLibraryDisplay($library);
-  toast.showToast();
+  showToast('Loaded Library.');
 })();
 
 async function clearLibrary() {
@@ -93,8 +83,7 @@ async function clearLibrary() {
 
   Lib.refreshLibraryDisplay();
 
-  toast.options.text = 'Library cleared.';
-  toast.showToast();
+  showToast('Library cleared.');
 
   return value;
 }
@@ -122,9 +111,6 @@ function dropZoneOnDrop(e) {
 }
 
 function initDragAndDrop() {
-  const debouncedRemove = debounce(() => {
-  });
-
   document.ondragenter = (e => {
     console.log('Dragging on body');
     e.preventDefault();
@@ -150,7 +136,6 @@ function initDragAndDrop() {
 function loadFileAsEpub(file) {
   const reader = new FileReader();
 
-
   // Executes after readAsArrayBuffer finishes
   reader.onload = bookData => {
     storeBookToLib(bookData.target.result, Lib.bookLib, "Library");
@@ -161,12 +146,10 @@ function loadFileAsEpub(file) {
     Lib.saveLibrary().then(() => {
       Lib.refreshLibraryDisplay();
     });
-    toast.options.text = 'Added book to library.';
-    toast.showToast();
+    showToast('Added new EPUB to Library.');
   };
 
   reader.readAsArrayBuffer(file);
-
 }
 
 initializeModals('modal-container', 'modal-close');

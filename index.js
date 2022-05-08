@@ -24,7 +24,6 @@ Object.keys(moduleDists).forEach(key => {
 });
 
 for (module in moduleSrc) {
-  console.log(moduleSrc[module]);
   app.get(`/scripts/${moduleSrc[module]}.js`, function (req, res) {
     res.sendFile(path.join(__dirname, `/node_modules/${module}/src/${moduleSrc[module]}.js`));
   });

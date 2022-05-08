@@ -1,5 +1,5 @@
 import State from "./State.js";
-import { elementFactory, getIndexedDBUsage } from "./Utils.js";
+import { elementFactory, getIndexedDBUsage, showToast } from "./Utils.js";
 
 /**
  * @type {HTMLElement} libraryElement The div element to display each book in the library
@@ -36,6 +36,7 @@ export default class Library {
       const value = await localforage.getItem('Library');
       return value;
     } catch (err) {
+      showToast('Unable to fetch Library from storage.', 'warning');
       console.log(err);
     }
   }
@@ -45,6 +46,7 @@ export default class Library {
       const value = await localforage.setItem('Library', bookLib);
       return value;
     } catch (err) {
+      showToast('Unable to save Library to storage.', 'warning');
       console.log(err);
     }
   }
@@ -54,6 +56,7 @@ export default class Library {
     try {
       value = await localforage.removeItem('Library');
     } catch (err) {
+      showToast('Unable to clear Library.', 'warning');
       console.log(err);
     }
     await this.refreshLibraryDisplay();
@@ -68,7 +71,12 @@ export default class Library {
    * @type {HTMLElement} libraryElement
    */
   async refreshLibraryDisplay(libraryElement = this.libraryEl) {
-    await this.refreshStorageDisplay();
+    try {
+      await this.refreshStorageDisplay();
+    } catch (err) {
+      // showToast('Unable to refresh storage display.', 'warning');
+      console.log(err);
+    }
 
     // console.log(Object.keys(this.bookLib));
     if (Object.keys(this.bookLib).length === 0) {
@@ -76,6 +84,7 @@ export default class Library {
       // achieves a 'seamless' refresh and allows for it to update
       // as well in case we clear bookLib
       libraryElement.innerHTML = "";
+      showToast('Library is empty.');
       throw 'Library is empty.';
     }
 
@@ -186,6 +195,7 @@ export default class Library {
   removeBookFromLib(index, category) {
     return async () => {
       this.bookLib[category].splice(index, 1);
+      showToast('Book removed from Library.');
       await this.saveLibrary();
       this.refreshLibraryDisplay();
     }
@@ -221,6 +231,7 @@ export default class Library {
         this.bookLib[newCategory] = [];
 
       this.bookLib[newCategory].push(book);
+      showToast(`Book moved to ${newCategory}.`);
       this.refreshLibraryDisplay();
       await this.saveLibrary();
     }

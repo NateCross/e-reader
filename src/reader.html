@@ -4,8 +4,9 @@
     <title>E-Reader: Reader</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- TODO: Insert CSS here -->
     <link rel="stylesheet" href="./css/app.css">
+    <link rel="stylesheet" href="./css/toastify.css">
+
 
     <!-- Used in previewing the themes, do not use in the actual file-->
     <link rel="stylesheet" href="./css/themes.css">
@@ -61,10 +62,12 @@
       <label for="search-bar">Search in Book</label>
       <input type="text" id="search-bar">
 
-      <label for="results-current">List of Search Results</label>
-      <input type="number" id="results-current" min=1>
-      /
-      <span id="results-total">-</span>
+      <div class="search-results-container">
+        <label for="results-current">List of Search Results</label>
+        <input type="number" id="results-current" min=1>
+        /
+        <span id="results-total">-</span>
+      </div>
     </div>
 
     <div class="speech">
@@ -73,8 +76,6 @@
       <input type="button" id="speech-stop" value="Stop Speech">
     </div>
 
-    <!-- FIXME: Remove me after testing -->
-    <input type="button" id='test-button' value="Modal Test">
     <input type="button" id='metadata' value="Get Book Metadata">
 
     <div class="options">

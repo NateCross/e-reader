@@ -176,11 +176,11 @@ export function attachModal(
   return () => {
     const modal = document.querySelector(`#${containerElementId}`);
 
-    const modalHeader = document.querySelector('.modal-header');
+    const modalHeader = modal.querySelector('.modal-header');
 
-    const modalContent = document.querySelector('.modal-body');
+    const modalContent = modal.querySelector('.modal-body');
 
-    const modalFooter = document.querySelector('.modal-footer');
+    const modalFooter = modal.querySelector('.modal-footer');
 
     modalHeader.children[1].innerHTML = header;
     modalContent.innerHTML = content;
@@ -192,3 +192,59 @@ export function attachModal(
 
   }
 }
+
+const toast = Toastify({
+  text: "",
+  duration: 3000,
+  close: true,
+  gravity: "top",
+  position: "center",
+  style: {
+    background: "black",
+    color: "white",
+    "font-family": "Arial, sans-serif",
+  },
+});
+
+const quickToast = Toastify({
+  text: "",
+  duration: 1000,
+  close: true,
+  gravity: "top",
+  position: "center",
+  style: {
+    background: "black",
+    color: "white",
+    "font-family": "Arial, sans-serif",
+  },
+});
+
+const warningToast = Toastify({
+  text: "",
+  duration: 3000,
+  close: true,
+  gravity: "top",
+  position: "center",
+  style: {
+    background: "#F02C2C",
+    color: "white",
+    "font-family": "Arial, sans-serif",
+  },
+});
+
+
+/**
+ * Helper function to show preset toasts with the help of Toastify
+ * @param {String} message The message to be displayed in the toast.
+ * @param {String} type 'normal', 'warning'
+ */
+export function showToast (message, type = 'normal') {
+  const toastList = {
+    normal: toast,
+    warning: warningToast,
+    quick: quickToast,
+  }
+  toastList[type].options.text = message;
+  toastList[type].showToast();
+}
+

@@ -163,3 +163,11 @@ input[type="file"] {
   color: white;
 }
 
+/*
+ * Alternate class for modal-header and modal-footer
+ * in case of a warning or error.
+ */
+.modal-warning {
+  background-color: #F02C2C;
+}
+

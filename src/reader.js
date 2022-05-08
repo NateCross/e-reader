@@ -1,6 +1,6 @@
 import State from './State.js';
-import { LoremIpsum, Metadata } from './ModalTextContent.js';
-import { attachModal, initializeModals } from './Utils.js';
+import * as Modals from './ModalTextContent.js';
+import { attachModal, initializeModals, showToast } from './Utils.js';
 
 /// HTML Elements ///
 const $title = document.querySelector('#title');
@@ -27,13 +27,15 @@ const $bookmark_list = document.querySelector('#bookmark-list');
 const $search_bar = document.querySelector('#search-bar');
 const $search_results_current = document.querySelector('#results-current');
 const $search_results_total = document.querySelector('#results-total');
+const $search_results_container = document.querySelector('.search-results-container');
 
 const $voices = document.querySelector('#voices');
 const $speech_start = document.querySelector('#speech-start');
 const $speech_stop = document.querySelector('#speech-stop');
+const $speech = document.querySelector('.speech');
 
 const $settings_remove = document.querySelector('#settings-remove');
-// TODO: Change it to settings
+// TODO: Change it to settings. This was a mistake
 const $options_flow = document.querySelector('#options-flow');
 const $settings_font_size = document.querySelector('#settings-font-size');
 const $settings_font = document.querySelector('#settings-font');
@@ -49,12 +51,26 @@ const $settings_speech_pitch_val = document.querySelector('#speech-pitch-val');
 
 const $metadata_button = document.querySelector('#metadata');
 
-// TODO: Add buttons for other features
-
+// We have to create the AppState object before we perform
+// the other operations here
 const AppState = new State();
 
 ///// MAIN /////
+
+/**
+ * The initialization function that turns everything on and hooks
+ * into the various HTML elements. Also handles loading user settings.
+ *
+ * This is a separate function because, as has been observed, when
+ * a setting is changed that adjusts the book rendition, it must be
+ * re-rendered. This would require refreshing. But another way would be
+ * to "delete" the viewer's inner HTML and re-run this function to
+ * achieve so without forcing a refresh.
+ * NOTE: Due to the above, there may or may not be memory leaks.
+ * It is my understanding that there are none at the moment, but it is worth looking into.
+ */
 const Initialize = async () => {
+  showToast('Loading book...', 'quick');
 
   // Library is in localforage -- or indexedDB -- because it
   // can store objects. The opened book index is stored in
@@ -65,44 +81,49 @@ const Initialize = async () => {
 
   // If we cannot find a book to open, go back to the index
   // TODO: Throw proper error message then go back
-  if (!openedBook || !Lib || !Lib[category][openedBook])
-    window.location.href = '/';
+  if (!openedBook || !Lib || !Lib[category][openedBook]) {
+    Modals.ErrorNoBook.showModal();
+  }
 
   // NOTE: This is still here for testing purposes.
   // TODO: Refactor stuff in the html to the js
   // openBook(Library[openedBook].bookData);
 
   // Performing initialization operations
+  // Order is not very important, as long as they are there.
+  // We have to open the book and get the settings first before
+  // anything else, though, or else nothing will load right
   await AppState.openBook(Lib[category][openedBook].bookData);
   await AppState.getStoredSettings();
   AppState.renderBook($viewer);
+
+  // These functions interact with the DOM
+  // NOTE: Instead of passing an HTML element, we could pass the
+  // string of the id/class instead. It would require some rewriting
+  // of the functions, though.
   AppState.updateBookTitle($title);
   AppState.getStoredLocations($page_total);
   AppState.loadTableOfContents($toc);
   AppState.getStoredHighlights($highlight_list);
   AppState.getStoredBookmarks($bookmark_list);
-  AppState.initializeSpeech($voices);
+  AppState.initializeSpeech($voices, $speech);
+
   attachSettingsOptions('font', $settings_font);
   attachSettingsOptions('theme', $settings_theme);
-  initSettingsDisplay();
-  initializeModals('modal-container');
 
-  // TODO: Refactor to go inside AppState
+  // These functions exist in reader.js because they essentially
+  // hook into a lot of elements in the document.
+  // If they were in AppState, I would have to pass in a lot of
+  // id names or elements. Admittedly, it looks ugly, so
+  // refactoring these would be ideal.
+  initializeModals('modal-container');
+  initSettingsDisplay();
   attachKeyboardInput();
   attachClickButtonInput();
 
   AppState.attachRelocatedEvent($page_current, $page_percent, $toc, $page_slider);
 
-  $page_current.onchange = e => {
-    if (!e.target.value) {
-      $page_current.value = AppState.currentPageRange;
-      return;
-    }
-
-    AppState.rendition.display(
-      AppState.book.locations.cfiFromLocation(e.target.value)
-    );
-  };
+  $page_current.onchange = changeCurrentPage;
   $page_slider.onchange = pageSlider;
 
   $highlight.onclick = highlightCurrentTextSelection;
@@ -111,6 +132,7 @@ const Initialize = async () => {
   $bookmark.onclick = bookmarkCurrentPage;
   $bookmark_remove_all.onclick = resetBookmarks;
 
+  $search_results_container.style.display = 'none';
   $search_bar.onchange = searchInBook;
   $search_results_current.onchange = jumpToSearchResult;
 
@@ -127,17 +149,32 @@ const Initialize = async () => {
   $settings_speech_rate.oninput = changeSpeechRate;
   $settings_speech_pitch.oninput = changeSpeechPitch;
 
-  $metadata_button.onclick = attachModal(Metadata, 'modal-container', getMetadata);
+  $metadata_button.onclick = attachModal(Modals.Metadata, 'modal-container', getMetadata);
 
   AppState.attachContentsSelectionHook($viewer);
 
   // Update the page title
   // Must be done after book is loaded
   document.title = `E-Reader: ${AppState.metadata.title}`;
+  showToast('Finished loading book.');
 };
 
 console.log(AppState);
 console.log('Loaded reader');
+
+function changeCurrentPage(e) {
+
+  // Restores the current value in case the user does not want to
+  // change, and stops focusing the element. This prevents confusion.
+  if (!e.target.value) {
+    $page_current.value = AppState.currentPageRange;
+    return;
+  }
+
+  AppState.rendition.display(
+    AppState.book.locations.cfiFromLocation(e.target.value)
+  );
+}
 
 /**
  * Helper function used in attachKeyboardInput.
@@ -181,30 +218,33 @@ function highlightCurrentTextSelection(e) {
   // NOTE: Doesn't work on Firefox
   // e.view[0].getSelection().empty();
 
-  if (!AppState.currentSelectionText || !AppState.currentSelectionCFI)
-    throw 'Unable to highlight selected text.';
+  if (!AppState.currentSelectionText || !AppState.currentSelectionCFI) {
+    showToast('Unable to highlight selected text.');
+    return;
+  }
 
   AppState.rendition.annotations.highlight(
     AppState.currentSelectionCFI,
     {},
-    e => {
-      console.log(`Highlight Clicked: ${e.target}`);
-      console.log(AppState.rendition.annotations._annotations);
+    () => {
+      return;
     }
   );
 
   AppState.pushSelectionToHighlights($highlight_list);
 }
 
-function resetHighlights() {
+async function resetHighlights() {
   AppState.highlights.forEach(highlight => {
     AppState.rendition.annotations.remove(highlight, "highlight");
   });
 
   try {
-    localforage.removeItem(`${AppState.book.key()}-highlights`);
+    await localforage.removeItem(`${AppState.book.key()}-highlights`);
+    showToast('Successfully reset highlights.');
   } catch (err) {
     console.log(err);
+    showToast('Unable to reset highlights.', 'warning');
   }
 
   AppState.highlights = [];
@@ -214,13 +254,16 @@ function resetHighlights() {
 
 function bookmarkCurrentPage() {
   AppState.pushCurrentLocationToBookmarks($bookmark_list);
+  showToast('Bookmarked current page.');
 }
 
 function resetBookmarks() {
   try {
     localforage.removeItem(`${AppState.book.key()}-bookmarks`);
+    showToast('Successfully reset bookmarks.');
   } catch (err) {
     console.log(err);
+    showToast('Unable to reset bookmarks.', 'warning');
   }
 
   AppState.bookmarks = [];
@@ -234,7 +277,7 @@ function resetBookmarks() {
  */
 async function searchInBook(e) {
 
-  // Removing previous highlights if there were any
+  // Removing previous search highlights if there were any
   if (AppState.currentSearchResultCFI) {
     AppState.removeSearchHighlight();
     AppState.currentSearchResultCFI = "";
@@ -242,20 +285,22 @@ async function searchInBook(e) {
   }
 
   // Resetting search values
+  $search_results_container.style.display = 'none';
   $search_results_current.value = null;
-  $search_results_total.textContent = 'Searching...'
+  // $search_results_total.textContent = 'Searching...'
 
   // Fixes a massive memory leak when you empty the search string.
   // Without this, clearing the search bar will basically crash the app.
   if (!e.target.value) {
     $search_results_total.textContent = '-'
-    throw 'Search is empty.'
+    return;
   }
 
   const query = await AppState.doSearch(e.target.value);
   if (query.length === 0) {
     $search_results_total.textContent = '-';
-    throw 'No results found.'
+    showToast('No search results found.');
+    return;
   };
 
   // Storing the results inside AppState so that the results are easier
@@ -264,6 +309,8 @@ async function searchInBook(e) {
 
   $search_results_total.textContent = query.length;
   $search_results_current.max = query.length;
+  $search_results_container.style.display = 'inline';
+
 
   AppState.jumpToSearchCFI(0, $search_results_current);
 }
