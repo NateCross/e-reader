@@ -19,7 +19,6 @@ export default class extends AbstractView {
               accept = ".epub"
             >
           </div>
-          <script type="module" src="./js/app.js" async ></script>
         `;
     }
 }

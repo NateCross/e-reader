@@ -625,25 +625,27 @@ export default class State {
     this.highlights.forEach(highlight => {
       let li = elementFactory('li');
       let text = elementFactory('p');
-      let pageNum = elementFactory('a');
-      let remove = elementFactory('a');
+      let pageNum = elementFactory('input');
+      pageNum.type = 'button';
+      let remove = elementFactory('input');
+      remove.type = 'button';
 
       this.book.getRange(highlight).then(range => {
         text.textContent = range.toString();
 
-        pageNum.textContent = this.book.locations.locationFromCfi(highlight);
+        pageNum.value = this.book.locations.locationFromCfi(highlight);
         pageNum.onclick = () => {
           this.book.rendition.display(highlight)
         }
 
-        remove.textContent = 'Remove Highlight';
+        remove.value = 'Remove Highlight';
         remove.onclick = () => {
           this.removeHighlight($highlight_list, highlight);
         };
 
         li.appendChild(pageNum);
-        li.appendChild(text);
         li.appendChild(remove);
+        li.appendChild(text);
         list.appendChild(li);
       });
     });
@@ -699,18 +701,20 @@ export default class State {
     this.bookmarks.forEach(bookmark => {
       let li = elementFactory('li');
       // let text = elementFactory('p');
-      let pageNum = elementFactory('a');
-      let remove = elementFactory('a');
+      let pageNum = elementFactory('input');
+      pageNum.type = 'button';
+      let remove = elementFactory('input');
+      remove.type = 'button';
 
       // this.book.getRange(bookmark).then(range => {
       //   text.textContent = range.toString();
 
-      pageNum.textContent = this.book.locations.locationFromCfi(bookmark);
+      pageNum.value = this.book.locations.locationFromCfi(bookmark);
       pageNum.onclick = () => {
         this.book.rendition.display(bookmark)
       }
 
-      remove.textContent = 'Remove Bookmark';
+      remove.value = 'Remove Bookmark';
       remove.onclick = () => {
         this.removeBookmark($bookmark_list, bookmark);
       };

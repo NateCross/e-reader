@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Lorem Ipsum E-Reader</title>
+    <title>Libre Ipsum E-Reader</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./css/toastify.css">
@@ -12,18 +12,19 @@
   <body>
     <div class="banner">
       <nav class="navbar">
-        <img src="css/imgs/logo3.png" class="logo">
+        <a href="/"><img src="css/imgs/logo3.png" class="logo" alt="Libre Ipsum Logo"></a>
         <ul>
-            <li><a href="/" data-link> Home </a></li>
-            <li><a href="/about" data-link> About Us </a></li>
-            <li><a href="#"> Contact Us </a></li>
-            <li><a href="#"> Site Map </a></li>
-            <li><a href="#"> FAQ </a></li>
+            <!-- data-links are used for seamless transitions -->
+            <li><a href="/" data-link>Home</a></li>
+            <li><a href="/about" data-link>About Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Site Map</a></li>
+            <li><a href="#">FAQ</a></li>
         </ul>
       </nav>
 
       <main class="content">
-        <h1>READ ANY EPUB FOR FREE</h1>
+        <h1>READ YOUR EPUBS FOR FREE</h1>
         <p>Upload any EPUB file you have on hand by pressing the button or dragging the file to the button below. <br>Happy reading!</p>
         <label for="file-upload" class="file-upload-container">
           <input
@@ -35,9 +36,9 @@
         </label>
       </main>
 
-      <h1 class="projTitle">Lorem Ipsum E-Reader</h1>
+      <h1 class="projTitle">Libre Ipsum E-Reader</h1>
     </div>
-    
+
     <div id="library"></div>
 
     <div id="storage">
@@ -45,21 +46,6 @@
 
       <button id="clear-storage">Clear Storage</button>
     </div>
-
-    <!-- <div class="modal" id="modal-container">
-      <div class="modal-content">
-        <div class="modal-header">
-          <span class="modal-close">&times;</span>
-          <div class="modal-header-content">Modal Header</div>
-        </div>
-        <div class="modal-body">
-          <p></p>
-        </div>
-        <div class="modal-footer">
-          <h3 class="modal-footer-content">Modal Footer</h3>
-        </div>
-      </div>
-    </div> -->
 
     <!-- SCRIPTS -->
 

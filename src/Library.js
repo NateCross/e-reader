@@ -1,5 +1,6 @@
 import State from "./State.js";
 import { elementFactory, getIndexedDBUsage, showToast } from "./Utils.js";
+import { showModalWrapper, RemoveBook } from './ModalTextContent.js';
 
 /**
  * @type {HTMLElement} libraryElement The div element to display each book in the library
@@ -114,17 +115,25 @@ export default class Library {
         const state = new State();
         await state.openBook(book.bookData);
 
+        const bookImage = document.createElement('img');
+        bookImage.src = await state.book.coverUrl();
+        bookImage.alt = `${state.metadata.title} Book Cover`;
+        bookImage.classList.add('library-book-cover');
+        bookImage.onclick = this.openReaderEvent(index, category);
+
         const bookLink = document.createElement('a');
+        bookLink.classList.add('library-book-title');
         bookLink.textContent = state.metadata.title;
         bookLink.onclick = this.openReaderEvent(index, category);
 
         const moveCategory = document.createElement('input');
         moveCategory.type = 'button';
+        moveCategory.classList.add('library-book-category-button');
 
         switch (category) {
           case 'Library':
-            moveCategory.title = 'Move to favorites';
-            moveCategory.value = 'Move to favorites';
+            moveCategory.title = 'Move to Favorites';
+            moveCategory.value = 'Move to Favorites';
             moveCategory.onclick = this.moveBookToCategory(book);
             break;
           case 'Favorites':
@@ -138,7 +147,22 @@ export default class Library {
         removeBook.type = 'button';
         removeBook.title = 'Remove Book';
         removeBook.value = 'Remove Book';
-        removeBook.onclick = this.removeBookFromLib(index, category);
+        removeBook.classList.add('library-book-remove-button');
+        removeBook.onclick = showModalWrapper(RemoveBook, (_, body, footer, container) => {
+          const remove = footer.querySelector('#remove');
+          const cancel = footer.querySelector('#cancel');
+          const title = body.querySelector('#modal-book-title');
+
+          title.textContent = state.metadata.title;
+
+          cancel.onclick = () => {
+            container.remove();
+          }
+          remove.onclick = () => {
+            this.removeBookFromLib(index, category)();
+            container.remove();
+          }
+        });
 
 
         const bookElement = elementFactory('a', {
@@ -146,7 +170,7 @@ export default class Library {
 
         const divParent = elementFactory('div', {
           class: 'library-book',
-        }, bookElement, moveCategory, removeBook);
+        }, bookElement, bookImage, moveCategory, removeBook);
 
         const listChild = elementFactory('li', {},
         divParent);

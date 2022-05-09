@@ -7,7 +7,7 @@ import { attachModal, initializeModals, elementFactory } from './Utils.js';
  * @param {String} containerElementId Used for query selection
  * @param {Function} callback Callback to be executed after modal is displayed. Params: (header, content, footer). These are HTML elements.
  */
-export class ModalText {
+export class ModalTextOld {
   constructor(header, content, footer, container = 'modal-container', callback = function() { return }) {
     this.header = header;
     this.content = content;
@@ -22,8 +22,8 @@ export class ModalText {
 
     this.callback = callback;
   }
-  static initializeModals = initializeModals;
-  static attachModal = attachModal;
+  // static initializeModals = initializeModals;
+  // static attachModal = attachModal;
 
   // get headerContentFooterElements() {
   //   console.log(this.container);
@@ -63,53 +63,32 @@ export const LoremIpsum = {
   `
 }
 
-export const Metadata = {
-  header: `
-    <h2 id='metadata-title'>Metadata</h2>
-  `,
-  // TODO: Set a static size for the book cover image
-  content: `
-    <ul class='metadata-container'>
-      <img id='metadata-cover' alt='Book Cover' height='15%' width='15%'></li>
-      <li id='metadata-author'></li>
-      <li id='metadata-description'></li>
-      <li id='metadata-pubdate'></li>
-      <li id='metadata-publisher'></li>
-      <li id='metadata-rights'></li>
-    </ul>
-  `,
-  // Identifier
-  footer: `
-    <h3 id='metadata-identifier'></h3>
-  `
-}
-
-export const ErrorNoBook = new ModalText(
-  `<h2>Error: No Book Selected</h2>`,
-  `
-    <p>
-      A book was not selected, or the selected book was not found.
-      <br>
-      Returning to the Library page in 3 seconds...
-    </p>
-  `,
-  ``,
-
-  'modal-container',
-
-  (header, content, footer) => {
-
-    // Adds the warning class
-    header.classList.add('modal-warning');
-    footer.classList.add('modal-warning');
-
-    const arbitraryWaitTimer = 3000;
-
-    setTimeout(() => {
-      window.location.href = '/';
-    }, arbitraryWaitTimer);
-  }
-);
+// export const ErrorNoBook = new ModalTextOld(
+//   `<h2>Error: No Book Selected</h2>`,
+//   `
+//     <p>
+//       A book was not selected, or the selected book was not found.
+//       <br>
+//       Returning to the Library page in 3 seconds...
+//     </p>
+//   `,
+//   ``,
+//
+//   'modal-container',
+//
+//   (header, content, footer) => {
+//
+//     // Adds the warning class
+//     header.classList.add('modal-warning');
+//     footer.classList.add('modal-warning');
+//
+//     const arbitraryWaitTimer = 3000;
+//
+//     setTimeout(() => {
+//       window.location.href = '/';
+//     }, arbitraryWaitTimer);
+//   }
+// );
 
 // Rewriting the modal text class
 /**
@@ -120,7 +99,7 @@ export const ErrorNoBook = new ModalText(
  * @param {Function} callback function to be ran after modal is displayed
  * @param {Object} style CSS styles to be applied as a dict
  */
-export default class ModalText2 {
+export default class ModalText {
   constructor(header, body, footer, callback = function() { return }, style = {}) {
     this.header = header;
     this.body = body;
@@ -158,6 +137,13 @@ export default class ModalText2 {
     body.innerHTML = this.body;
     footer.innerHTML = this.footer;
 
+    if (this.style.header)
+      header.classList.add(this.style.header);
+    if (this.style.body)
+      body.classList.add(this.style.body);
+    if (this.style.footer)
+      footer.classList.add(this.style.footer);
+
     header.appendChild(close);
     header.appendChild(headerContent);
 
@@ -169,39 +155,179 @@ export default class ModalText2 {
     docFrag.appendChild(container);
 
     this.docFrag = docFrag;
-    return { docFrag, header, body, footer };
+    return { docFrag, container, header, body, footer, close };
   }
 
-  showModal() {
-    const { docFrag, header, body, footer } = this.createModalDocFrag();
-    document.body.appendChild(docFrag);
-    this.attachEvents(docFrag);
-    // docFrag.style.display = 'block';
-    this.callback(header, body, footer);
+  showModal(callback = this.callback) {
+    const { docFrag, container, header, body, footer, close } = this.createModalDocFrag();
+
+    // This timeout allows the CSS animation to trigger
+    // without noticeably affecting anything else
+    setTimeout(() => {
+      document.body.appendChild(docFrag);
+    }, 1)
+
+    // document.body.appendChild(docFrag);
+    // container.style.display = 'block';
+
+    this.attachEvents(container, close);
+    callback(header, body, footer, container);
   }
 
-  attachEvents(docFrag, close) {
-    const modalDiv = document.querySelector('#modal-container');
-    console.log(modalDiv);
-    // function removeCloseButton() {
-    //   docFrag.remove();
-    //   removeCloseButton
-    // }
+  attachEvents(container, close) {
+    function removeModal(e) {
+      if (e.target === container || e.target === close) {
+        container.remove();
+        document.removeEventListener('click', removeModal);
+      }
+    }
 
-    // close.onclick = () => {
-    //   docFrag.remove();
-    // };
-
-    window.onclick = () => {
-      modalDiv.remove();
-      // console.log('Window clicked');
-      // console.log(docFrag);
-    } 
+    document.addEventListener("click", removeModal);
   }
 }
 
-export const AnotherModalTest = new ModalText2(
-  `<h2>Hi</h2>`,
-  `<p>Lorem Ipsum</p>`,
-  `<h3>Footer</h3>`,
+export const ErrorNoBook = new ModalText(
+  `<h2>Error: No Book Selected</h2>`,
+  `
+    <p>
+      A book was not selected, or the selected book was not found.
+      <br>
+      Returning to the Library page in 3 seconds...
+    </p>
+  `,
+  `<input type='button' class='modal-button' title='Click to return now' value='Click to return now'></input>`,
+  (_, __, footer) => {
+    const arbitraryWaitTimer = 3000;
+
+    setTimeout(() => {
+      window.location.href = '/';
+    }, arbitraryWaitTimer);
+
+    const button = footer.querySelector('.modal-button');
+    button.onclick = () => {
+      window.location.href = '/';
+    }
+  },
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  },
 )
+
+export const Metadata = new ModalText(
+  `<h2 id='metadata-title'>Metadata</h2>`,
+  `
+    <ul class='metadata-container'>
+      <img id='metadata-cover' alt='Book Cover' height=20% width=20%></li>
+      <li id='metadata-author'></li>
+      <li id='metadata-description'></li>
+      <li id='metadata-pubdate'></li>
+      <li id='metadata-publisher'></li>
+      <li id='metadata-rights'></li>
+    </ul>
+  `,
+  `<h3 id='metadata-identifier'></h3>`
+)
+
+/**
+ * A wrapper for use with events
+ * @param {ModalText} modal The modal, probably from ModalTextContent
+ * @param {function} callback Callback function to be executed after modal displays, takes parameters (header, content, footer)
+ */
+export function showModalWrapper(modal, callback = undefined) {
+  return () => {
+    modal.showModal(callback);
+  }
+}
+
+export const RemoveAllHighlights = new ModalText(
+  `<h2>Remove All Highlights?</h2>`,
+  `<p>
+    Do you wish to remove all highlights?
+    <br>
+    This cannot be undone.
+  </p>
+  `,
+  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove' title='Remove All Highlights'></input>
+  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `,
+  undefined,
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  }
+)
+
+export const RemoveAllBookmarks = new ModalText(
+  `<h2>Remove All Bookmarks?</h2>`,
+  `<p>
+    Do you wish to remove all bookmarks?
+    <br>
+    This cannot be undone.
+  </p>
+  `,
+  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove' title='Remove All Bookmarks'></input>
+  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `,
+  undefined,
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  }
+)
+
+export const ResetSettings = new ModalText(
+  `<h2>Reset Settings to Default?</h2>`,
+  `<p>
+    Do you wish to reset all settings to default?
+    <br>
+    This cannot be undone.
+  </p>
+  `,
+  `<input type='button' class='modal-button modal-button-remove' id='remove' value='↺ Reset' title='Reset settings to default'></input>
+  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `,
+  undefined,
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  }
+)
+
+export const ClearLibrary = new ModalText(
+  `<h2>Remove all books?</h2>`,
+  `<p>
+    Do you wish to remove all books in all categories?
+    <br>
+    This cannot be undone, but your progress in each book will remain after removal.
+  </p>
+  `,
+  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove All Books' title='Remove all books in all categories'></input>
+  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `,
+  undefined,
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  }
+)
+
+export const RemoveBook = new ModalText(
+  `<h2>Remove Book?</h2>`,
+  `<p>
+    Do you wish to remove <strong id="modal-book-title">this book</strong>?
+    <br>
+    This cannot be undone, but your progress in this book will remain after removal.
+  </p>
+  `,
+  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove Book' title='Remove book'></input>
+  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `,
+  undefined,
+  {
+    header: 'modal-warning',
+    footer: 'modal-warning',
+  }
+)
+
+

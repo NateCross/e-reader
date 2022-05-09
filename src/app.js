@@ -1,6 +1,7 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
-import { initializeModals, attachModal, showToast } from './Utils.js';
+import { showToast } from './Utils.js';
+import * as Modals from './ModalTextContent.js';
 
 ///// FUNCTIONS /////
 
@@ -43,7 +44,6 @@ function openBookEvent(Library) {
 
 //// HTML ELEMENTS /////
 
-const $modal = document.querySelector('#modal');
 const $library = document.querySelector('#library');
 const $file_upload = document.querySelector('#file-upload');
 const $file_upload_container = document.querySelector('.file-upload-container');
@@ -59,9 +59,7 @@ const $storage_clear = document.querySelector('#clear-storage');
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
-$storage_clear.onclick = clearLibrary;
-// $drop_zone.ondragover = dropZoneDragOver;
-// $drop_zone.ondrop = dropZoneOnDrop;
+$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
 
 // Load the books from storage and populate the library div
@@ -70,6 +68,19 @@ initDragAndDrop();
   Lib.refreshLibraryDisplay($library);
   showToast('Loaded Library.');
 })();
+
+function ModalClearLibraryWrapper(_, __, footer, container) {
+  const remove = footer.querySelector('#remove');
+  const cancel = footer.querySelector('#cancel');
+
+  cancel.onclick = () => {
+    container.remove();
+  }
+  remove.onclick = () => {
+    clearLibrary();
+    container.remove();
+  }
+}
 
 async function clearLibrary() {
   let value = null;
@@ -151,7 +162,5 @@ function loadFileAsEpub(file) {
 
   reader.readAsArrayBuffer(file);
 }
-
-initializeModals('modal-container', 'modal-close');
 
 console.log('Loaded index');

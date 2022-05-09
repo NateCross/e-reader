@@ -1,8 +1,6 @@
 import State from './State.js';
 import * as Modals from './ModalTextContent.js';
-import { attachModal, initializeModals, showToast } from './Utils.js';
-
-Modals.AnotherModalTest.showModal();
+import { attachModal, showToast } from './Utils.js';
 
 /// HTML Elements ///
 const $title = document.querySelector('#title');
@@ -83,9 +81,9 @@ const Initialize = async () => {
 
   // If we cannot find a book to open, go back to the index
   // TODO: Throw proper error message then go back
-  if (!openedBook || !Lib || !Lib[category][openedBook]) {
-    Modals.ErrorNoBook.showModal();
-  }
+  // if (!openedBook || !Lib || !Lib[category][openedBook]) {
+  //   Modals.ErrorNoBook.showModal();
+  // }
 
   // NOTE: This is still here for testing purposes.
   // TODO: Refactor stuff in the html to the js
@@ -95,7 +93,12 @@ const Initialize = async () => {
   // Order is not very important, as long as they are there.
   // We have to open the book and get the settings first before
   // anything else, though, or else nothing will load right
-  await AppState.openBook(Lib[category][openedBook].bookData);
+  try {
+    await AppState.openBook(Lib[category][openedBook].bookData);
+  } catch (err) {
+    console.log(err);
+    Modals.ErrorNoBook.showModal();
+  }
   await AppState.getStoredSettings();
   AppState.renderBook($viewer);
 
@@ -129,10 +132,10 @@ const Initialize = async () => {
   $page_slider.onchange = pageSlider;
 
   $highlight.onclick = highlightCurrentTextSelection;
-  $highlight_remove_all.onclick = resetHighlights;
+  $highlight_remove_all.onclick = Modals.showModalWrapper(Modals.RemoveAllHighlights, ModalResetHighlightsWrapper);
 
   $bookmark.onclick = bookmarkCurrentPage;
-  $bookmark_remove_all.onclick = resetBookmarks;
+  $bookmark_remove_all.onclick = Modals.showModalWrapper(Modals.RemoveAllBookmarks, ModalResetBookmarksWrapper);
 
   $search_results_container.style.display = 'none';
   $search_bar.onchange = searchInBook;
@@ -142,7 +145,7 @@ const Initialize = async () => {
   $speech_start.onclick = startSpeech;
   $speech_stop.onclick = stopSpeech;
 
-  $settings_remove.onclick = restoreSettingsToDefault;
+  $settings_remove.onclick = Modals.showModalWrapper(Modals.ResetSettings, ModalResetSettingsWrapper);
   $options_flow.onchange = changeSettingsFlow;
   $settings_font_size.onchange = changeFontSize;
   $settings_font.onchange = changeFont;
@@ -151,7 +154,8 @@ const Initialize = async () => {
   $settings_speech_rate.oninput = changeSpeechRate;
   $settings_speech_pitch.oninput = changeSpeechPitch;
 
-  $metadata_button.onclick = attachModal(Modals.Metadata, 'modal-container', getMetadata);
+  $metadata_button.onclick = Modals.showModalWrapper(Modals.Metadata, getMetadata);
+  // $metadata_button.onclick = attachModal(Modals.Metadata, 'modal-container', getMetadata);
 
   AppState.attachContentsSelectionHook($viewer);
 
@@ -236,6 +240,19 @@ function highlightCurrentTextSelection(e) {
   AppState.pushSelectionToHighlights($highlight_list);
 }
 
+function ModalResetHighlightsWrapper(_, __, footer, container) {
+  const remove = footer.querySelector('#remove');
+  const cancel = footer.querySelector('#cancel');
+
+  cancel.onclick = () => {
+    container.remove();
+  }
+  remove.onclick = () => {
+    resetHighlights();
+    container.remove();
+  }
+}
+
 async function resetHighlights() {
   AppState.highlights.forEach(highlight => {
     AppState.rendition.annotations.remove(highlight, "highlight");
@@ -259,9 +276,22 @@ function bookmarkCurrentPage() {
   showToast('Bookmarked current page.');
 }
 
-function resetBookmarks() {
+function ModalResetBookmarksWrapper(_, __, footer, container) {
+  const remove = footer.querySelector('#remove');
+  const cancel = footer.querySelector('#cancel');
+
+  cancel.onclick = () => {
+    container.remove();
+  }
+  remove.onclick = () => {
+    resetBookmarks();
+    container.remove();
+  }
+}
+
+async function resetBookmarks() {
   try {
-    localforage.removeItem(`${AppState.book.key()}-bookmarks`);
+    await localforage.removeItem(`${AppState.book.key()}-bookmarks`);
     showToast('Successfully reset bookmarks.');
   } catch (err) {
     console.log(err);
@@ -345,6 +375,20 @@ function stopSpeech() {
   window.speechSynthesis.cancel();
   showToast('Stopped speaking.');
 }
+
+function ModalResetSettingsWrapper(_, __, footer, container) {
+  const remove = footer.querySelector('#remove');
+  const cancel = footer.querySelector('#cancel');
+
+  cancel.onclick = () => {
+    container.remove();
+  }
+  remove.onclick = () => {
+    restoreSettingsToDefault();
+    container.remove();
+  }
+}
+
 
 /**
  * We are changing all the settings, so it is not feasible to
@@ -455,15 +499,15 @@ async function changeSpeechPitch(e) {
  * Used with attachModal. The elements and their ids are found in
  * the object 'Metadata' of ModalTextContent.js.
  */
-function getMetadata() {
-  const title = document.querySelector('#metadata-title');
-  const cover = document.querySelector('#metadata-cover');
-  const author = document.querySelector('#metadata-author');
-  const description = document.querySelector('#metadata-description');
-  const pubdate = document.querySelector('#metadata-pubdate');
-  const publisher = document.querySelector('#metadata-publisher');
-  const rights = document.querySelector('#metadata-rights');
-  const identifier = document.querySelector('#metadata-identifier');
+function getMetadata(header, content, footer) {
+  const title = header.querySelector('#metadata-title');
+  const cover = content.querySelector('#metadata-cover');
+  const author = content.querySelector('#metadata-author');
+  const description = content.querySelector('#metadata-description');
+  const pubdate = content.querySelector('#metadata-pubdate');
+  const publisher = content.querySelector('#metadata-publisher');
+  const rights = content.querySelector('#metadata-rights');
+  const identifier = footer.querySelector('#metadata-identifier');
 
   title.textContent = AppState.metadata.title;
   cover.src = AppState.coverURL;

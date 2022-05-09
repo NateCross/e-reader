@@ -1,6 +1,12 @@
 /* Could be useful? */
 :root {
   --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  --gold: #aa6c39 !important;
+  --gold-hover: #aa6c39 !important;
+  --button-remove: #808080 !important;
+  --button-cancel: var(--button-remove);
+  --button-remove-hover: #373737 !important;
+  --button-cancel-hover: var(--button-remove-hover);
 }
 
 /*
@@ -12,7 +18,7 @@
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
-  font-family: Arial;
+  /* font-family: Arial; */
   padding: 10px;
   color: white;
   cursor: pointer;
@@ -74,7 +80,8 @@ input[type="file"] {
   /* Stay in place */
   z-index: 1;
   /* Sit on top */
-  padding-top: 100px;
+  padding-top: 200px;
+  padding-bottom: 200px;
   /* Location of the box */
   left: 0;
   top: 0;
@@ -94,16 +101,17 @@ input[type="file"] {
 /* Modal Content */
 .modal-content {
   position: relative;
-  background-color: #fefefe;
   margin: auto;
   padding: 0;
-  border: 1px solid #888;
+  /* border: 1px solid #888; */
+  border-radius: 5px;
   width: 80%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
-  animation-duration: 0.4s
+  animation-duration: 0.4s;
+  /* background-color: #fefefe; */
 }
 
 /* Add Animation */
@@ -147,18 +155,24 @@ input[type="file"] {
 }
 
 .modal-header {
-  padding: 2px 16px;
+  padding: 20px 16px;
   background-color: #5cb85c;
+  border-radius: 5px 5px 0 0;
   color: white;
 }
 
 .modal-body {
-  padding: 2px 16px;
+  /* height: 5px; */
+  /* margin: px 0; */
+  /* padding: 10px 0; */
+  background-color: #fefefe;
+  padding: 20px 16px;
 }
 
 .modal-footer {
-  padding: 2px 16px;
+  padding: 20px 16px;
   background-color: #5cb85c;
+  border-radius: 0 0 5px 5px;
   color: white;
 }
 
@@ -167,5 +181,104 @@ input[type="file"] {
  * in case of a warning or error.
  */
 .modal-warning {
-  background-color: #F02C2C;
+  /* background-color: #F02C2C; */
+  background-color: #D0312D;
+}
+
+/*
+ * Displaying buttons here so we use flex to make it neater
+ */
+.modal-footer.modal-warning {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.modal-footer.modal-footer-flex {
+  display: flex;
+  /* flex: 1; */
+  justify-content: center;
+  align-content: center;
+}
+
+.modal-button {
+  background-color: var(--gold);
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 7.5px 15px;
+  color: white;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+  font-size: 1.2em;
+  margin: 0px 10px;
+  flex: 0 0 calc(50% - 10px);
+}
+.modal-button:hover {
+  background-color: var(--gold-hover);
+}
+
+/*
+ * Used in:
+ * Remove all highlights, remove all bookmarks
+ * remove book, reset Library
+ */
+.modal-button-remove {
+  background-color: var(--button-remove);
+}
+
+.modal-button-remove:hover {
+  background-color: var(--button-remove-hover);
+}
+
+/* .modal-button-yes { */
+/**/
+/* } */
+
+.modal-button-cancel {
+  background-color: var(--button-cancel);
+}
+
+.modal-button-cancel:hover {
+  background-color: var(--button-cancel-hover);
+}
+
+#modal-book-title {
+  font-weight: bold;
+}
+
+/*
+ * Styles the library div
+ */
+.library-book {
+  color: red;
+}
+
+/* Styles the library book name */
+.library-book-title{
+  cursor: pointer;
+}
+
+/*
+ * Book cover display in the Library div
+ */
+.library-book-cover {
+  height: 15%;
+  width: 15%;
+  cursor: pointer;
+}
+
+.library-book-category-button {
+  border: 1px solid magenta;
+  cursor: pointer;
+}
+
+.library-book-remove-button {
+  border: 1px solid cyan;
+  cursor: pointer;
+}
+
+.metadata-container {
+  /* The list display breaks so here is a workaround */
+  list-style-type: none;
 }
