@@ -2,6 +2,8 @@ import State from './State.js';
 import * as Modals from './ModalTextContent.js';
 import { attachModal, initializeModals, showToast } from './Utils.js';
 
+Modals.AnotherModalTest.showModal();
+
 /// HTML Elements ///
 const $title = document.querySelector('#title');
 const $toc = document.querySelector('#table-of-contents');
@@ -116,7 +118,7 @@ const Initialize = async () => {
   // If they were in AppState, I would have to pass in a lot of
   // id names or elements. Admittedly, it looks ugly, so
   // refactoring these would be ideal.
-  initializeModals('modal-container');
+  // initializeModals('modal-container');
   initSettingsDisplay();
   attachKeyboardInput();
   attachClickButtonInput();

@@ -1,4 +1,4 @@
-import { attachModal, initializeModals } from './Utils.js';
+import { attachModal, initializeModals, elementFactory } from './Utils.js';
 
 /**
  * @param {String} header HTML to be displayed in header
@@ -110,3 +110,98 @@ export const ErrorNoBook = new ModalText(
     }, arbitraryWaitTimer);
   }
 );
+
+// Rewriting the modal text class
+/**
+ * Rewriting the modal text class to not rely on being placed in the DOM
+ * @param {String} header HTML to be displayed in the title
+ * @param {String} body HTML to be displayed in the body
+ * @param {String} footer HTML to be displayed in the footer
+ * @param {Function} callback function to be ran after modal is displayed
+ * @param {Object} style CSS styles to be applied as a dict
+ */
+export default class ModalText2 {
+  constructor(header, body, footer, callback = function() { return }, style = {}) {
+    this.header = header;
+    this.body = body;
+    this.footer = footer;
+    this.callback = callback;
+    this.style = style;
+
+    this.docFrag;
+  }
+
+  createModalDocFrag() {
+    const docFrag = new DocumentFragment();
+
+    const container = document.createElement('div');
+    const content = document.createElement('div');
+    const header = document.createElement('div');
+    const close = document.createElement('span');
+    const headerContent = document.createElement('div');
+    const body = document.createElement('div');
+    const footer = document.createElement('div');
+
+    container.classList.add('modal');
+    container.id = 'modal-container';
+    content.classList.add('modal-content');
+    header.classList.add('modal-header');
+    close.classList.add('modal-close');
+    headerContent.classList.add('modal-header-content');
+    body.classList.add('modal-body');
+    footer.classList.add('modal-footer');
+
+    // Shows the 'x' button
+    close.innerHTML = '&times;';
+
+    headerContent.innerHTML = this.header;
+    body.innerHTML = this.body;
+    footer.innerHTML = this.footer;
+
+    header.appendChild(close);
+    header.appendChild(headerContent);
+
+    content.appendChild(header);
+    content.appendChild(body);
+    content.appendChild(footer);
+
+    container.appendChild(content);
+    docFrag.appendChild(container);
+
+    this.docFrag = docFrag;
+    return { docFrag, header, body, footer };
+  }
+
+  showModal() {
+    const { docFrag, header, body, footer } = this.createModalDocFrag();
+    document.body.appendChild(docFrag);
+    this.attachEvents(docFrag);
+    // docFrag.style.display = 'block';
+    this.callback(header, body, footer);
+  }
+
+  attachEvents(docFrag, close) {
+    const modalDiv = document.querySelector('#modal-container');
+    console.log(modalDiv);
+    // function removeCloseButton() {
+    //   docFrag.remove();
+    //   removeCloseButton
+    // }
+
+    // close.onclick = () => {
+    //   docFrag.remove();
+    // };
+
+    window.onclick = () => {
+      modalDiv.remove();
+      // console.log('Window clicked');
+      // console.log(docFrag);
+    } 
+  }
+}
+
+export const AnotherModalTest = new ModalText2(
+  `<h2>Hi</h2>`,
+  `<p>Lorem Ipsum</p>`,
+  `<h3>Footer</h3>`,
+)
