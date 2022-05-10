@@ -301,8 +301,6 @@ export default class State {
 
       docFrag.appendChild(option);
     });
-    // this.reversedSections = this.bookSections.slice().reverse();
-    // console.log(this.reversedSections);
 
     $toc.appendChild(docFrag);
 
@@ -531,7 +529,6 @@ export default class State {
       this.currentSelectionText = "";
       this.currentSelectionCFI = "";
 
-      // console.log(this);
     };
   }
 

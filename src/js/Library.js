@@ -33,23 +33,25 @@ export default class Library {
   }
 
   async getLibrary() {
+    let value = null;
     try {
-      const value = await localforage.getItem('Library');
-      return value;
+      value = await localforage.getItem('Library');
     } catch (err) {
       showToast('Unable to fetch Library from storage.', 'warning');
       console.log(err);
     }
+    return value;
   }
 
   async saveLibrary(bookLib = this.bookLib) {
+    let value = null;
     try {
-      const value = await localforage.setItem('Library', bookLib);
-      return value;
+      value = await localforage.setItem('Library', bookLib);
     } catch (err) {
       showToast('Unable to save Library to storage.', 'warning');
       console.log(err);
     }
+    return value;
   }
 
   async clearLibrary() {
@@ -60,7 +62,12 @@ export default class Library {
       showToast('Unable to clear Library.', 'warning');
       console.log(err);
     }
-    await this.refreshLibraryDisplay();
+    try {
+      value = await this.refreshLibraryDisplay();
+    } catch (err) {
+      showToast('Unable to refresh Library.', 'warning');
+      console.log(err);
+    }
     return value;
   }
 
@@ -75,18 +82,17 @@ export default class Library {
     try {
       await this.refreshStorageDisplay();
     } catch (err) {
-      // showToast('Unable to refresh storage display.', 'warning');
+      showToast('Unable to refresh storage display.', 'warning');
       console.log(err);
     }
 
-    // console.log(Object.keys(this.bookLib));
     if (Object.keys(this.bookLib).length === 0) {
       // Putting these functions up here and below, after the list is created,
       // achieves a 'seamless' refresh and allows for it to update
       // as well in case we clear bookLib
       libraryElement.innerHTML = "";
       showToast('Library is empty.');
-      throw 'Library is empty.';
+      return;
     }
 
     // We use a docfrag to add elements in a performant way
@@ -94,7 +100,6 @@ export default class Library {
     // Using a special docfrag so favorites will always be first
     // This must be appended first
     const favoriteDocFrag = new DocumentFragment();
-
 
     // Iterate over this.bookLib and create list elements
     // Because we have multiple categories, we iterate through them this way
@@ -116,9 +121,9 @@ export default class Library {
         await state.openBook(book.bookData);
 
         const bookImage = document.createElement('img');
+        bookImage.classList.add('library-book-cover');
         bookImage.src = await state.book.coverUrl();
         bookImage.alt = `${state.metadata.title} Book Cover`;
-        bookImage.classList.add('library-book-cover');
         bookImage.onclick = this.openReaderEvent(index, category);
 
         const bookLink = document.createElement('a');
@@ -127,9 +132,10 @@ export default class Library {
         bookLink.onclick = this.openReaderEvent(index, category);
 
         const moveCategory = document.createElement('input');
-        moveCategory.type = 'button';
         moveCategory.classList.add('library-book-category-button');
+        moveCategory.type = 'button';
 
+        // NOTE: Would be better if converted to object key-value pairs
         switch (category) {
           case 'Library':
             moveCategory.title = 'Move to Favorites';
@@ -148,6 +154,9 @@ export default class Library {
         removeBook.title = 'Remove Book';
         removeBook.value = 'Remove Book';
         removeBook.classList.add('library-book-remove-button');
+
+        // Workaround to essentially pass a lot of parameters onto existing
+        // functions.
         removeBook.onclick = showModalWrapper(RemoveBook, (_, body, footer, container) => {
           const remove = footer.querySelector('#remove');
           const cancel = footer.querySelector('#cancel');
@@ -159,11 +168,16 @@ export default class Library {
             container.remove();
           }
           remove.onclick = () => {
+
+            // removeBookFromLib was supposed to be the original function to be used
+            // onclick. However, due to the addition of a modal wrapper,
+            // we have to immediately execute the function returned from this function.
+            // This preserves the functionality while adding the modal.
             this.removeBookFromLib(index, category)();
+
             container.remove();
           }
         });
-
 
         const bookElement = elementFactory('a', {
         }, bookLink);

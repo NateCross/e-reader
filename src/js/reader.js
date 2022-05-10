@@ -1,6 +1,6 @@
 import State from './State.js';
 import * as Modals from './ModalTextContent.js';
-import { attachModal, showToast } from './Utils.js';
+import { showToast } from './Utils.js';
 
 /// HTML Elements ///
 const $title = document.querySelector('#title');
@@ -165,8 +165,7 @@ const Initialize = async () => {
   showToast('Finished loading book.');
 };
 
-console.log(AppState);
-console.log('Loaded reader');
+///// FUNCTIONS /////
 
 function changeCurrentPage(e) {
 
@@ -260,10 +259,10 @@ async function resetHighlights() {
 
   try {
     await localforage.removeItem(`${AppState.book.key()}-highlights`);
-    showToast('Successfully reset highlights.');
+    showToast('Successfully removed highlights.');
   } catch (err) {
     console.log(err);
-    showToast('Unable to reset highlights.', 'warning');
+    showToast('Unable to remove highlights.', 'warning');
   }
 
   AppState.highlights = [];
@@ -292,10 +291,10 @@ function ModalResetBookmarksWrapper(_, __, footer, container) {
 async function resetBookmarks() {
   try {
     await localforage.removeItem(`${AppState.book.key()}-bookmarks`);
-    showToast('Successfully reset bookmarks.');
+    showToast('Successfully removed bookmarks.');
   } catch (err) {
     console.log(err);
-    showToast('Unable to reset bookmarks.', 'warning');
+    showToast('Unable to remove bookmarks.', 'warning');
   }
 
   AppState.bookmarks = [];
@@ -533,3 +532,6 @@ function refreshRendition() {
 }
 
 Initialize();
+
+console.log(AppState);
+console.log('Loaded reader');

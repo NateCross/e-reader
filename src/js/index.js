@@ -3,6 +3,34 @@ import LibItem from './LibItem.js';
 import { showToast } from './Utils.js';
 import * as Modals from './ModalTextContent.js';
 
+
+//// HTML ELEMENTS /////
+
+const $library = document.querySelector('#library');
+const $file_upload = document.querySelector('#file-upload');
+const $file_upload_container = document.querySelector('.file-upload-container');
+
+const $storage_usage = document.querySelector('#usage');
+const $storage_quota = document.querySelector('#quota');
+const $storage_percent = document.querySelector('#percent');
+const $storage_clear = document.querySelector('#clear-storage');
+
+// const $drop_zone = document.querySelector('.drop-zone');
+
+///// MAIN /////
+const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
+
+$file_upload.onchange = openBookEvent(Lib);
+$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
+initDragAndDrop();
+
+// Load the books from storage and populate the library div
+(async () => {
+  await Lib.init();
+  Lib.refreshLibraryDisplay($library);
+  showToast('Loaded Library.');
+})();
+
 ///// FUNCTIONS /////
 
 /**
@@ -41,33 +69,6 @@ function openBookEvent(Library) {
     loadFileAsEpub(file, Library);
   }
 }
-
-//// HTML ELEMENTS /////
-
-const $library = document.querySelector('#library');
-const $file_upload = document.querySelector('#file-upload');
-const $file_upload_container = document.querySelector('.file-upload-container');
-
-const $storage_usage = document.querySelector('#usage');
-const $storage_quota = document.querySelector('#quota');
-const $storage_percent = document.querySelector('#percent');
-const $storage_clear = document.querySelector('#clear-storage');
-
-// const $drop_zone = document.querySelector('.drop-zone');
-
-///// MAIN /////
-const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
-
-$file_upload.onchange = openBookEvent(Lib);
-$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
-initDragAndDrop();
-
-// Load the books from storage and populate the library div
-(async () => {
-  await Lib.init();
-  Lib.refreshLibraryDisplay($library);
-  showToast('Loaded Library.');
-})();
 
 function ModalClearLibraryWrapper(_, __, footer, container) {
   const remove = footer.querySelector('#remove');
