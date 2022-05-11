@@ -3,7 +3,6 @@ import LibItem from './LibItem.js';
 import { showToast } from './Utils.js';
 import * as Modals from './ModalTextContent.js';
 
-
 //// HTML ELEMENTS /////
 
 const $library = document.querySelector('#library');
@@ -15,12 +14,15 @@ const $storage_quota = document.querySelector('#quota');
 const $storage_percent = document.querySelector('#percent');
 const $storage_clear = document.querySelector('#clear-storage');
 
+const $search_bar = document.querySelector('#search-bar');
+
 // const $drop_zone = document.querySelector('.drop-zone');
 
 ///// MAIN /////
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
+$search_bar.onchange = searchInLib;
 $storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
 
@@ -37,9 +39,11 @@ initDragAndDrop();
  * @param {ArrayBuffer|String} bookData
  * @param {Array} bookLib The global list of books in library
  * @param {String} category The inserted book's category ('Library', 'Favorites', etc.)
+ * @param {Object} metadata The opened book's metadata
+ * @param {string} coverString base64 string of the book's cover
  */
-function storeBookToLib(bookData, bookLib, category) {
-  const itemToSave = new LibItem(bookData);
+function storeBookToLib(bookData, bookLib, category, metadata, coverString) {
+  const itemToSave = new LibItem(bookData, metadata, coverString);
   if (!bookLib[category])
     bookLib[category] = [];
 
@@ -149,19 +153,56 @@ function loadFileAsEpub(file) {
   const reader = new FileReader();
 
   // Executes after readAsArrayBuffer finishes
-  reader.onload = bookData => {
-    storeBookToLib(bookData.target.result, Lib.bookLib, "Library");
+  reader.onload = async bookData => {
+    const book = ePub({ replacements: 'base64' });
+    await book.open(bookData.target.result, 'base64');
+    const metadata = book.packaging.metadata;
+    let coverUrl = await book.coverUrl();
 
-    // Need to execute the functions directly after uploading a book
-    // Async await does not work here, apparently, so we use 'then'
-    // to make these async functions execute one after the other
-    Lib.saveLibrary().then(() => {
-      Lib.refreshLibraryDisplay();
-    });
-    showToast('Added new EPUB to Library.');
+    // We use an HTTP request to get the image from the url,
+    // then we can load the response into the File Reader to get
+    // a base64 string of the image file that can be saved
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", coverUrl, true);
+    xhr.responseType = "blob";
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState !== 4) return;
+
+      if (((xhr.status === 200) || (xhr.status == 0)) && (xhr.response)) {
+        const ImgReader = new FileReader();
+        ImgReader.onloadend = function() {
+          storeBookToLib(bookData.target.result, Lib.bookLib, "Library", metadata, ImgReader.result);
+
+          // Need to execute the functions directly after uploading a book
+          // Async await does not work here, apparently, so we use 'then'
+          // to make these async functions execute one after the other
+          Lib.saveLibrary().then(() => {
+            Lib.refreshLibraryDisplay();
+          });
+          showToast('Added new EPUB to Library.');
+        }
+        ImgReader.readAsDataURL(xhr.response);
+        }
+    }
+    xhr.send(null);
+
+    // var imgReader = new FileReader();
+    // imgReader.readAsDataURL(coverUrl);
+    // imgReader.onloadend = function() {
+    //   var base64data = imgReader.result;
+    //   console.log(base64data);
+    // }
+
+
   };
 
   reader.readAsArrayBuffer(file);
+}
+
+function searchInLib(e) {
+  const query = e.target.value;
+  const results = Lib.searchBooks(query);
+  console.log(results);
 }
 
 console.log('Loaded index');

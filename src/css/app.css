@@ -251,11 +251,17 @@ input[type="file"] {
  * Styles the library div
  */
 .library-book {
-  color: red;
+  /* color: blue; */
 }
 
 /* Styles the library book name */
 .library-book-title{
+  color: red;
+  cursor: pointer;
+}
+
+.library-book-author{
+  color: blue;
   cursor: pointer;
 }
 

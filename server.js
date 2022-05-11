@@ -10,7 +10,7 @@ const path = require('path');
 // The node modules used in the app
 // Some module dist files have a different name,
 // so we use an associative array to denote this
-const moduleDists = {'jszip': 'jszip', 'epubjs': 'epub', 'localforage': 'localforage'};
+const moduleDists = {'jszip': 'jszip', 'epubjs': 'epub', 'localforage': 'localforage', 'fuse.js': 'fuse'};
 // As above, but the files are in a src folder
 const moduleSrc = {'toastify-js': 'toastify'};
 

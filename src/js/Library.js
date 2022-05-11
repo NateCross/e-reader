@@ -77,13 +77,23 @@ export default class Library {
    * Updates the library div element with a display of the items.
    * Call after updating this.bookLib.
    * @type {HTMLElement} libraryElement
+   * @param {Array} searchResults List of books returned from a Fuse.js search
    */
-  async refreshLibraryDisplay(libraryElement = this.libraryEl) {
+  async refreshLibraryDisplay(libraryElement = this.libraryEl, searchResults = null) {
     try {
       await this.refreshStorageDisplay();
     } catch (err) {
       showToast('Unable to refresh storage display.', 'warning');
       console.log(err);
+    }
+
+    if (searchResults === null) {
+      console.log('Search is empty.');
+    }
+
+    if (typeof searchResults === 'Array' && searchResults.length === 0) {
+      console.log('No results found.');
+      showToast('No results for search found.');
     }
 
     if (Object.keys(this.bookLib).length === 0) {
@@ -117,19 +127,24 @@ export default class Library {
       const listParent = elementFactory('ul');
 
       this.bookLib[category].forEach(async (book, index) => {
-        const state = new State();
-        await state.openBook(book.bookData);
+        // let state = new State();
+        // await state.openBook(book.bookData);
 
         const bookImage = document.createElement('img');
         bookImage.classList.add('library-book-cover');
-        bookImage.src = await state.book.coverUrl();
-        bookImage.alt = `${state.metadata.title} Book Cover`;
+        bookImage.src = book.coverImg;
+        bookImage.alt = `${book.metadata.title} Book Cover`;
         bookImage.onclick = this.openReaderEvent(index, category);
 
         const bookLink = document.createElement('a');
         bookLink.classList.add('library-book-title');
-        bookLink.textContent = state.metadata.title;
+        bookLink.textContent = book.metadata.title;
         bookLink.onclick = this.openReaderEvent(index, category);
+
+        const bookAuthor = document.createElement('a');
+        bookAuthor.classList.add('library-book-author');
+        bookAuthor.textContent = book.metadata.creator;
+        bookAuthor.onclick = this.openReaderEvent(index, category);
 
         const moveCategory = document.createElement('input');
         moveCategory.classList.add('library-book-category-button');
@@ -162,7 +177,7 @@ export default class Library {
           const cancel = footer.querySelector('#cancel');
           const title = body.querySelector('#modal-book-title');
 
-          title.textContent = state.metadata.title;
+          title.textContent = book.metadata.title;
 
           cancel.onclick = () => {
             container.remove();
@@ -179,12 +194,12 @@ export default class Library {
           }
         });
 
-        const bookElement = elementFactory('a', {
-        }, bookLink);
+        // const bookElement = elementFactory('a', {
+        // }, bookLink);
 
         const divParent = elementFactory('div', {
           class: 'library-book',
-        }, bookElement, bookImage, moveCategory, removeBook);
+        }, bookLink, bookAuthor, bookImage, moveCategory, removeBook);
 
         const listChild = elementFactory('li', {},
         divParent);
@@ -217,12 +232,6 @@ export default class Library {
     this.storageQuotaEl.innerHTML = storage.quota;
     this.storageUsageEl.innerHTML = storage.usage;
     this.storagePercentEl.innerHTML = storage.percent;
-  }
-
-  storeBookToLib(bookData) {
-    let itemToSave = new LibItem(bookData);
-    this.bookLib.push(itemToSave);
-    this.saveLibrary();
   }
 
   /**
@@ -273,5 +282,23 @@ export default class Library {
       this.refreshLibraryDisplay();
       await this.saveLibrary();
     }
+  }
+
+
+
+  /**
+   * Requires fuse.js
+   * @param {string} query String to search
+   * @param {Object} options Sett2ings and keys to search in the metadata. Likely title.
+   */
+  searchBooks(
+    query,
+    options = {
+      keys: [ 'metadata.title', 'metadata.author' ],
+      includeMatches: true,
+    }) {
+    console.log(this.bookLib);
+    const search = new Fuse(this.bookLib, options);
+    return search.search(query);
   }
 }

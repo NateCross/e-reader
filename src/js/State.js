@@ -204,11 +204,11 @@ export default class State {
 
   }
 
-  reset() {
-    if (this.book)
-      this.book.destroy();
-    if (this.rendition)
-      this.rendition.destroy();
+  async reset() {
+    // if (this.book)
+      // this.book.destroy();
+    // if (this.rendition)
+      // this.rendition.destroy();
     // TODO: Insert code to remove inputs
   }
 
