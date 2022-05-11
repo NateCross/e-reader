@@ -1,11 +1,11 @@
 /** INDEX **/
-* {
+*{
   margin: 0;
   padding: 0;
   font-family: sans-serif;
 }
 
-.banner {
+.banner{
   width: 100%;
   height: 100vh;
   background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("imgs/background.jpg");
@@ -13,7 +13,7 @@
   background-position: center;
 }
 
-.navbar {
+.navbar{
   width: 85%;
   margin: auto;
   padding: 35px 0;
@@ -22,40 +22,40 @@
   justify-content: space-between;
 }
 
-.logo {
+.logo{
   width: 120px;
   cursor: pointer;
 }
 
-.navbar ul li {
+.navbar ul li{
   list-style: none;
   display: inline-block;
   margin: 0 20px;
   position: relative;
 }
 
-.navbar ul li a {
+.navbar ul li a{
   text-decoration: none;
   color: #fff;
   text-transform: uppercase;
 }
 
-.navbar ul li a::after {
+.navbar ul li a::after{
   content: '';
   height: 3px;
   width: 0;
-  background: #aa6c39;
+  background: #D4AF37;
   position: absolute;
   left: 0;
   bottom: -10px;
   transition: 0.5s;
 }
 
-.navbar ul li a:hover::after {
+.navbar ul li a:hover::after{
   width: 100%;
 }
 
-.content {
+.content{
   width: 100%;
   position: absolute;
   top: 50%;
@@ -64,18 +64,18 @@
   color: #fff;
 }
 
-.content h1 {
+.content h1{
   font-size: 70px;
   margin-top: 80px;
 }
 
-.content p {
+.content p{
   margin: 20px auto;
   font-weight: 100;
   line-height: 25px;
 }
 
-.projTitle {
+.projTitle{
   color: #fff;
   font-family: 'Times New Roman', Times, serif;
   margin-top: -2.5%;
@@ -83,6 +83,6 @@
 }
 
 /** READER **/
-#back-to-index {
+#back-to-index{
   margin: 100;
 }
