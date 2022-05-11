@@ -25,6 +25,7 @@ const $bookmark_remove_all = document.querySelector('#bookmark-remove-all');
 const $bookmark_list = document.querySelector('#bookmark-list');
 
 const $search_bar = document.querySelector('#search-bar');
+const $search_clear = document.querySelector('#search-clear');
 const $search_results_current = document.querySelector('#results-current');
 const $search_results_total = document.querySelector('#results-total');
 const $search_results_container = document.querySelector('.search-results-container');
@@ -77,7 +78,7 @@ const Initialize = async () => {
   // localStorage since it is just a simple number
   const Lib = await localforage.getItem('Library');
   const openedBook = localStorage.getItem('OpenedBookLibIndex');
-  const category = localStorage.getItem('OpenedBookLibCategory');
+  // const category = localStorage.getItem('OpenedBookLibCategory');
 
   // If we cannot find a book to open, go back to the index
   // TODO: Throw proper error message then go back
@@ -94,7 +95,7 @@ const Initialize = async () => {
   // We have to open the book and get the settings first before
   // anything else, though, or else nothing will load right
   try {
-    await AppState.openBook(Lib[category][openedBook].bookData);
+    await AppState.openBook(Lib[openedBook].bookData);
   } catch (err) {
     console.log(err);
     Modals.ErrorNoBook.showModal();
@@ -139,6 +140,7 @@ const Initialize = async () => {
 
   $search_results_container.style.display = 'none';
   $search_bar.onchange = searchInBook;
+  $search_clear.onclick = clearSearch;
   $search_results_current.onchange = jumpToSearchResult;
 
   $voices.onchange = changeVoice;
@@ -521,6 +523,13 @@ function getMetadata(header, content, footer) {
 function pageSlider(e) {
   const cfi = AppState.book.locations.cfiFromPercentage(e.target.value / 100);
   AppState.rendition.display(cfi);
+}
+
+function clearSearch() {
+  $search_bar.value = '';
+
+  // Quick hack to emulate 'e.target.value' to prevent errors
+  searchInBook({ target: { value: '' } })
 }
 
 /**

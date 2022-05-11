@@ -14,7 +14,11 @@ const $storage_quota = document.querySelector('#quota');
 const $storage_percent = document.querySelector('#percent');
 const $storage_clear = document.querySelector('#clear-storage');
 
+const $search = document.querySelector('.search');
 const $search_bar = document.querySelector('#search-bar');
+const $search_clear = document.querySelector('#search-clear');
+const $search_results = document.querySelector('#search-results');
+const $search_query = document.querySelector('#search-query');
 
 // const $drop_zone = document.querySelector('.drop-zone');
 
@@ -22,7 +26,8 @@ const $search_bar = document.querySelector('#search-bar');
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
-// $search_bar.onchange = searchInLib;
+$search_bar.onchange = searchInLib;
+$search_clear.onclick = clearSearch;
 $storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
 
@@ -43,11 +48,9 @@ initDragAndDrop();
  * @param {string} coverString base64 string of the book's cover
  */
 function storeBookToLib(bookData, bookLib, category, metadata, coverString) {
-  const itemToSave = new LibItem(bookData, metadata, coverString);
-  if (!bookLib[category])
-    bookLib[category] = [];
+  const itemToSave = new LibItem(bookData, metadata, coverString, category);
 
-  bookLib[category].push(itemToSave);
+  bookLib.push(itemToSave);
 }
 
 /**
@@ -201,8 +204,30 @@ function loadFileAsEpub(file) {
 
 function searchInLib(e) {
   const query = e.target.value;
+
+  if (query === '') {
+    $library.style.display = 'inline';
+    $search_results.style.display = 'none';
+    $search_query.style.display = 'none';
+    return;
+  }
+  $library.style.display = 'none';
+  $search_results.style.display = 'inline';
+  $search_query.style.display = 'inline';
+
   const results = Lib.searchBooks(query);
   console.log(results);
+  Lib.updateSearchResults(results, query, $search_results, $search_query);
+}
+
+function clearSearch() {
+  $search_bar.value = '';
+
+  // Faking 'e.target.value' because, apparently, using the || operator
+  // will not pick between 'e.target.value' or 'e'
+  // This passes exactly what we need to clear the search.
+  searchInLib({ target: { value: '' } });
+
 }
 
 console.log('Loaded index');

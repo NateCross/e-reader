@@ -15,7 +15,7 @@ export default class Library {
     storageQuotaEl = null,
     storagePercentEl = null,
   ) {
-    this.bookLib = {};
+    this.bookLib = [];
 
     // HTML elements
     this.libraryEl = libraryEl;
@@ -29,7 +29,7 @@ export default class Library {
    * @function
    */
   async init() {
-    this.bookLib = await this.getLibrary() || {};
+    this.bookLib = await this.getLibrary() || [];
   }
 
   async getLibrary() {
@@ -79,7 +79,7 @@ export default class Library {
    * @type {HTMLElement} libraryElement
    * @param {Array} searchResults List of books returned from a Fuse.js search
    */
-  async refreshLibraryDisplay(libraryElement = this.libraryEl, searchResults = null) {
+  async refreshLibraryDisplay(libraryElement = this.libraryEl) {
     try {
       await this.refreshStorageDisplay();
     } catch (err) {
@@ -87,16 +87,7 @@ export default class Library {
       console.log(err);
     }
 
-    if (searchResults === null) {
-      console.log('Search is empty.');
-    }
-
-    if (typeof searchResults === 'Array' && searchResults.length === 0) {
-      console.log('No results found.');
-      showToast('No results for search found.');
-    }
-
-    if (Object.keys(this.bookLib).length === 0) {
+    if (this.bookLib.length === 0) {
       // Putting these functions up here and below, after the list is created,
       // achieves a 'seamless' refresh and allows for it to update
       // as well in case we clear bookLib
@@ -106,121 +97,143 @@ export default class Library {
     }
 
     // We use a docfrag to add elements in a performant way
-    const docFrag = new DocumentFragment();
-    // Using a special docfrag so favorites will always be first
-    // This must be appended first
-    const favoriteDocFrag = new DocumentFragment();
+    // This object is meant to store docfrags of different categories
+    // depending on what is listed in each book's category
+    const docFrags = {};
 
-    // Iterate over this.bookLib and create list elements
-    // Because we have multiple categories, we iterate through them this way
-    for (const category in this.bookLib) {
+    this.bookLib.forEach((book, index) => {
+      let categoryTitle = null;
+      let listParent = null;
 
-      // NOTE: This could be cut. It might be less intuitive with this in
-      // This essentially skips printing a category if it does not have
-      // any books inside it.
-      if (this.bookLib[category].length === 0)
-        continue;
+      // Creates a new category in docFrags
+      // We do this so that categories and books could be added
+      // in one go, without having to loop twice or something
+      if (!docFrags[book.category]) {
+        docFrags[book.category] = new DocumentFragment();
 
-      const categoryTitle = document.createElement('h3');
-      categoryTitle.textContent = category;
+        categoryTitle = document.createElement('h3');
+        categoryTitle.textContent = book.category;
 
-      const listParent = elementFactory('ul');
-
-      this.bookLib[category].forEach(async (book, index) => {
-        // let state = new State();
-        // await state.openBook(book.bookData);
-
-        const bookImage = document.createElement('img');
-        bookImage.classList.add('library-book-cover');
-        bookImage.src = book.coverImg;
-        bookImage.alt = `${book.metadata.title} Book Cover`;
-        bookImage.onclick = this.openReaderEvent(index, category);
-
-        const bookLink = document.createElement('a');
-        bookLink.classList.add('library-book-title');
-        bookLink.textContent = book.metadata.title;
-        bookLink.onclick = this.openReaderEvent(index, category);
-
-        const bookAuthor = document.createElement('a');
-        bookAuthor.classList.add('library-book-author');
-        bookAuthor.textContent = book.metadata.creator;
-        bookAuthor.onclick = this.openReaderEvent(index, category);
-
-        const moveCategory = document.createElement('input');
-        moveCategory.classList.add('library-book-category-button');
-        moveCategory.type = 'button';
-
-        // NOTE: Would be better if converted to object key-value pairs
-        switch (category) {
-          case 'Library':
-            moveCategory.title = 'Move to Favorites';
-            moveCategory.value = 'Move to Favorites';
-            moveCategory.onclick = this.moveBookToCategory(book);
-            break;
-          case 'Favorites':
-            moveCategory.title = 'Remove from favorites';
-            moveCategory.value = 'Remove from favorites';
-            moveCategory.onclick = this.moveBookToCategory(book, 'Favorites', 'Library');
-            break;
-        }
-
-        const removeBook = document.createElement('input');
-        removeBook.type = 'button';
-        removeBook.title = 'Remove Book';
-        removeBook.value = 'Remove Book';
-        removeBook.classList.add('library-book-remove-button');
-
-        // Workaround to essentially pass a lot of parameters onto existing
-        // functions.
-        removeBook.onclick = showModalWrapper(RemoveBook, (_, body, footer, container) => {
-          const remove = footer.querySelector('#remove');
-          const cancel = footer.querySelector('#cancel');
-          const title = body.querySelector('#modal-book-title');
-
-          title.textContent = book.metadata.title;
-
-          cancel.onclick = () => {
-            container.remove();
-          }
-          remove.onclick = () => {
-
-            // removeBookFromLib was supposed to be the original function to be used
-            // onclick. However, due to the addition of a modal wrapper,
-            // we have to immediately execute the function returned from this function.
-            // This preserves the functionality while adding the modal.
-            this.removeBookFromLib(index, category)();
-
-            container.remove();
-          }
-        });
-
-        // const bookElement = elementFactory('a', {
-        // }, bookLink);
-
-        const divParent = elementFactory('div', {
-          class: 'library-book',
-        }, bookLink, bookAuthor, bookImage, moveCategory, removeBook);
-
-        const listChild = elementFactory('li', {},
-        divParent);
-
-        listParent.appendChild(listChild);
-      });
-
-      if (category !== 'Favorites') {
-        docFrag.append(categoryTitle);
-        docFrag.append(listParent);
-      } else {
-        favoriteDocFrag.append(categoryTitle);
-        favoriteDocFrag.append(listParent);
+        listParent = elementFactory('ul');
       }
-    }
+
+      const bookImage = this.createElementBookImage(book, index);
+      const bookLink = this.createElementBookLink(book, index);
+      const bookAuthor = this.createElementBookAuthor(book, index);
+      const moveCategory = this.createElementMoveCategory(book);
+      const removeBook = this.createElementRemoveBook(book, index);
+
+      const divParent = elementFactory('div', {
+        class: 'library-book',
+      }, bookLink, bookAuthor, bookImage, moveCategory, removeBook);
+
+      const listChild = elementFactory('li', {},
+      divParent);
+
+      if (categoryTitle !== null)
+        docFrags[book.category].append(categoryTitle);
+
+      if (listParent !== null)
+        docFrags[book.category].append(listParent);
+
+      // The second child is the ul element, so we append the children
+      // to this
+      docFrags[book.category].children[1].appendChild(listChild);
+    });
 
     // Clear element before appending
     // It's put here so that it appears to change instantly
     libraryElement.innerHTML = "";
-    libraryElement.appendChild(favoriteDocFrag);
-    libraryElement.appendChild(docFrag);
+
+    // Because we want to prioritize Favorites in display, we put this first
+    if (docFrags['Favorites'])
+      libraryElement.appendChild(docFrags['Favorites']);
+    if (docFrags['Library'])
+      libraryElement.appendChild(docFrags['Library']);
+  }
+
+  createElementBookImage(book, index) {
+    const bookImage = document.createElement('img');
+    bookImage.classList.add('library-book-cover');
+    bookImage.src = book.coverImg;
+    bookImage.alt = `${book.metadata.title} Book Cover`;
+    bookImage.onclick = this.openReaderEvent(index);
+
+    return bookImage;
+  }
+
+  createElementBookLink(book, index) {
+    const bookLink = document.createElement('a');
+    bookLink.classList.add('library-book-title');
+    bookLink.textContent = book.metadata.title;
+    bookLink.onclick = this.openReaderEvent(index);
+
+    return bookLink;
+  }
+
+  createElementBookAuthor(book, index) {
+    const bookAuthor = document.createElement('a');
+    bookAuthor.classList.add('library-book-author');
+    bookAuthor.textContent = book.metadata.creator;
+    bookAuthor.onclick = this.openReaderEvent(index);
+
+    return bookAuthor;
+  }
+
+  createElementMoveCategory(book) {
+    const moveCategory = document.createElement('input');
+    moveCategory.classList.add('library-book-category-button');
+    moveCategory.type = 'button';
+
+    // NOTE: Would be better if converted to object key-value pairs
+    switch (book.category) {
+      case 'Library':
+        moveCategory.title = 'Move to Favorites';
+        moveCategory.value = 'Move to Favorites';
+        moveCategory.onclick = this.moveBookToCategory(book);
+        break;
+      case 'Favorites':
+        moveCategory.title = 'Remove from favorites';
+        moveCategory.value = 'Remove from favorites';
+        moveCategory.onclick = this.moveBookToCategory(book, 'Favorites', 'Library');
+        break;
+    }
+
+    return moveCategory;
+  }
+
+  createElementRemoveBook(book, index) {
+    const removeBook = document.createElement('input');
+    removeBook.type = 'button';
+    removeBook.title = 'Remove Book';
+    removeBook.value = 'Remove Book';
+    removeBook.classList.add('library-book-remove-button');
+
+    // Workaround to essentially pass a lot of parameters onto existing
+    // functions.
+    removeBook.onclick = showModalWrapper(RemoveBook, (_, body, footer, container) => {
+      const remove = footer.querySelector('#remove');
+      const cancel = footer.querySelector('#cancel');
+      const title = body.querySelector('#modal-book-title');
+
+      title.textContent = book.metadata.title;
+
+      cancel.onclick = () => {
+        container.remove();
+      }
+      remove.onclick = () => {
+
+        // removeBookFromLib was supposed to be the original function to be used
+        // onclick. However, due to the addition of a modal wrapper,
+        // we have to immediately execute the function returned from this function.
+        // This preserves the functionality while adding the modal.
+        this.removeBookFromLib(index)();
+
+        container.remove();
+      }
+    });
+
+    return removeBook;
   }
 
   /**
@@ -239,9 +252,9 @@ export default class Library {
    * @param {Number} Index The book's index in storage. You can get this in the refreshLibraryDisplay method.
    * @param {String} category Name of the category, like 'Favorites', 'Library'
    */
-  removeBookFromLib(index, category) {
+  removeBookFromLib(index) {
     return async () => {
-      this.bookLib[category].splice(index, 1);
+      this.bookLib.splice(index, 1);
       showToast('Book removed from Library.');
       await this.saveLibrary();
       this.refreshLibraryDisplay();
@@ -255,12 +268,11 @@ export default class Library {
    * items.
    * @param {Number} storageIndex Index of book to be opened in the 'Library' key in localstorage/IndexedDB
    */
-  openReaderEvent(storageIndex, category) {
+  openReaderEvent(storageIndex) {
     // We return a function here as a workaround to pass parameters
     return () => {
       try {
         localStorage.setItem('OpenedBookLibIndex', storageIndex);
-        localStorage.setItem('OpenedBookLibCategory', category);
         // TODO: Change this from the 'js/' dir to... somewhere else
         window.location.href = "/reader";
       } catch (err) {
@@ -272,19 +284,21 @@ export default class Library {
   /** Use with a button attached to the bookLib elements */
   moveBookToCategory(book, oldCategory = "Library", newCategory = "Favorites") {
     return async () => {
-      this.bookLib[oldCategory].splice(this.bookLib[oldCategory].indexOf(book), 1);
 
-      if (!this.bookLib[newCategory])
-        this.bookLib[newCategory] = [];
+      // this.bookLib[oldCategory].splice(this.bookLib[oldCategory].indexOf(book), 1);
+      //
+      // if (!this.bookLib[newCategory])
+      //   this.bookLib[newCategory] = [];
+      //
+      // this.bookLib[newCategory].push(book);
 
-      this.bookLib[newCategory].push(book);
+      this.bookLib[this.bookLib.indexOf(book)].category = newCategory;
+
       showToast(`Book moved to ${newCategory}.`);
       this.refreshLibraryDisplay();
       await this.saveLibrary();
     }
   }
-
-
 
   /**
    * Requires fuse.js
@@ -297,8 +311,40 @@ export default class Library {
       keys: [ 'metadata.title', 'metadata.author' ],
       includeMatches: true,
     }) {
-    console.log(this.bookLib);
     const search = new Fuse(this.bookLib, options);
+    // const results = search.search(query);
     return search.search(query);
+  }
+
+  updateSearchResults(results, query, $search_results, $search_query) {
+    $search_query.innerHTML = `Results for: <strong id='search-query-text'>${query}</strong>`
+
+    if (results.length === 0) {
+      $search_results.innerHTML = "";
+      showToast('No search results found.');
+      return;
+    }
+
+    const docFrag = new DocumentFragment();
+
+    results.forEach((result, index) => {
+      const book = result.item;
+
+      const bookImage = this.createElementBookImage(book, index);
+      const bookLink = this.createElementBookLink(book, index);
+      const bookAuthor = this.createElementBookAuthor(book, index);
+      const moveCategory = this.createElementMoveCategory(book);
+      const removeBook = this.createElementRemoveBook(book, index);
+
+      const divParent = elementFactory('div', {
+        class: 'library-book',
+      }, bookLink, bookAuthor, bookImage, moveCategory, removeBook);
+
+      const listChild = elementFactory('li', {}, divParent);
+
+      docFrag.appendChild(listChild);
+    });
+    $search_results.innerHTML = "";
+    $search_results.appendChild(docFrag);
   }
 }
