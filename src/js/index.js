@@ -22,7 +22,7 @@ const $search_bar = document.querySelector('#search-bar');
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
-$search_bar.onchange = searchInLib;
+// $search_bar.onchange = searchInLib;
 $storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
 
