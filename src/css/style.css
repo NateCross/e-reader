@@ -13,7 +13,7 @@
   background-position: center;
 }
 
-.navbar{
+.mainNavbar{
   width: 85%;
   margin: auto;
   padding: 35px 0;
@@ -23,24 +23,24 @@
 }
 
 .logo{
-  width: 120px;
+  width: 175px;
   cursor: pointer;
 }
 
-.navbar ul li{
+.mainNavbar ul li{
   list-style: none;
   display: inline-block;
   margin: 0 20px;
   position: relative;
 }
 
-.navbar ul li a{
+.mainNavbar ul li a{
   text-decoration: none;
   color: #fff;
   text-transform: uppercase;
 }
 
-.navbar ul li a::after{
+.mainNavbar ul li a::after{
   content: '';
   height: 3px;
   width: 0;
@@ -51,7 +51,7 @@
   transition: 0.5s;
 }
 
-.navbar ul li a:hover::after{
+.mainNavbar ul li a:hover::after{
   width: 100%;
 }
 
@@ -75,14 +75,107 @@
   line-height: 25px;
 }
 
-.projTitle{
-  color: #fff;
-  font-family: 'Times New Roman', Times, serif;
-  margin-top: -2.5%;
-  margin-left: 2.5%;
+#storage button{
+  background-color: #D4AF37;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
 }
+
+#storage button:hover{
+  background-color: #996515;
+  cursor:pointer;
+}
+
+/** LIBRARY **/
+
+
+
 
 /** READER **/
 #back-to-index{
-  margin: 100;
+  background-color: #D4AF37;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
 }
+
+#back-to-index:hover{
+  background-color: #996515;
+  cursor:pointer;
+}
+
+#title {
+  color: white;
+  text-align: center;
+}
+
+.navigate { 
+  height: 50px;
+  position: relative;
+
+}
+
+.TOC select{
+  display: block;
+  margin: 0 auto;
+}
+
+.spreads{
+  border: 5px solid #D4AF37;
+}
+
+.arrow  {
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+  transition: background-color .2s ease-in;
+  margin: 0;
+  position:relative;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+#prev {
+  background-color: #D4AF37;
+  color: white;
+}
+
+#prev:hover {
+  background-color:#996515;
+  cursor:pointer;
+}
+
+#next {
+  background-color: #D4AF37;
+  color: white;
+}
+
+#next:hover {
+  background-color:#996515;
+  cursor:pointer;
+}
+
+
+

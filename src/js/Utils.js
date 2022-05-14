@@ -247,23 +247,3 @@ export function showToast (message, type = 'normal') {
   toastList[type].options.text = message;
   toastList[type].showToast();
 }
-
-// https://stackoverflow.com/a/63634012
-/** Used for executing scripts after load page */
-// export function loadScript(src) {
-//   return new Promise(function (resolve, reject) {
-//     if ($("script[src='" + src + "']").length === 0) {
-//         var script = document.createElement('script');
-//         script.onload = function () {
-//             resolve();
-//         };
-//         script.onerror = function () {
-//             reject();
-//         };
-//         script.src = src;
-//         document.body.appendChild(script);
-//     } else {
-//         resolve();
-//     }
-//   });
-// }

@@ -5,7 +5,7 @@ import { elementFactory, showToast } from './Utils.js';
  * Manages state of the entire app.
  * Load the epub.js and localforage script before this.
  * @class
- * @param {ePub} ePubJS - the epub.js object
+ * @param {Object} ePubJS - the epub.js object
  */
 export default class State {
   constructor() {
@@ -204,11 +204,11 @@ export default class State {
 
   }
 
-  reset() {
-    if (this.book)
-      this.book.destroy();
-    if (this.rendition)
-      this.rendition.destroy();
+  async reset() {
+    // if (this.book)
+      // this.book.destroy();
+    // if (this.rendition)
+      // this.rendition.destroy();
     // TODO: Insert code to remove inputs
   }
 
@@ -301,8 +301,6 @@ export default class State {
 
       docFrag.appendChild(option);
     });
-    // this.reversedSections = this.bookSections.slice().reverse();
-    // console.log(this.reversedSections);
 
     $toc.appendChild(docFrag);
 
@@ -531,7 +529,6 @@ export default class State {
       this.currentSelectionText = "";
       this.currentSelectionCFI = "";
 
-      // console.log(this);
     };
   }
 
