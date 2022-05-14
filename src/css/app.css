@@ -14,7 +14,7 @@
  * on styling buttons
  */
 .file-upload-container {
-  background-color: #007bff !important;
+  background-color: #D4AF37 !important;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
@@ -30,7 +30,7 @@
 }
 
 .file-upload-container:hover {
-  background-color: #1459A3 !important;
+  background-color: #996515 !important;
 }
 
 /*
@@ -55,20 +55,6 @@ input[type="file"] {
 }
 
 /*
- * FIXME: Tried to make this work with Toastify.js. Doesn't work
- * So you must style the toasts inside the js.
- */
-/* .modal { */
-/*   background-color: red; */
-/*   color: red; */
-/*   font-family: "Arial", "sans-serif"; */
-/* } */
-
-/* #viewer { */
-/*   width: 400px; */
-/*   height: 100vh; */
-/*   margin: 0 auto; */
-/* } */
 
 /* MODALS https://www.w3schools.com/howto/howto_css_modals.asp */
 
@@ -103,7 +89,6 @@ input[type="file"] {
   position: relative;
   margin: auto;
   padding: 0;
-  /* border: 1px solid #888; */
   border-radius: 5px;
   width: 80%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -111,7 +96,6 @@ input[type="file"] {
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
   animation-duration: 0.4s;
-  /* background-color: #fefefe; */
 }
 
 /* Add Animation */
@@ -162,9 +146,6 @@ input[type="file"] {
 }
 
 .modal-body {
-  /* height: 5px; */
-  /* margin: px 0; */
-  /* padding: 10px 0; */
   background-color: #fefefe;
   padding: 20px 16px;
 }
@@ -214,6 +195,7 @@ input[type="file"] {
   margin: 0px 10px;
   flex: 0 0 calc(50% - 10px);
 }
+
 .modal-button:hover {
   background-color: var(--gold-hover);
 }
@@ -250,12 +232,17 @@ input[type="file"] {
 /*
  * Styles the library div
  */
-.library-book {
-  color: red;
-}
+
+.library-book {}
 
 /* Styles the library book name */
-.library-book-title{
+.library-book-title {
+  color: red;
+  cursor: pointer;
+}
+
+.library-book-author {
+  color: blue;
   cursor: pointer;
 }
 
@@ -271,14 +258,156 @@ input[type="file"] {
 .library-book-category-button {
   border: 1px solid magenta;
   cursor: pointer;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  padding: 10px;
+  color: black;
+  transition: background-color .2s ease-in;
 }
+
+.library-book-category-button:hover {
+  background-color: #D4AF37;
+  cursor: pointer;
+}
+
 
 .library-book-remove-button {
   border: 1px solid cyan;
+  cursor: pointer;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  padding: 10px;
+  color: black;
+  transition: background-color .2s ease-in;
+}
+
+.library-book-remove-button:hover {
+  background-color: #D4AF37;
   cursor: pointer;
 }
 
 .metadata-container {
   /* The list display breaks so here is a workaround */
   list-style-type: none;
+}
+
+.icon-bar {
+  width: 100%;
+  /* Full-width */
+  background-color: #D4AF37;
+  overflow: auto;
+  /* Overflow due to float */
+}
+
+/* The dropdown container */
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  font-size: 20px;
+  border: none;
+  outline: none;
+  color: white;
+  display: inline;
+  padding: 10px 10px;
+  padding-right: 85px;
+  padding-left: 85px;
+  background-color: inherit;
+  font-family: inherit;
+  /* Important for vertical align on mobile phones */
+  margin: 0;
+  /* Important for vertical align on mobile phones */
+  transition: background-color .2s ease-in;
+
+}
+
+/* Add a dark gold background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: #996515;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+select {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  padding: 1em 1em;
+  border: 0;
+}
+
+.TOC {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+.toc_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+.viewMode {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+.viewMode_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+.themes {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+.themes_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+.fonts {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+.fonts_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+.page-count {
+  align-self: center;
+  padding-left: 10%;
 }

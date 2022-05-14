@@ -45,9 +45,9 @@ Uses [epub.js](https://github.com/futurepress/epub.js/).
 - [ ] Reading Progress
   - [x] Percent
   - [ ] Reading Time
-- [ ] Search
+- [x] Search
   - [x] Search in book
-  - [ ] Search for a book using metadata
+  - [x] Search for a book using metadata
 - [x] Library Organization
   - [x] Favorites
   - [ ] Categories _sorta?_
