@@ -78,17 +78,6 @@ const Initialize = async () => {
   // localStorage since it is just a simple number
   const Lib = await localforage.getItem('Library');
   const openedBook = localStorage.getItem('OpenedBookLibIndex');
-  // const category = localStorage.getItem('OpenedBookLibCategory');
-
-  // If we cannot find a book to open, go back to the index
-  // TODO: Throw proper error message then go back
-  // if (!openedBook || !Lib || !Lib[category][openedBook]) {
-  //   Modals.ErrorNoBook.showModal();
-  // }
-
-  // NOTE: This is still here for testing purposes.
-  // TODO: Refactor stuff in the html to the js
-  // openBook(Library[openedBook].bookData);
 
   // Performing initialization operations
   // Order is not very important, as long as they are there.
@@ -358,7 +347,7 @@ function jumpToSearchResult(e) {
 }
 
 function changeVoice(e) {
-  AppState.speech.voice = AppState.voices[e.target.value];
+  AppState.speech.voice = AppState.voices[e.target.selectedIndex];
 }
 
 /** Reads the selected text, but if not, reads whole page */

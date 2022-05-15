@@ -787,7 +787,7 @@ export default class State {
     return startRange.toString();
   }
 
-  async initializeSpeech($voices, $speech) {
+  initializeSpeech($voices, $speech) {
     this.speech = new SpeechSynthesisUtterance();
 
     this.speech.lang = "en";  // en is default
@@ -806,7 +806,7 @@ export default class State {
 
       console.log('Speech is ready');
       showToast('Speech Synthesis is ready.');
-      this.speech.voice = voices[0];
+      this.speech.voice = this.voices[0];
 
       const docFrag = new DocumentFragment();
       this.voices.forEach(voice => {
