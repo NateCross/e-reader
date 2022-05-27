@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -257,3 +258,411 @@
     <script type="module" src="./js/reader.js"></script>
   </body>
 </html>
+||||||| constructed merge base
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>E-Reader: Reader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/app.css">
+    <link rel="stylesheet" href="./css/toastify.css">
+
+
+    <!-- Used in previewing the themes, do not use in the actual file-->
+    <link rel="stylesheet" href="./css/themes.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+      /*
+       * For some reason, the .searchResult class only works
+       * when declared in style, so here it shall stay
+       */
+      .searchResult {
+        fill: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="navbar">
+        <img src="css/imgs/logo3.png" class="logo">
+        <ul>
+            <li><a href="#"> Home </a></li>
+            <li><a href="#"> About Us </a></li>
+            <li><a href="#"> Contact Us </a></li>
+            <li><a href="#"> Site Map </a></li>
+            <li><a href="#"> FAQ </a></li>
+        </ul>
+      </div>
+      <h1 class="projTitle">Lorem Ipsum E-Reader</h1>
+
+    </div>
+    <a href="/"><input type="button" id="back-to-index" value="Back"></a>
+    <!-- Book Title -->
+    <h1 id="title"></h1>
+
+    <select
+      name  = "table-of-contents"
+      id    = "table-of-contents"
+      title = "Table of Contents"
+    ></select>
+
+    <!-- Render the book here -->
+    <div id="viewer" class="spreads"></div>
+
+    <!-- Arrows for going back/forwards one page -->
+    <a href="#prev" id="prev" class="arrow" title="Previous Page">‹</a>
+    <a href="#next" id="next" class="arrow" title="Next Page">›</a>
+
+    <div class="page-count">
+      <input
+        type    = "text"
+        onFocus = "this.select();"
+        id      = "current-page"
+        size    = "5"
+        title   = "Currently Displayed Pages"
+      >
+      <span id="percentage"></span>
+      /
+      <span id="total-pages"></span>
+      <input type="range" id="page-slider" min='0' max='100' step='1'>
+    </div>
+
+    <input type="button" id="highlight" value="Highlight Selected Text">
+    <input type="button" id="highlight-remove-all" value="Remove All Highlights">
+    <input type="button" id="bookmark" value="Bookmark Current Page">
+    <input type="button" id="bookmark-remove-all" value="Remove All Bookmarks">
+
+    <div class="search">
+      <label for="search-bar">Search in Book</label>
+      <input type="text" id="search-bar">
+      <input type="button" id="search-clear" value='Clear Search' title='Clear Search'>
+
+      <div class="search-results-container">
+        <label for="results-current">List of Search Results</label>
+        <input type="number" id="results-current" min=1>
+        /
+        <span id="results-total">-</span>
+      </div>
+    </div>
+
+    <div class="speech">
+      <select name="Voices" id="voices" title="Text-to-Speech Voices"></select>
+      <input type="button" id="speech-start" value="Start Speech">
+      <input type="button" id="speech-stop" value="Stop Speech">
+    </div>
+
+    <input type="button" id='metadata' value="Get Book Metadata">
+
+    <div class="options">
+      <h1>Options</h1>
+      <input type="button" id="settings-remove" value="Reset Settings to Default">
+      <ul class="options-list">
+        <li>
+          <label for="options-flow">View Mode</label>
+          <select name="Flow" id="options-flow" title="View Mode">
+            <option value="paginated">Paginated</option>
+            <option value="scrolled-doc">Scroll</option>
+          </select>
+        </li>
+        <li>
+          <label for="settings-theme">Theme</label>
+          <select name="Theme" id="settings-theme" title="Theme"></select>
+        </li>
+        <li>
+          <label for="settings-font">Font</label>
+          <select name="Font" id="settings-font" title="Font"></select>
+        </li>
+        <li>
+          <label for="settings-font-size">Font Size</label>
+          <input type="number" id="settings-font-size" title="Font Size" min=15>
+          <span>(Min. 15)</span>
+        </li>
+        <li>
+          <div class="speech-sliders">
+            <label for="speech-volume">Volume</label>
+            <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
+            <span id="speech-volume-val"></span>
+
+            <label for="speech-rate">Rate</label>
+            <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1"step="0.1">
+            <span id="speech-rate-val"></span>
+
+            <label for="speech-pitch">Pitch</label>
+            <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1"step="0.1">
+            <span id="speech-pitch-val"></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <h1>Highlights</h1>
+    <div id="highlight-list"></div>
+
+    <h1>Bookmarks</h1>
+    <div id="bookmark-list"></div>
+
+    <!-- SCRIPTS -->
+
+    <!-- Unpack epub files -->
+    <script src="./scripts/jszip.min.js"></script>
+
+    <!-- Enhanced local storage, allows for objects -->
+    <script src="./scripts/localforage.min.js"></script>
+
+    <!-- Main reader library -->
+    <script src="./scripts/epub.min.js"></script>
+
+    <!-- For displaying toast messages -->
+    <script src="./scripts/toastify.js"></script>
+
+    <script type="module" src="./js/reader.js"></script>
+  </body>
+</html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>E-Reader: Reader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/app.css">
+    <link rel="stylesheet" href="./css/toastify.css">
+    <script src="https://kit.fontawesome.com/c228841dd8.js" crossorigin="anonymous"></script>
+    <!-- Used in previewing the themes, do not use in the actual file-->
+    <link rel="stylesheet" href="./css/themes.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+      /*
+       * For some reason, the .searchResult class only works
+       * when declared in style, so here it shall stay
+       */
+      .searchResult {
+        fill: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner">
+      <div class="mainNavbar">
+        <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
+        <ul>
+            <li><a href="/" data-link> Home </a></li>
+            <li><a href="/library" data-link>Library</a></li>
+            <li><a href="/about" data-link> About Us </a></li>
+            <li><a href="/contact" data-link> Contact Us </a></li>
+            <li><a href="#"> Site Map </a></li>
+            <li><a href="/faq" data-link> FAQ </a></li>
+        </ul>
+      </div>
+      <!-- Book Title -->
+    <h1 id="title"></h1>
+    <div class="page-count">
+      <input
+        type    = "text"
+        onFocus = "this.select();"
+        id      = "current-page"
+        size    = "5"
+        title   = "Currently Displayed Pages"
+      >
+      <span id="percentage"></span>
+      /
+      <span id="total-pages"></span>
+      <input type="range" id="page-slider" min='0' max='100' step='1'>
+    </div>
+    
+  <div class="icon-bar">
+  <ul>
+    <!-- Table of Contents -->
+    <div class="dropdown">
+      <li><button class="dropbtn"><i class="fa-solid fa-table-list"></i>
+        <i class="fa fa-caret-down"></i>
+      </button></li>
+      <div class="dropdown-content">
+        <div class="custom-select">
+          <div id="TOC">
+           <p id="toc_title">Table of Contents</p> 
+           <select
+             name  = "table-of-contents"
+             id    = "table-of-contents"
+              title = "Table of Contents"
+            ></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- View Mode Option -->
+    <div class="dropdown">
+      <li><button class="dropbtn"><i class="fa-solid fa-eye"></i>
+        <i class="fa fa-caret-down"></i>
+      </button></li>
+      <div class="dropdown-content">
+        <div id="viewMode">
+          <p id="viewMode_title">View Mode</p> 
+          <select name="Flow" id="options-flow" title="View Mode">
+            <option value="paginated">Paginated</option>
+            <option value="scrolled-doc">Scroll</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- Theme Option -->
+    <div class="dropdown">
+      <li><button class="dropbtn"><i class="fa-solid fa-circle-half-stroke"></i>
+        <i class="fa fa-caret-down"></i>
+      </button></li>
+      <div class="dropdown-content">
+        <div id="themes">
+          <p id="themes_title">Themes</p>
+          <select name="Theme" id="settings-theme" title="Theme"></select>
+        </div>
+      </div>
+    </div>
+    <!-- Font Option -->
+    <div class="dropdown">
+      <li><button class="dropbtn"><i class="fa-solid fa-font"></i>
+        <i class="fa fa-caret-down"></i>
+      </button></li>
+      <div class="dropdown-content">
+        <div id="fonts">
+          <p id="fonts_title">Fonts</p>
+          <select name="Font" id="settings-font" title="Font"></select>
+        </div>
+      </div>
+    </div>
+    <!-- Font Size Option -->
+    <div class="dropdown">
+      <li><button class="dropbtn"><i class="fa-solid fa-text-height"></i>
+        <i class="fa fa-caret-down"></i>
+      </button></li>
+      <div class="dropdown-content">
+        <div id="fontSize">
+          <p id="fontSize_title">Font Size</p>
+          <input type="number" id="settings-font-size" title="Font Size" min=15>
+          <span>(Min. 15)</span>
+        </div>
+      </div>
+    </div>
+   <!-- Search in Book Option -->
+   <div class="dropdown">
+    <li><button class="dropbtn"><i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fa fa-caret-down"></i>
+    </button></li>
+    <div class="dropdown-content">
+      <div id="searchInBook" class="search">
+        <p id="searchInBook_title">Search in Book</p>
+        <input type="text" id="search-bar">
+        <input type="button" id="search-clear" value='Clear Search' title='Clear Search'>
+        <div class="search-results-container">
+          <p id="searchInBook_results">Search Results</p>
+          <input type="number" id="results-current" min=1>
+          /
+          <span id="results-total">-</span>
+        </div>
+      </div>
+    </div>
+  </div>
+   <!-- Highlight Option -->
+   <div class="dropdown">
+    <li><button class="dropbtn"><i class="fa-solid fa-highlighter"></i>
+      <i class="fa fa-caret-down"></i>
+    </button></li>
+    <div id="highlight-buttons" class="dropdown-content">
+      <p id="highlights">Highlights</p>
+      <div id="highlight-list"></div>
+       <input type="button" id="highlight" value="Highlight Selected Text">
+       <input type="button" id="highlight-remove-all" value="Remove All Highlights">
+    </div>
+  </div>
+  <!-- Bookmark Option -->
+  <div class="dropdown">
+    <li><button class="dropbtn"><i class="fa-solid fa-bookmark"></i>
+      <i class="fa fa-caret-down"></i>
+    </button></li>
+    <div id="bookmark-buttons" class="dropdown-content">
+      <p id="bookmarks">Bookmarks</p>
+    <div id="bookmark-list"></div>
+      <input type="button" id="bookmark" value="Bookmark Current Page">
+      <input type="button" id="bookmark-remove-all" value="Remove All Bookmarks">
+    </div>
+  </div>
+  <!-- Text-to-Speech Options -->
+  <div class="dropdown">
+    <li><button class="dropbtn"><i class="fa-solid fa-microphone"></i>
+      <i class="fa fa-caret-down"></i>
+    </button></li>
+    <div id="speech" class="dropdown-content">
+      <p id="text-to-speech">Text-to-Speech</p>
+      <div class="speech">
+        <select name="Voices" id="voices" title="Text-to-Speech Voices"></select>
+        <input type="button" id="speech-start" value="Start Speech">
+        <input type="button" id="speech-stop" value="Stop Speech">
+      </div>
+      <div class="speech-sliders">
+        <label for="speech-volume">Volume</label>
+        <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
+        <span id="speech-volume-val"></span>
+        
+        <label for="speech-rate">Rate</label>
+        <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1"step="0.1">
+        <span id="speech-rate-val"></span>
+      
+        <label for="speech-pitch">Pitch</label>
+        <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1"step="0.1">
+        <span id="speech-pitch-val"></span>
+      </div>
+    </div>
+  </div>
+  <!-- Get Book Metadata-->
+  <div class="dropdown">
+    <li><button class="dropbtn" id="metadata" value="Get Book Metadata" title="Get Book Metadata" ><i class="fa-solid fa-file-code"></i></button></li>
+  </div>
+  <!-- Return Settings to Default -->
+  <div class="dropdown">
+    <li><button class="dropbtn" id="settings-remove" value="Reset Settings to Default" title="Return Settings to Default"><i class="fa-solid fa-arrow-rotate-left"></i></button></li>
+  </div>
+</ul>
+  <!-- Render the book here -->
+  <div id="viewer" class="spreads">    </div>
+  <!-- Arrows for going back/forwards one page -->
+  <a href="#prev" id="prev" class="arrow" title="Previous Page"> <i class="fa-solid fa-chevron-left"></i> </a>
+  <a href="#next" id="next" class="arrow" title="Next Page"> <i class="fa-solid fa-chevron-right"></i> </a>
+  </div>  
+  </div>  
+ 
+    
+
+    <!-- <div class="modal" id="modal-container">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-close">&times;</span>
+          <h2 class="modal-header-content">Modal Header</h2>
+        </div>
+        <div class="modal-body">
+          <p>Test</p>
+        </div>
+        <div class="modal-footer">
+          <h3 class="modal-footer-content">Modal Footer</h3>
+        </div>
+      </div>
+    </div> -->
+    
+  </div>
+    <!-- SCRIPTS -->
+
+    <!-- Unpack epub files -->
+    <script src="./scripts/jszip.min.js"></script>
+
+    <!-- Enhanced local storage, allows for objects -->
+    <script src="./scripts/localforage.min.js"></script>
+
+    <!-- Main reader library -->
+    <script src="./scripts/epub.min.js"></script>
+
+    <!-- For displaying toast messages -->
+    <script src="./scripts/toastify.js"></script>
+
+    <script type="module" src="./js/reader.js"></script>
+  </body>
+</html>
+>>>>>>> Stashed changes

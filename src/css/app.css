@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /* Could be useful? */
 :root {
   --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
@@ -411,3 +412,1125 @@ select {
   align-self: center;
   padding-left: 10%;
 }
+||||||| constructed merge base
+/* Could be useful? */
+:root {
+  --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  --gold: #aa6c39 !important;
+  --gold-hover: #aa6c39 !important;
+  --button-remove: #808080 !important;
+  --button-cancel: var(--button-remove);
+  --button-remove-hover: #373737 !important;
+  --button-cancel-hover: var(--button-remove-hover);
+}
+
+/*
+ * See https://stackoverflow.com/a/25825731
+ * on styling buttons
+ */
+.file-upload-container {
+  background-color: #007bff !important;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+}
+
+.file-upload-container:after {
+  content: '⬆ Upload EPUB File';
+}
+
+.file-upload-container:hover {
+  background-color: #1459A3 !important;
+}
+
+/*
+ * Added when a file is dragged onto the body of the
+ * index.html.
+ */
+.file-upload-file-is-hovered {
+  background-color: #28A745 !important;
+
+}
+
+.file-upload-file-is-hovered:after {
+  content: '⬆ Drop EPUB File Here';
+}
+
+/*
+ * Hides the actual file upload button so we can style
+ * file-upload-container instead
+ */
+input[type="file"] {
+  display: none;
+}
+
+/*
+ * FIXME: Tried to make this work with Toastify.js. Doesn't work
+ * So you must style the toasts inside the js.
+ */
+/* .modal { */
+/*   background-color: red; */
+/*   color: red; */
+/*   font-family: "Arial", "sans-serif"; */
+/* } */
+
+/* #viewer { */
+/*   width: 400px; */
+/*   height: 100vh; */
+/*   margin: 0 auto; */
+/* } */
+
+/* MODALS https://www.w3schools.com/howto/howto_css_modals.asp */
+
+/* The Modal (background) */
+.modal {
+  display: block;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  padding-top: 200px;
+  padding-bottom: 200px;
+  /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+  font-family: 'Arial', 'sans-serif';
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  margin: auto;
+  padding: 0;
+  /* border: 1px solid #888; */
+  border-radius: 5px;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  /* background-color: #fefefe; */
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
+}
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
+}
+
+/* The Close Button */
+.modal-close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 20px 16px;
+  background-color: #5cb85c;
+  border-radius: 5px 5px 0 0;
+  color: white;
+}
+
+.modal-body {
+  /* height: 5px; */
+  /* margin: px 0; */
+  /* padding: 10px 0; */
+  background-color: #fefefe;
+  padding: 20px 16px;
+}
+
+.modal-footer {
+  padding: 20px 16px;
+  background-color: #5cb85c;
+  border-radius: 0 0 5px 5px;
+  color: white;
+}
+
+/*
+ * Alternate class for modal-header and modal-footer
+ * in case of a warning or error.
+ */
+.modal-warning {
+  /* background-color: #F02C2C; */
+  background-color: #D0312D;
+}
+
+/*
+ * Displaying buttons here so we use flex to make it neater
+ */
+.modal-footer.modal-warning {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.modal-footer.modal-footer-flex {
+  display: flex;
+  /* flex: 1; */
+  justify-content: center;
+  align-content: center;
+}
+
+.modal-button {
+  background-color: var(--gold);
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 7.5px 15px;
+  color: white;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+  font-size: 1.2em;
+  margin: 0px 10px;
+  flex: 0 0 calc(50% - 10px);
+}
+.modal-button:hover {
+  background-color: var(--gold-hover);
+}
+
+/*
+ * Used in:
+ * Remove all highlights, remove all bookmarks
+ * remove book, reset Library
+ */
+.modal-button-remove {
+  background-color: var(--button-remove);
+}
+
+.modal-button-remove:hover {
+  background-color: var(--button-remove-hover);
+}
+
+/* .modal-button-yes { */
+/**/
+/* } */
+
+.modal-button-cancel {
+  background-color: var(--button-cancel);
+}
+
+.modal-button-cancel:hover {
+  background-color: var(--button-cancel-hover);
+}
+
+#modal-book-title {
+  font-weight: bold;
+}
+
+/*
+ * Styles the library div
+ */
+.library-book {
+  /* color: blue; */
+}
+
+/* Styles the library book name */
+.library-book-title{
+  color: red;
+  cursor: pointer;
+}
+
+.library-book-author{
+  color: blue;
+  cursor: pointer;
+}
+
+/*
+ * Book cover display in the Library div
+ */
+.library-book-cover {
+  height: 15%;
+  width: 15%;
+  cursor: pointer;
+}
+
+.library-book-category-button {
+  border: 1px solid magenta;
+  cursor: pointer;
+}
+
+.library-book-remove-button {
+  border: 1px solid cyan;
+  cursor: pointer;
+}
+
+.metadata-container {
+  /* The list display breaks so here is a workaround */
+  list-style-type: none;
+}
+=======
+/* Could be useful? */
+:root {
+  --text-stroke-shadow: -1px 1px 0 #000, 1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  --gold: #aa6c39 !important;
+  --gold-hover: #aa6c39 !important;
+  --button-remove: #808080 !important;
+  --button-cancel: var(--button-remove);
+  --button-remove-hover: #373737 !important;
+  --button-cancel-hover: var(--button-remove-hover);
+}
+
+/*
+ * See https://stackoverflow.com/a/25825731
+ * on styling buttons
+ */
+.file-upload-container {
+  background-color: #15133C !important;
+  border: 1px solid #F1EEE9;
+  border-radius: 5px;
+  border-width: 1px;
+  font-size: larger;
+  /* font-family: Arial; */
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+}
+
+.file-upload-container:after {
+  content: '⬆ Upload EPUB File';
+}
+
+.file-upload-container:hover {
+  background-color: #EC994B !important;
+}
+
+/*
+ * Added when a file is dragged onto the body of the
+ * index.html.
+ */
+.file-upload-file-is-hovered {
+  background-color: #EC994B !important;
+
+}
+
+.file-upload-file-is-hovered:after {
+  content: '⬆ Drop EPUB File Here';
+}
+
+/*
+ * Hides the actual file upload button so we can style
+ * file-upload-container instead
+ */
+input[type="file"] {
+  display: none;
+}
+
+/*
+
+/* MODALS https://www.w3schools.com/howto/howto_css_modals.asp */
+
+/* The Modal (background) */
+.modal {
+  display: block;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  padding-top: 200px;
+  padding-bottom: 200px;
+  /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+  font-family: 'Arial', 'sans-serif';
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  margin: auto;
+  padding: 0;
+  border-radius: 5px;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
+}
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0
+  }
+
+  to {
+    top: 0;
+    opacity: 1
+  }
+}
+
+/* The Close Button */
+.modal-close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 20px 16px;
+  background-color: #5cb85c;
+  border-radius: 5px 5px 0 0;
+  color: white;
+}
+
+.modal-body {
+  background-color: #fefefe;
+  padding: 20px 16px;
+}
+
+.modal-footer {
+  padding: 20px 16px;
+  background-color: #5cb85c;
+  border-radius: 0 0 5px 5px;
+  color: white;
+}
+
+/*
+ * Alternate class for modal-header and modal-footer
+ * in case of a warning or error.
+ */
+.modal-warning {
+  /* background-color: #F02C2C; */
+  background-color: #D0312D;
+}
+
+/*
+ * Displaying buttons here so we use flex to make it neater
+ */
+.modal-footer.modal-warning {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.modal-footer.modal-footer-flex {
+  display: flex;
+  /* flex: 1; */
+  justify-content: center;
+  align-content: center;
+}
+
+.modal-button {
+  background-color: var(--gold);
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 7.5px 15px;
+  color: white;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+  font-size: 1.2em;
+  margin: 0px 10px;
+  flex: 0 0 calc(50% - 10px);
+}
+
+.modal-button:hover {
+  background-color: var(--gold-hover);
+}
+
+/*
+ * Used in:
+ * Remove all highlights, remove all bookmarks
+ * remove book, reset Library
+ */
+.modal-button-remove {
+  background-color: var(--button-remove);
+}
+
+.modal-button-remove:hover {
+  background-color: var(--button-remove-hover);
+}
+
+/* .modal-button-yes { */
+/**/
+/* } */
+
+.modal-button-cancel {
+  background-color: var(--button-cancel);
+}
+
+.modal-button-cancel:hover {
+  background-color: var(--button-cancel-hover);
+}
+
+#modal-book-title {
+  font-weight: bold;
+}
+
+/*
+ * Styles the library div
+ */
+
+#library{
+  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("imgs/background.jpg");
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+#library > h3{
+  font-size: 45px;
+  text-align: center;
+  color: #F1EEE9;
+}
+
+#library > ul{
+  max-width: 66rem;
+}
+
+.library-book{
+ 
+}
+
+
+
+/* Styles the library book name */
+.library-book-title {
+  font-size: larger;
+  color: #F1EEE9;
+  cursor: pointer;
+}
+
+.library-book-title::after{
+  content: "\a";
+  white-space: pre;
+}
+
+.library-book-author {
+  font-size: larger;
+  color: #F1EEE9; 
+  cursor: pointer;
+  
+}
+
+/*
+ * Book cover display in the Library div
+ */
+.library-book-cover {
+  border-style: solid;
+  border-color: #15133C;
+  height: 13%;
+  width: 13%;
+  cursor: pointer;
+  opacity: 1;
+  display: block;
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.library-book-image-container::after {
+  content: "\a";
+  white-space: pre;
+}
+
+.library-book-image-container{
+  position:relative;
+  width: auto;
+  
+}
+
+.library-book-image-container:hover .library-book-cover{
+  opacity: 0.3;
+}
+
+.library-book-image-container:hover .library-book-image-button-container{
+  opacity: 1;
+}
+
+.library-book-image-button-container{
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+
+}
+
+.library-book-category-button {
+  background-color: #15133C;
+  border-color:#F1EEE9;
+  color:#F1EEE9;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  padding: 10px 24px;
+  transition: background-color .2s ease-in;
+  display: block; /* Make the buttons appear below each other */
+  margin-bottom: 10px;
+
+}
+
+.library-book-category-button:hover {
+  background-color: #EC994B;
+  cursor: pointer;
+}
+
+
+.library-book-remove-button {
+  background-color: #15133C;
+  border-color:#F1EEE9;
+  color:#F1EEE9;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  padding: 10px 34.5px;
+  transition: background-color .2s ease-in;
+
+}
+
+.library-book-remove-button:hover {
+  background-color: #EC994B;
+  cursor: pointer;
+}
+
+.metadata-container {
+  /* The list display breaks so here is a workaround */
+  list-style-type: none;
+}
+
+.icon-bar {
+  width: 100%;
+  /* Full-width */
+  background-color: #15133C;
+  overflow: auto;
+  /* Overflow due to float */
+}
+
+/* The dropdown container */
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  font-size: 20px;
+  border: none;
+  outline: none;
+  color: white;
+  display: inline;
+  padding: 8px 8px;
+  padding-right: 25px;
+  padding-left: 25px;
+  background-color: inherit;
+  font-family: inherit;
+  /* Important for vertical align on mobile phones */
+  margin: 0;
+  /* Important for vertical align on mobile phones */
+  transition: background-color .2s ease-in;
+
+}
+
+/* Add an orange background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: #EC994B;
+  cursor:pointer;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #F1EEE9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+select {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  padding: 1em 1em;
+  border: 0;
+}
+
+.icon-bar > ul{
+  text-align:center;
+}
+
+.icon-bar > ul > li{
+  display:inline-block;
+  margin-left: 15px;       /* This is when the drop down box appears */
+  position: relative;
+}
+
+#TOC {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#toc_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#viewMode {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#viewMode_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#themes {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#themes_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#fonts {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#fonts_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#fontSize {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#fontSize_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#fontSize input[type=number] {
+  padding: 6px;
+  border: 1px solid;
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+#fontSize span{
+  font-weight: bold;
+}
+
+#searchInBook {
+  background: #F1EEE9 none repeat scroll 0 0;
+  font-size: 95%;
+  padding: 20px;
+  width: auto;
+}
+
+#searchInBook_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#searchInBook input[type=text] {
+  padding: 6px;
+  border: 1px solid;
+  margin-top: 8px;
+  margin-right: 16px;
+  font-size: 15px;
+}
+
+#searchInBook input[type=number] {
+  padding: 6px;
+  border: 1px solid;
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+#results-total {
+  font-size:larger;
+  font-weight: bold;
+}
+
+#search-clear {
+  background-color: #15133C;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
+}
+
+#search-clear:hover {
+  background-color: #EC994B;
+  cursor:pointer;
+}
+
+#searchInBook_results {
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+#highlights {
+  font-weight: 700;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+ul{
+  list-style-type: none;
+ }
+
+#highlight-buttons input[type=button]{
+  background-color: #73777B;
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
+}
+
+#highlight-buttons input[type=button]:hover {
+  background-color: #EC994B;
+  cursor:pointer;
+}
+
+#bookmarks {
+  font-weight: 700;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+#bookmark-buttons input[type=button]{
+  background-color: #73777B;
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
+}
+
+#bookmark-buttons input[type=button]:hover {
+  background-color: #EC994B;
+  cursor:pointer;
+}
+
+#text-to-speech {
+  font-weight: 700;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+.speech input[type=button]{
+  background-color: #73777B;
+  border: none;
+  color: white;
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  /* font-family: Arial; */
+  transition: background-color .2s ease-in;
+}
+
+.speech input[type=button]:hover {
+  background-color: #EC994B;
+  cursor:pointer;
+}
+
+#title{
+  padding: 15px 15px;
+}
+
+.page-count{
+  color: #F1EEE9;
+  padding-left: 39%;
+}
+
+#current-page{
+  padding: 5px;
+  border: 1px solid;
+  margin-bottom: 5px; 
+  font-size: 15px;
+}
+
+#percentage{
+  font-size: larger;
+}
+
+#page-slider{
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;  
+  background: #F1EEE9; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#page-slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+#page-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%; 
+  background: #EC994B;
+  cursor: pointer; /* Cursor on hover */
+}
+
+#page-slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-volume{
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;  
+  background: #73777B; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-volume:hover{
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+#speech-volume::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%; 
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-volume::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-rate{
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;  
+  background: #73777B; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-rate:hover{
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+#speech-rate::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%; 
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-rate::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-pitch{
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;  
+  background: #73777B; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-pitch:hover{
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+#speech-pitch::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%; 
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+#speech-pitch::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B; 
+  cursor: pointer; /* Cursor on hover */
+}
+
+.speech-sliders label {
+  font-weight: 700;
+}
+
+.speech-sliders span{
+  font-weight: 700;
+  margin-right: 25px;
+}
+
+/*
+ * Quick and dirty fix for the select boxes on Firefox 
+ * Since they cannot be styled
+ * https://stackoverflow.com/questions/44147362/firefox-overriding-style-of-html-select-option
+ */
+ @supports (-moz-appearance:none) {
+  select
+  {
+  -moz-appearance:none !important;
+  background: transparent url('data:image/gif;base64,R0lGODlhBgAGAKEDAFVVVX9/f9TU1CgmNyH5BAEKAAMALAAAAAAGAAYAAAIODA4hCDKWxlhNvmCnGwUAOw==') right center no-repeat !important;
+  background-position: calc(100% - 5px) center !important;
+  }
+}
+>>>>>>> Stashed changes

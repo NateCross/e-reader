@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -49,3 +50,59 @@ body {
       display: block;
     }
   }
+||||||| constructed merge base
+=======
+.wrapper h1{
+  color: #F1EEE9;
+  font-size: 52px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.team{
+  display: flex;
+  text-align: center;
+  width: auto;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.team .team_member{
+  background: #15133C;
+  margin: 25px;
+  margin-bottom: 50px;
+  width: 300px;
+  padding: 20px;
+  line-height: 20px;
+  color: #F1EEE9;
+  position: relative;
+}
+
+.team .team_member h3{
+  color: #F1EEE9;
+  font-size: 26px;
+  margin-top: 50px;
+}
+
+.team .team_member p.role{
+  color: #F1EEE9;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin: 12px 0;
+}
+
+.team .team_member .team_img{
+  border-radius: 50%;
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #EC994B;
+}
+
+.team .team_member .team_img img{
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+}
+>>>>>>> Stashed changes

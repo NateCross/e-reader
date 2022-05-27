@@ -123,9 +123,17 @@ export default class Library {
       const moveCategory = this.createElementMoveCategory(book);
       const removeBook = this.createElementRemoveBook(book, index);
 
+      const divBookImageButtonContainer = elementFactory('div', {
+        class: 'library-book-image-button-container',
+      }, moveCategory, removeBook);
+
+      const divBookImageContainer = elementFactory('div', {
+        class: 'library-book-image-container',
+      }, bookImage, divBookImageButtonContainer);
+
       const divParent = elementFactory('div', {
         class: 'library-book',
-      }, bookLink, bookAuthor, bookImage, moveCategory, removeBook);
+      }, bookLink, bookAuthor, divBookImageContainer);
 
       const listChild = elementFactory('li', {},
       divParent);

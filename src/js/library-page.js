@@ -1,18 +1,37 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
 import { showToast } from './Utils.js';
-// import * as Modals from './ModalTextContent.js';
+import * as Modals from './ModalTextContent.js';
 
-//// HTML ELEMENTS /////
-
+const $library = document.querySelector('#library');
 const $file_upload = document.querySelector('#file-upload');
 const $file_upload_container = document.querySelector('.file-upload-container');
 
-///// MAIN /////
-const Lib = new Library();
+const $storage_usage = document.querySelector('#usage');
+const $storage_quota = document.querySelector('#quota');
+const $storage_percent = document.querySelector('#percent');
+const $storage_clear = document.querySelector('#clear-storage');
+
+const $search = document.querySelector('.search');
+const $search_bar = document.querySelector('#search-bar');
+const $search_clear = document.querySelector('#search-clear');
+const $search_results = document.querySelector('#search-results');
+const $search_query = document.querySelector('#search-query');
+
+const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
+$search_bar.onchange = searchInLib;
+$search_clear.onclick = clearSearch;
+$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
+
+// Load the books from storage and populate the library div
+(async () => {
+  await Lib.init();
+  Lib.refreshLibraryDisplay($library);
+  showToast('Loaded Library.');
+})();
 
 ///// FUNCTIONS /////
 
@@ -51,6 +70,36 @@ function openBookEvent(Library) {
     const file = e.target.files[0];
     loadFileAsEpub(file, Library);
   }
+}
+
+function ModalClearLibraryWrapper(_, __, footer, container) {
+  const remove = footer.querySelector('#remove');
+  const cancel = footer.querySelector('#cancel');
+
+  cancel.onclick = () => {
+    container.remove();
+  }
+  remove.onclick = () => {
+    clearLibrary();
+    container.remove();
+  }
+}
+
+async function clearLibrary() {
+  let value = null;
+
+  try {
+    value = await localforage.removeItem('Library');
+    Lib.bookLib = [];
+  } catch (err) {
+    console.log(err);
+  }
+
+  Lib.refreshLibraryDisplay();
+
+  showToast('Library cleared.');
+
+  return value;
 }
 
 function dropZoneDragOver(e) {
@@ -149,4 +198,33 @@ function loadFileAsEpub(file) {
   reader.readAsArrayBuffer(file);
 }
 
+function searchInLib(e) {
+  const query = e.target.value;
+
+  if (query === '') {
+    $library.style.display = 'inline';
+    $search_results.style.display = 'none';
+    $search_query.style.display = 'none';
+    return;
+  }
+  $library.style.display = 'none';
+  $search_results.style.display = 'inline';
+  $search_query.style.display = 'inline';
+
+  const results = Lib.searchBooks(query);
+  console.log(results);
+  Lib.updateSearchResults(results, query, $search_results, $search_query);
+}
+
+function clearSearch() {
+  $search_bar.value = '';
+
+  // Faking 'e.target.value' because, apparently, using the || operator
+  // will not pick between 'e.target.value' or 'e'
+  // This passes exactly what we need to clear the search.
+  searchInLib({ target: { value: '' } });
+
+}
+
 console.log('Loaded index');
+
