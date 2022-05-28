@@ -14,6 +14,15 @@ const Lib = new Library();
 $file_upload.onchange = openBookEvent(Lib);
 initDragAndDrop();
 
+
+(async () => {
+  try {
+    await Lib.init();
+  } catch (e) {
+    console.log(e);
+    showToast('Could not load local storage.', 'warning');
+  }
+})();
 ///// FUNCTIONS /////
 
 /**

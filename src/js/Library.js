@@ -196,13 +196,13 @@ export default class Library {
     // NOTE: Would be better if converted to object key-value pairs
     switch (book.category) {
       case 'Library':
-        moveCategory.title = 'Move to Favorites';
-        moveCategory.value = 'Move to Favorites';
+        moveCategory.title = 'Favorite';
+        moveCategory.value = 'Favorite';
         moveCategory.onclick = this.moveBookToCategory(book);
         break;
       case 'Favorites':
-        moveCategory.title = 'Remove from favorites';
-        moveCategory.value = 'Remove from favorites';
+        moveCategory.title = 'Unfavorite';
+        moveCategory.value = 'Unfavorite';
         moveCategory.onclick = this.moveBookToCategory(book, 'Favorites', 'Library');
         break;
     }
@@ -213,8 +213,8 @@ export default class Library {
   createElementRemoveBook(book, index) {
     const removeBook = document.createElement('input');
     removeBook.type = 'button';
-    removeBook.title = 'Remove Book';
-    removeBook.value = 'Remove Book';
+    removeBook.title = 'Remove';
+    removeBook.value = 'Remove';
     removeBook.classList.add('library-book-remove-button');
 
     // Workaround to essentially pass a lot of parameters onto existing
@@ -324,7 +324,7 @@ export default class Library {
   }
 
   updateSearchResults(results, query, $search_results, $search_query) {
-    $search_query.innerHTML = `Results for: <strong id='search-query-text'>${query}</strong>`
+    
 
     if (results.length === 0) {
       $search_results.innerHTML = "";
@@ -333,6 +333,8 @@ export default class Library {
     }
 
     const docFrag = new DocumentFragment();
+    const listParent = elementFactory('ul');
+
 
     results.forEach((result, index) => {
       const book = result.item;
@@ -349,8 +351,10 @@ export default class Library {
 
       const listChild = elementFactory('li', {}, divParent);
 
-      docFrag.appendChild(listChild);
+      
+      listParent.appendChild(listChild);
     });
+    docFrag.appendChild(listParent);
     $search_results.innerHTML = "";
     $search_results.appendChild(docFrag);
   }

@@ -1,11 +1,9 @@
-# [Libre Ipsum E-Reader](https://libreipsum.herokuapp.com/)
+# E-Reader
 
 EPUB reader written in vanilla JavaScript.
 Aims to be a convenient way to view .epub files
 you have on your device.
 Uses [epub.js](https://github.com/futurepress/epub.js/).
-
-This site is now hosted on Heroku.
 
 # DEVELOPING
 
@@ -14,12 +12,6 @@ This site is now hosted on Heroku.
 - Run `npm install --dev`
 - Run `npm run dev` to start nodemon
 - Run `npm test` to start the tests with the live server
-
-## HEROKU
-
-- `git push heroku main` to update the Heroku site.
-- `heroku ps:scale web=0` to turn off.
-- `heroku ps:scale web=1` to turn on.
 
 ## THEMES
 

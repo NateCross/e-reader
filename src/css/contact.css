@@ -7,24 +7,24 @@
     flex-direction: column;
 }
 
-.contact .content h1{
-    color: white;
-    font-size: 52px;
-    margin-top: 100px;
-    margin-bottom: 25px;
-    text-align: center;
-}
-
 .contact .content{
     max-width: 800px;
     text-align: center;
-    padding-bottom: 600px;
+}
+
+.contact .content h1{
+    color: white;
+    font-size: 52px;
+    margin-bottom: 25px;
+    text-align: center;
+    
 }
 
 .contact .content h2{ 
     font-size: 22px;
     font-weight: 500;
     color: #fff;
+    margin-bottom: 60%;
 }
 
 .container
