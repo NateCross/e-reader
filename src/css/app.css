@@ -407,12 +407,12 @@ input[type="file"] {
 }
 
 .icon-bar {
-  /* width: 100%; */
+  width: 100%;
   /* Full-width */
   background-color: #15133C;
   overflow: auto;
   /* Overflow due to float */
-  margin: 0 2rem;
+  /* margin: 0 2rem; */
 }
 
 /* The dropdown container */
