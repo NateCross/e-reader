@@ -331,10 +331,12 @@ async function searchInBook(e) {
 
   $search_results_total.textContent = query.length;
   $search_results_current.max = query.length;
-  $search_results_container.style.display = 'inline';
+  $search_results_container.style.display = 'block';
 
+  const index = AppState.getNextSearchResultFromCurrentCFI() || 0;
+  // console.log(index);
 
-  AppState.jumpToSearchCFI(0, $search_results_current);
+  AppState.jumpToSearchCFI(index, $search_results_current);
 }
 
 function jumpToSearchResult(e) {
@@ -343,7 +345,7 @@ function jumpToSearchResult(e) {
   // so we subtract to compensate for that
   const result = e.target.value - 1;
 
-  AppState.jumpToSearchCFI(result);
+  AppState.jumpToSearchCFI(result, $search_results_current);
 }
 
 function changeVoice(e) {

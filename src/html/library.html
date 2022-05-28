@@ -10,49 +10,45 @@
     <link rel="stylesheet" href="./css/style.css">
   </head>
   <body>
-      <nav class="mainNavbar">
-        <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
-        <ul>
-            <!-- data-links are used for seamless transitions -->
-            <li><a href="/" data-link>Home</a></li>
-            <li><a href="/library" data-link>Library</a></li>
-            <li><a href="/about" data-link>About Us</a></li>
-            <li><a href="/contact" data-link>Contact Us</a></li>
-            <li><a href="/sitemap">Site Map</a></li>
-            <li><a href="/faq" data-link>FAQ</a></li>
-        </ul>
-      </nav>
-     
-        <div class="upload">
-        <label for="file-upload" class="file-upload-container"></label></li>
+    <nav class="mainNavbar">
+      <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
+      <ul>
+          <!-- data-links are used for seamless transitions -->
+          <li><a href="/" data-link>Home</a></li>
+          <li><a href="/library" data-link>Library</a></li>
+          <li><a href="/about" data-link>About Us</a></li>
+          <li><a href="/contact" data-link>Contact Us</a></li>
+          <li><a href="/sitemap">Site Map</a></li>
+          <li><a href="/faq" data-link>FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="top-bar">
+      <div class="upload">
+        <label for="file-upload" class="file-upload-container"></label>
         <input
           type   = "file"
           id     = "file-upload"
           name   = "file-upload"
           accept = ".epub"
         >
-      </label>
-       </div>
+      </div>
       <div class="search">
-        <input type="text" id="search-bar" title="Search for a Book" placeholder="Search for a book's title or author..." size='50'>
         <div id="search-query"></div>
         <input type="button" id="search-clear" value='Clear Search' title='Clear Search'>
-        
-        <div id="storage">
-          <p>Storage: <output id="usage">-</output> / <output id="quota">-</output> (<output id="percent">-</output>%) 
-            <button id="clear-storage">Clear Storage</button>
-          </p>
-        </div>
-        
-     
-      
-        <div id="search-results"></div>        
-      </div>    
+        <input type="text" id="search-bar" title="Search for a Book" placeholder="Search for a book's title or author..." size='50'>
+      </div>
+    </div>
 
-    
-    <div id="library">
-    
-      
+    <div id="search-results"></div>
+
+    <div id="library"></div>
+
+    <div id="storage">
+      <p>Storage: <output id="usage">-</output> / <output id="quota">-</output> (<output id="percent">-</output>%) 
+        <button id="clear-storage">Clear Storage</button>
+      </p>
+    </div>
+
     <!-- SCRIPTS -->
 
     <!-- Unpack epub files -->

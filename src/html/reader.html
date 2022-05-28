@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./css/app.css">
     <link rel="stylesheet" href="./css/toastify.css">
-    <script src="https://kit.fontawesome.com/c228841dd8.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://kit.fontawesome.com/c228841dd8.js" crossorigin="anonymous"></script> -->
+
     <!-- Used in previewing the themes, do not use in the actual file-->
     <link rel="stylesheet" href="./css/themes.css">
     <link rel="stylesheet" href="css/style.css">
@@ -22,6 +23,7 @@
     </style>
   </head>
   <body>
+    <!--
       <div class="mainNavbar">
         <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
         <ul>
@@ -33,6 +35,7 @@
             <li><a href="/faq" data-link> FAQ </a></li>
         </ul>
       </div>
+    -->
       <!-- Book Title -->
     <h1 id="title"></h1>
     <div class="page-count">
@@ -40,16 +43,87 @@
         type    = "text"
         onFocus = "this.select();"
         id      = "current-page"
-        size    = "5"
+        size    = "10"
         title   = "Currently Displayed Pages"
       >
       <span id="percentage"></span>
       /
       <span id="total-pages"></span>
-      <input type="range" id="page-slider" min='0' max='100' step='1'>
     </div>
   <div class="icon-bar">
   <ul>
+    <!-- Page navigation buttons -->
+    <div class="dropdown">
+      <li>
+        <button
+          class="dropbtn"
+          id="return-to-home"
+          type="button"
+          value="Return to Home Page"
+        >
+          <i class="fa-solid fa-house"></i>
+          <i class="fa fa-caret-down"></i>
+        </button>
+      </li>
+      <div class="dropdown-content">
+        <ul id="icon-nav-container">
+          <li>
+            <a
+              id="nav-button-home"
+              class="icon-nav-buttons"
+              href="/"
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <a
+              id="nav-button-library"
+              class="icon-nav-buttons"
+              href="/library"
+            >
+              Library
+            </a>
+          </li>
+          <li>
+            <a
+              id="nav-button-about-us"
+              class="icon-nav-buttons"
+              href="/about"
+            >
+              About Us
+            </a>
+          </li>
+          <li>
+            <a
+              id="nav-button-contact"
+              class="icon-nav-buttons"
+              href="/contact"
+            >
+              Contact Us
+            </a>
+          </li>
+          <li>
+            <a
+              id="nav-button-sitemap"
+              class="icon-nav-buttons"
+              href="/sitemap"
+            >
+              Site Map
+            </a>
+          </li>
+          <li>
+            <a
+              id="nav-button-faq"
+              class="icon-nav-buttons"
+              href="/faq"
+            >
+              FAQ
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
     <!-- Table of Contents -->
     <div class="dropdown">
       <li><button class="dropbtn"><i class="fa-solid fa-table-list"></i>
@@ -176,15 +250,15 @@
         <input type="button" id="speech-stop" value="Stop Speech">
       </div>
       <div class="speech-sliders">
-        <label for="speech-volume">Volume</label>
+        <label for="speech-volume" id="speech-volume-label">Volume</label>
         <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
         <span id="speech-volume-val"></span>
         
-        <label for="speech-rate">Rate</label>
+        <label for="speech-rate" id="speech-rate-label">Rate</label>
         <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1"step="0.1">
         <span id="speech-rate-val"></span>
       
-        <label for="speech-pitch">Pitch</label>
+        <label for="speech-pitch" id="speech-pitch-label">Pitch</label>
         <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1"step="0.1">
         <span id="speech-pitch-val"></span>
       </div>
@@ -192,11 +266,11 @@
   </div>
   <!-- Get Book Metadata-->
   <div class="dropdown">
-    <li><button class="dropbtn" id="metadata" value="Get Book Metadata" title="Get Book Metadata" ><i class="fa-solid fa-file-code"></i></button></li>
+    <li><button class="dropbtn funcbtn" id="metadata" value="Get Book Metadata" title="Get Book Metadata" ><i class="fa-solid fa-file-code"></i></button></li>
   </div>
   <!-- Return Settings to Default -->
   <div class="dropdown">
-    <li><button class="dropbtn" id="settings-remove" value="Reset Settings to Default" title="Return Settings to Default"><i class="fa-solid fa-arrow-rotate-left"></i></button></li>
+    <li><button class="dropbtn funcbtn" id="settings-remove" value="Reset Settings to Default" title="Return Settings to Default"><i class="fa-solid fa-arrow-rotate-left"></i></button></li>
   </div>
 </ul>
   <!-- Render the book here -->
@@ -204,25 +278,12 @@
   <!-- Arrows for going back/forwards one page -->
   <a href="#prev" id="prev" class="arrow" title="Previous Page"> <i class="fa-solid fa-chevron-left"></i> </a>
   <a href="#next" id="next" class="arrow" title="Next Page"> <i class="fa-solid fa-chevron-right"></i> </a>
-  </div>  
 
-    
-
-    <!-- <div class="modal" id="modal-container">
-      <div class="modal-content">
-        <div class="modal-header">
-          <span class="modal-close">&times;</span>
-          <h2 class="modal-header-content">Modal Header</h2>
-        </div>
-        <div class="modal-body">
-          <p>Test</p>
-        </div>
-        <div class="modal-footer">
-          <h3 class="modal-footer-content">Modal Footer</h3>
-        </div>
-      </div>
-    </div> -->
-    
+  <div class="page-slider-container">
+    <input type="range" id="page-slider" min='0' max='100' step='1'>
+  </div>
+  <!-- <label for="page-slider">Page Slider</label> -->
+  </div>
   </div>
     <!-- SCRIPTS -->
 
@@ -237,6 +298,9 @@
 
     <!-- For displaying toast messages -->
     <script src="./scripts/toastify.js"></script>
+
+    <!-- For displaying the fancy icons -->
+    <script src="./js/font-awesome.js"></script>
 
     <script type="module" src="./js/reader.js"></script>
   </body>

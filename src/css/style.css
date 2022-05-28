@@ -84,7 +84,8 @@ body{
 }
 
 #storage{
-  color:#F1EEE9
+  color:#F1EEE9;
+  margin: 2rem;
 }
 
 #storage button{
@@ -132,8 +133,7 @@ body{
   color: #15133C;
   position: absolute;
   top: 50%;
-  margin-top: 175px;
-  font-size: 25px;
+  font-size: 2rem;
   font-family: arial, sans-serif;
   font-weight: bold;
   -webkit-user-select: none;
@@ -143,12 +143,8 @@ body{
   transition: background-color .2s ease-in;
 }
 
-#prev {
-  left:0;
-}
-
 #prev{
-  left: 40px;
+  left: 1rem;
 }
 
 #prev:hover {
@@ -156,12 +152,8 @@ body{
   cursor:pointer;
 }
 
-#next {
-  right:0;
-}
-
 #next{
-  right:40px;
+  right: 1rem;
 }
 
 #next:hover {

@@ -22,6 +22,8 @@ export default class Library {
     this.storageUsageEl = storageUsageEl;
     this.storageQuotaEl = storageQuotaEl;
     this.storagePercentEl = storagePercentEl;
+
+    this.storageDisplayIsSupported = true;
   }
 
   /**
@@ -80,11 +82,14 @@ export default class Library {
    * @param {Array} searchResults List of books returned from a Fuse.js search
    */
   async refreshLibraryDisplay(libraryElement = this.libraryEl) {
+
     try {
       await this.refreshStorageDisplay();
     } catch (err) {
-      showToast('Unable to refresh storage display.', 'warning');
+      if (this.storageDisplayIsSupported)
+        showToast('Unable to refresh storage display.', 'warning');
       console.log(err);
+      this.storageDisplayIsSupported = false;
     }
 
     if (this.bookLib.length === 0) {
@@ -131,13 +136,14 @@ export default class Library {
         class: 'library-book-image-container',
       }, bookImage, divBookImageButtonContainer);
 
-      const divParent = elementFactory('div', {
+      const divParent = elementFactory('a', {
         class: 'library-book',
+        href: '/reader',
       }, bookLink, bookAuthor, divBookImageContainer);
+      divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
 
       const listChild = elementFactory('li', {},
       divParent);
-      listChild.onclick = this.openReaderEvent(index, moveCategory, removeBook);
 
       if (categoryTitle !== null)
         docFrags[book.category].append(categoryTitle);
@@ -171,7 +177,7 @@ export default class Library {
   }
 
   createElementBookLink(book, index) {
-    const bookLink = document.createElement('a');
+    const bookLink = document.createElement('p');
     bookLink.classList.add('library-book-title');
     bookLink.innerHTML = book.metadata.title;
 
@@ -179,7 +185,7 @@ export default class Library {
   }
 
   createElementBookAuthor(book, index) {
-    const bookAuthor = document.createElement('a');
+    const bookAuthor = document.createElement('p');
     bookAuthor.classList.add('library-book-author');
     bookAuthor.innerHTML = book.metadata.creator;
 
@@ -247,7 +253,13 @@ export default class Library {
    * Should be done after refreshing library
    */
   async refreshStorageDisplay() {
-    const storage = await getIndexedDBUsage();
+    let storage;
+    try {
+      storage = await getIndexedDBUsage();
+    } catch (e) {
+      console.log(e);
+      return;
+    }
     this.storageQuotaEl.innerHTML = storage.quota;
     this.storageUsageEl.innerHTML = storage.usage;
     this.storagePercentEl.innerHTML = storage.percent;
@@ -277,7 +289,8 @@ export default class Library {
   openReaderEvent(storageIndex, moveCategory = null, removeBook = null) {
     // We return a function here as a workaround to pass parameters
     return e => {
-      if (typeof e !== 'undefined' && (e.target === moveCategory || e.target === removeBook)) return;
+      // It returns false so that it prevents the parent anchor from going to the href
+      if (typeof e !== 'undefined' && (e.target === moveCategory || e.target === removeBook)) return false;
 
       try {
         localStorage.setItem('OpenedBookLibIndex', storageIndex);
@@ -350,7 +363,7 @@ export default class Library {
       // const moveCategory = this.createElementMoveCategory(book);
       // const removeBook = this.createElementRemoveBook(book, index);
 
-      const divParent = elementFactory('div', {
+      const divParent = elementFactory('a', {
         class: 'library-book',
       }, bookLink, bookAuthor, bookImage);
 

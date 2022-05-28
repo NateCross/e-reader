@@ -181,7 +181,8 @@ export default class State {
         // manager: "continuous",
         flow: this.settings.flow,
         width: this.settings.width,
-        height: this.settings.height,
+        height: '75vh',
+        // height: this.settings.height,
         allowScriptedContent: true,
         snap: true,
       });
@@ -734,6 +735,16 @@ export default class State {
     ).then(results => Promise.resolve([].concat.apply([], results)));
   };
 
+  /** Compare start CFI to searchResults; jump to the next one */
+  getNextSearchResultFromCurrentCFI() {
+    const startCfi = this.currentLocation.start.cfi;
+    const cfiComparison = new ePub.CFI();
+    const nextSearchResult = this.searchResults.findIndex(result =>
+      cfiComparison.compare(startCfi, result.cfi) <= 0
+    );
+    return nextSearchResult;
+  }
+
   /**
    * doSearch returns an array of CFIs with an excerpt.
    * This function handles jumping to an index within that array
@@ -756,7 +767,7 @@ export default class State {
     // Only triggers when a new search is made, from 'searchInBook'
     // of reader.js. Makes the search results more intuitive.
     if ($search_results_current)
-      $search_results_current.value = 1;
+      $search_results_current.value = resultNumber + 1;
   }
 
   /**
