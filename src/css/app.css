@@ -9,6 +9,10 @@
   --button-cancel-hover: var(--button-remove-hover);
 }
 
+select {
+  filter: brightness(100%);
+}
+
 /*
  * See https://stackoverflow.com/a/25825731
  * on styling buttons
@@ -27,7 +31,7 @@
 
 
 .file-upload-container:after {
-  content: '⬆ Upload EPUB File';
+  content: '⬆ Upload And Read EPUB File';
 }
 
 .file-upload-container:hover {
@@ -269,11 +273,12 @@ input[type="file"] {
  */
 
 #library{
- 
   
 }
 
+.library-search-highlight {
 
+}
 
 #library > h3{
   font-size: 45px;
@@ -288,18 +293,18 @@ input[type="file"] {
   grid-template-columns: 25% 25% 25% 25%;
 }
 
-.library-book{
+.library-book {
   margin: 2rem;
- 
+  border: 3px aliceblue;
+  border-style: solid;
+  padding: 0.5rem;
+  cursor: pointer;
 }
-
-
 
 /* Styles the library book name */
 .library-book-title {
   font-size: larger;
   color: #F1EEE9;
-  cursor: pointer;
   font-weight: bold;
 }
 
@@ -311,8 +316,6 @@ input[type="file"] {
 .library-book-author {
   font-size: larger;
   color: #F1EEE9;
-  cursor: pointer;
-  
 }
 
 /*
@@ -322,13 +325,10 @@ input[type="file"] {
   border-style: solid;
   border-color: #15133C;
   height: 75%;
-  width: 50%;
-  cursor: pointer;
+  width: 100%;
   opacity: 1;
   transition: .5s ease;
   backface-visibility: hidden;
- 
-  
 }
 
 .library-book-image-container::after {
@@ -341,11 +341,11 @@ input[type="file"] {
   width: auto;
 }
 
-.library-book-image-container:hover .library-book-cover{
+.library-book:hover .library-book-cover{
   opacity: 0.3;
 }
 
-.library-book-image-container:hover .library-book-image-button-container{
+.library-book:hover .library-book-image-button-container{
   opacity: 1;
 }
 
@@ -354,8 +354,9 @@ input[type="file"] {
   transition: .5s ease;
   opacity: 0;
   position: absolute;
+
   top: 50%;
-  left: 25.5%;
+  left: 50%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
 

@@ -1,6 +1,6 @@
 import Library from './Library.js';
 import LibItem from './LibItem.js';
-import { showToast } from './Utils.js';
+import { showToast, fuseSearchHighlight } from './Utils.js';
 import * as Modals from './ModalTextContent.js';
 
 const $library = document.querySelector('#library');
@@ -21,7 +21,7 @@ const $search_query = document.querySelector('#search-query');
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent(Lib);
-$search_bar.onchange = searchInLib;
+$search_bar.oninput = searchInLib;
 $search_clear.onclick = clearSearch;
 $storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
 initDragAndDrop();
@@ -184,15 +184,6 @@ function loadFileAsEpub(file) {
         }
     }
     xhr.send(null);
-
-    // var imgReader = new FileReader();
-    // imgReader.readAsDataURL(coverUrl);
-    // imgReader.onloadend = function() {
-    //   var base64data = imgReader.result;
-    //   console.log(base64data);
-    // }
-
-
   };
 
   reader.readAsArrayBuffer(file);
@@ -202,17 +193,19 @@ function searchInLib(e) {
   const query = e.target.value;
 
   if (query === '') {
-    $library.style.display = 'inline';
+    $library.style.display = 'block';
     $search_results.style.display = 'none';
     $search_query.style.display = 'none';
     return;
   }
   $library.style.display = 'none';
-  $search_results.style.display = 'inline';
-  $search_query.style.display = 'inline';
+  $search_results.style.display = 'block';
+  $search_query.style.display = 'block';
 
   const results = Lib.searchBooks(query);
-  console.log(results);
+  results.forEach(resultItem => {
+    fuseSearchHighlight(resultItem);
+  });
   Lib.updateSearchResults(results, query, $search_results, $search_query);
 }
 

@@ -137,6 +137,7 @@ export default class Library {
 
       const listChild = elementFactory('li', {},
       divParent);
+      listChild.onclick = this.openReaderEvent(index, moveCategory, removeBook);
 
       if (categoryTitle !== null)
         docFrags[book.category].append(categoryTitle);
@@ -165,7 +166,6 @@ export default class Library {
     bookImage.classList.add('library-book-cover');
     bookImage.src = book.coverImg;
     bookImage.alt = `${book.metadata.title} Book Cover`;
-    bookImage.onclick = this.openReaderEvent(index);
 
     return bookImage;
   }
@@ -173,8 +173,7 @@ export default class Library {
   createElementBookLink(book, index) {
     const bookLink = document.createElement('a');
     bookLink.classList.add('library-book-title');
-    bookLink.textContent = book.metadata.title;
-    bookLink.onclick = this.openReaderEvent(index);
+    bookLink.innerHTML = book.metadata.title;
 
     return bookLink;
   }
@@ -182,8 +181,7 @@ export default class Library {
   createElementBookAuthor(book, index) {
     const bookAuthor = document.createElement('a');
     bookAuthor.classList.add('library-book-author');
-    bookAuthor.textContent = book.metadata.creator;
-    bookAuthor.onclick = this.openReaderEvent(index);
+    bookAuthor.innerHTML = book.metadata.creator;
 
     return bookAuthor;
   }
@@ -276,9 +274,11 @@ export default class Library {
    * items.
    * @param {Number} storageIndex Index of book to be opened in the 'Library' key in localstorage/IndexedDB
    */
-  openReaderEvent(storageIndex) {
+  openReaderEvent(storageIndex, moveCategory = null, removeBook = null) {
     // We return a function here as a workaround to pass parameters
-    return () => {
+    return e => {
+      if (typeof e !== 'undefined' && (e.target === moveCategory || e.target === removeBook)) return;
+
       try {
         localStorage.setItem('OpenedBookLibIndex', storageIndex);
         // TODO: Change this from the 'js/' dir to... somewhere else
@@ -319,22 +319,27 @@ export default class Library {
       keys: [ 'metadata.title', 'metadata.creator' ],
       includeMatches: true,
     }) {
-    const search = new Fuse(this.bookLib, options);
+
+    // Create a copy so search highlight does not interfere
+    // with actual bookLib
+    // We use lodash's cloneDeep function since this
+    // isn't natively available in ES6
+    const bookLibCopy = _.cloneDeep(this.bookLib);
+    // console.log(bookLibCopy);
+
+    const search = new Fuse(bookLibCopy, options);
     return search.search(query);
   }
 
   updateSearchResults(results, query, $search_results, $search_query) {
-    
-
     if (results.length === 0) {
       $search_results.innerHTML = "";
-      showToast('No search results found.');
+      // showToast('No search results found.');
       return;
     }
 
     const docFrag = new DocumentFragment();
     const listParent = elementFactory('ul');
-
 
     results.forEach((result, index) => {
       const book = result.item;
@@ -350,8 +355,9 @@ export default class Library {
       }, bookLink, bookAuthor, bookImage);
 
       const listChild = elementFactory('li', {}, divParent);
+      listChild.onclick = this.openReaderEvent(index);
 
-      
+
       listParent.appendChild(listChild);
     });
     docFrag.appendChild(listParent);

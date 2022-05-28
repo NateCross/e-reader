@@ -8,43 +8,40 @@
     <link rel="stylesheet" href="./css/toastify.css">
     <link rel="stylesheet" href="./css/app.css">
     <link rel="stylesheet" href="./css/style.css">
-    
 
     <!-- <script type="module" src="./js/app.js" defer></script> -->
-    
   </head>
   <body>
-      <nav class="mainNavbar">
-        <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
-        <ul>
-            <!-- data-links are used for seamless transitions -->
-            <li><a href="/" data-link>Home</a></li>
-            <li><a href="/library" data-link>Library</a></li>
-            <li><a href="/about" data-link>About Us</a></li>
-            <li><a href="/contact" data-link>Contact Us</a></li>
-            <li><a href="/sitemap">Site Map</a></li>
-            <li><a href="/faq" data-link>FAQ</a></li>
-        </ul>
-      </nav>
+    <nav class="mainNavbar">
+      <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/library">Library</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/sitemap">Site Map</a></li>
+        <li><a href="/faq">FAQ</a></li>
+      </ul>
+    </nav>
 
-      <main class="content">
-        <h1>READ YOUR EPUBS FOR FREE</h1>
-        <p>Upload any EPUB file you have on hand by pressing the button or dragging the file to the button below,
-        <br> then simply click on the newly uploaded book's title or cover below to begin.
-        <br>Happy reading!</p>
-        <label for="file-upload" class="file-upload-container">
-          <input
-            type   = "file"
-            id     = "file-upload"
-            name   = "file-upload"
-            accept = ".epub"
-          >
-        </label>
-        <div class="iframe-container">
-         <iframe width="560" height="315" src="https://www.youtube.com/embed/hE5hS53fYqs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      </main>
-    
+    <main class="content">
+      <h1>READ YOUR EPUBS FOR FREE</h1>
+      <p>Upload any EPUB file you have on hand by pressing the button or dragging the file to the button below,
+      <br> then simply click on the newly uploaded book's title or cover below to begin.
+      <br>Happy reading!</p>
+      <label for="file-upload" class="file-upload-container">
+        <input
+          type   = "file"
+          id     = "file-upload"
+          name   = "file-upload"
+          accept = ".epub"
+        >
+      </label>
+
+      <div class="iframe-container">
+       <iframe width="560" height="315" src="https://www.youtube.com/embed/hE5hS53fYqs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </main>
     <!-- SCRIPTS -->
 
     <!-- Unpack epub files -->
@@ -64,8 +61,6 @@
 
     <!-- <script type="module" src="./js/router.js"></script> -->
     <script type="module" src="./js/index.js"></script>
-
-    
   </body>
 </html>
 

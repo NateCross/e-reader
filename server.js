@@ -31,6 +31,10 @@ for (module in moduleSrc) {
 
 // Serving the js
 app.use('/js', express.static(path.join(__dirname, '/src/js/')));
+// Serving lodash specifically
+app.get('/scripts/lodash.js', function(req, res) {
+  res.sendFile(path.join(__dirname, '/node_modules/lodash/lodash.js'));
+});
 
 // Serving the css
 app.use('/css',express.static(path.join(__dirname, '/src/css/')));

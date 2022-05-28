@@ -247,3 +247,42 @@ export function showToast (message, type = 'normal') {
   toastList[type].options.text = message;
   toastList[type].showToast();
 }
+
+// https://github.com/brunocechet/Fuse.js-with-highlight/blob/master/index.js
+/**
+ * Helper function to highlight fuse.js results.
+ */
+export function fuseSearchHighlight(resultItem, highlightClassId = 'library-search-highlight') {
+  resultItem.matches.forEach((matchItem) => {
+
+    // Because we search in 'metadata.title and .author'
+    // we have to access the resultItem.item like a 2D array
+    // thus, we have to split to get the actual metadata
+    // category that was found
+    const keySplit = matchItem.key.split('.');
+
+    const text = resultItem.item[keySplit[0]][keySplit[1]];
+    const result = [];
+    const matches = [].concat(matchItem.indices); // limpar referencia
+    let pair = matches.shift();
+
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charAt(i)
+      if (pair && i == pair[0]) {
+        result.push(`<mark class=${highlightClassId}>`)
+      }
+      result.push(char)
+      if (pair && i == pair[1]) {
+        result.push('</mark>')
+        pair = matches.shift()
+      }
+    }
+    resultItem.item[keySplit[0]][keySplit[1]] = result.join('');
+
+    if(resultItem.children && resultItem.children.length > 0){
+      resultItem.children.forEach((child) => {
+        highlighter(child);
+      });
+    }
+  });
+}
