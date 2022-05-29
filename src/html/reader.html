@@ -201,9 +201,12 @@
     </button></li>
     <div class="dropdown-content">
       <div id="searchInBook" class="search">
-        <p id="searchInBook_title">Search in Book</p>
-        <input type="text" id="search-bar">
-        <input type="button" id="search-clear" value='Clear Search' title='Clear Search'>
+        <div class="search-function-container">
+          <p id="searchInBook_title">Search in Book</p>
+          <input type="text" id="search-bar">
+          <input type="button" id="search-button" value='Search' title='Search'>
+          <input type="button" id="search-clear" value='Clear' title='Clear Search'>
+        </div>
         <div class="search-results-container">
           <p id="searchInBook_results">Search Results</p>
           <input type="number" id="results-current" min=1>

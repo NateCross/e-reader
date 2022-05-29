@@ -21,18 +21,26 @@ body{
   align-items: center;
   justify-content: space-between;
   font-weight: bold;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.logo{
-  width: 175px;
+/* .mainNavbar i:hover + .mainNavbar ul li { */
+/* } */
+
+.logo {
+  width: 100px;
   cursor: pointer;
 }
 
+/* .mainNavbar ul { */
+/*   display: none; */
+/* } */
+
 .mainNavbar ul li{
   list-style: none;
-  display: inline-block;
-  margin: 0 20px;
   position: relative;
+  display: inline-block;
 }
 
 .mainNavbar ul li a{
@@ -41,23 +49,37 @@ body{
   text-transform: uppercase;
 }
 
-.mainNavbar ul li a::after{
-  content: '';
-  height: 3px;
-  width: 0;
-  background: #EC994B;
-  position: absolute;
-  left: 0;
-  bottom: -10px;
-  transition: 0.5s;
+.nav-hamburger {
+  display: block;
+  font-size: 50px;
+  color: white;
+  transition: color var(--default-transition);
 }
 
-.mainNavbar ul li a:hover::after{
-  width: 100%;
+.nav-hamburger:hover {
+  color: var(--hover);
 }
+
+.nav-list {
+  display: none;
+  position: relative;
+}
+
+.nav-hamburger:hover ~ .nav-list {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 5%;
+  /* gap: 2rem; */
+  background-color: #F1EEE9;
+  width: 12rem;
+  font-family: Times New Roman, serif;
+}
+
 
 .content{
-  width: 100%;
+  /* width: 100%; */
 
   /*
    * Disabled the following below because
@@ -69,11 +91,13 @@ body{
   /* transform: translateY(-50%); */
 
   text-align: center;
+  margin-left: 2rem;
+  margin-right: 2rem;
   color: #F1EEE9;
 }
 
 .content h1{
-  font-size: 60px;
+  font-size: 3rem;
 }
 
 .content p{
@@ -180,4 +204,87 @@ body{
   width: 100%;
   height: 100%;
 }
+
+@media screen and (min-width: 600px) {
+
+}
+
+@media screen and (min-width: 800px) {
+  .content h1 {
+    font-size: 4rem;
+  }
+}
+
+
+@media screen and (min-width: 1000px) {
+  .logo {
+    width: 175px;
+  }
+  .nav-list {
+    display: block;
+    flex-direction: row;
+  }
+  .mainNavbar i {
+    display: none;
+  }
+  .mainNavbar ul {
+    visibility: visible;
+  }
+
+  .mainNavbar ul li {
+    margin: 0 20px;
+  }
+
+  .mainNavbar ul li a::after{
+    content: '';
+    height: 3px;
+    width: 0;
+    background: #EC994B;
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    transition: 0.5s;
+  }
+
+  .mainNavbar ul li a:hover::after{
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .nav-list:hover {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top: 5%;
+    /* gap: 2rem; */
+    background-color: #F1EEE9;
+    width: 12rem;
+    font-family: Times New Roman, serif;
+    /* margin-top: .5rem; */
+    /* margin-bottom: .5rem; */
+    /* height: 10rem; */
+  }
+
+  .nav-list li a {
+    display: block;
+    background-color: #15133C;
+    color: white;
+    text-align: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: background-color var(--default-transition);
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .nav-list li a:hover {
+    background-color: var(--hover);
+
+  }
+
+}
+
 

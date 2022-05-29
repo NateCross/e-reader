@@ -31,6 +31,7 @@ const $bookmark_remove_all = document.querySelector('#bookmark-remove-all');
 const $bookmark_list = document.querySelector('#bookmark-list');
 
 const $search_bar = document.querySelector('#search-bar');
+const $search_button = document.querySelector('#search-button');
 const $search_clear = document.querySelector('#search-clear');
 const $search_results_current = document.querySelector('#results-current');
 const $search_results_total = document.querySelector('#results-total');
@@ -135,6 +136,7 @@ const Initialize = async () => {
 
   $search_results_container.style.display = 'none';
   $search_bar.onchange = searchInBook;
+  $search_button.onclick = searchInBook;
   $search_clear.onclick = clearSearch;
   $search_results_current.onchange = jumpToSearchResult;
 

@@ -13,14 +13,14 @@
   <body>
     <nav class="mainNavbar">
       <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
-      <ul>
-          <!-- data-links are used for seamless transitions -->
-          <li><a href="/" data-link>Home</a></li>
-          <li><a href="/library" data-link>Library</a></li>
-          <li><a href="/about" data-link>About Us</a></li>
-          <li><a href="/contact" data-link>Contact Us</a></li>
-          <li><a href="/sitemap">Site Map</a></li>
-          <li><a href="/faq" data-link>FAQ</a></li>
+      <i class="fa-solid fa-bars nav-hamburger"></i>
+      <ul class="nav-list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/library">Library</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/sitemap">Site Map</a></li>
+        <li><a href="/faq">FAQ</a></li>
       </ul>
     </nav>
     <div class="top-bar">
@@ -69,6 +69,9 @@
 
     <!-- Helper functions -->
     <script src="./scripts/lodash.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="./js/font-awesome.js"></script>
 
     <!-- <script type="module" src="./js/router.js"></script> -->
     <script type="module" src="./js/library-page.js"></script>
