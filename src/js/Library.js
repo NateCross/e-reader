@@ -140,7 +140,7 @@ export default class Library {
         class: 'library-book',
         href: `/reader?book=${index}`,
       }, bookLink, bookAuthor, divBookImageContainer);
-      // divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
+      divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
 
       const listChild = elementFactory('li', {},
       divParent);
@@ -286,19 +286,15 @@ export default class Library {
    * items.
    * @param {Number} storageIndex Index of book to be opened in the 'Library' key in localstorage/IndexedDB
    */
-  openReaderEvent(storageIndex, moveCategory = null, removeBook = null) {
+  openReaderEvent(moveCategory = null, removeBook = null) {
+
     // We return a function here as a workaround to pass parameters
     return e => {
       // It returns false so that it prevents the parent anchor from going to the href
-      if (typeof e !== 'undefined' && (e.target === moveCategory || e.target === removeBook)) return false;
+      if (typeof e === 'undefined')
+        window.location.href = `/reader?book=${this.bookLib.length - 1}`;
 
-      try {
-        localStorage.setItem('OpenedBookLibIndex', storageIndex);
-        // TODO: Change this from the 'js/' dir to... somewhere else
-        window.location.href = "/reader";
-      } catch (err) {
-        console.log(`ERROR: ${err}`);
-      }
+      if (e.target === moveCategory || e.target === removeBook) return false;
     }
   }
 

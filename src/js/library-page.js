@@ -20,7 +20,7 @@ const $search_query = document.querySelector('#search-query');
 
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
-$file_upload.onchange = openBookEvent(Lib);
+$file_upload.onchange = openBookEvent();
 $search_bar.oninput = searchInLib;
 $search_clear.onclick = clearSearch;
 $storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
