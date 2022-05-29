@@ -258,6 +258,14 @@ input[type="file"] {
   flex-direction: column;
 }
 
+.search-lib {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .search input[type=text]{
   /* float: right; */
@@ -268,12 +276,12 @@ input[type="file"] {
   /* margin-right: 16px; */
 }
 
-#search-results > ul{
+#search-results ul{
   display: grid;
   grid-template-columns: repeat(1, 1fr);
 }
 
-#storage p{
+#storage p {
   font-size: larger;
   background-color: #15133C;
   min-width: 2rem;

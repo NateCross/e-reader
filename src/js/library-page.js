@@ -12,7 +12,7 @@ const $storage_quota = document.querySelector('#quota');
 const $storage_percent = document.querySelector('#percent');
 const $storage_clear = document.querySelector('#clear-storage');
 
-const $search = document.querySelector('.search');
+const $search = document.querySelector('.search-lib');
 const $search_bar = document.querySelector('#search-bar');
 const $search_clear = document.querySelector('#search-clear');
 const $search_results = document.querySelector('#search-results');

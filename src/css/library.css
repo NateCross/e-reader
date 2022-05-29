@@ -1,12 +1,12 @@
 @media screen and (min-width: 600px) {
-  #library > ul {
+  #library ul, #search-results ul {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* Medium */
 @media screen and (min-width: 800px) {
-  #library > ul {
+  #library ul, #search-results ul {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -28,14 +28,14 @@
 }
 
 @media screen and (min-width: 1000px) {
-  #library > ul {
+  #library ul, #search-results ul {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 /* Extra large */
 @media screen and (min-width: 1200px) {
-  #library > ul {
+  #library ul, #search-results ul {
     grid-template-columns: repeat(5, 1fr);
   }
 
