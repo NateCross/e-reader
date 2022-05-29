@@ -138,9 +138,9 @@ export default class Library {
 
       const divParent = elementFactory('a', {
         class: 'library-book',
-        href: '/reader',
+        href: `/reader?book=${index}`,
       }, bookLink, bookAuthor, divBookImageContainer);
-      divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
+      // divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
 
       const listChild = elementFactory('li', {},
       divParent);

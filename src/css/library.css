@@ -1,0 +1,49 @@
+@media screen and (min-width: 600px) {
+  #library > ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Medium */
+@media screen and (min-width: 800px) {
+  #library > ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .top-bar {
+    flex-direction: row;
+    /* display: flex; */
+    /* justify-content: space-between; */
+    /* align-items: center; */
+  }
+
+  .search input[type=text] {
+    font-size: 13px;
+    width: 80%;
+  }
+
+  #storage p {
+    width: 18%;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  #library > ul {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Extra large */
+@media screen and (min-width: 1200px) {
+  #library > ul {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .file-upload-container:after {
+    content: '⬆ UPLOAD AND READ EPUB FILE';
+  }
+
+  .search input[type=text] {
+    font-size: 17px;
+  }
+}

@@ -1,11 +1,28 @@
+// Used for res.sendFile in app.get
+const path = require('path');
+
+// Used for livereload in Express
+// https://stackoverflow.com/a/60542066
+
+const livereload = require("livereload");
+const connectLivereload = require("connect-livereload");
+
+// open livereload high port and start to watch public directory for changes
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(__dirname, 'src'));
+
+// ping browser on Express boot, once browser has reconnected and handshaken
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
+});
+
 // Boilerplate for express.js
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 const fs = require('fs');
-
-// Used for res.sendFile in app.get
-const path = require('path');
 
 // The node modules used in the app
 // Some module dist files have a different name,
@@ -73,6 +90,8 @@ fs.readdir(`${__dirname}/src/html`, (err, files) => {
 
   }
 });
+app.use(connectLivereload());
+
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}!`);

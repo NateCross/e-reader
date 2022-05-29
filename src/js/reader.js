@@ -2,6 +2,12 @@ import State from './State.js';
 import * as Modals from './ModalTextContent.js';
 import { showToast } from './Utils.js';
 
+/// URL Search Parameters ///
+/// Used for getting the book index to be opened ///
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const bookToOpen = urlParams.get('book');
+
 /// HTML Elements ///
 const $title = document.querySelector('#title');
 const $toc = document.querySelector('#table-of-contents');
@@ -77,7 +83,7 @@ const Initialize = async () => {
   // can store objects. The opened book index is stored in
   // localStorage since it is just a simple number
   const Lib = await localforage.getItem('Library');
-  const openedBook = localStorage.getItem('OpenedBookLibIndex');
+  const openedBook = bookToOpen;
 
   // Performing initialization operations
   // Order is not very important, as long as they are there.
