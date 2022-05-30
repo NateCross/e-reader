@@ -40,7 +40,7 @@
   }
 
   .file-upload-container:after {
-    content: '⬆ UPLOAD AND READ EPUB FILE';
+    content: ' UPLOAD AND READ EPUB FILE';
   }
 
   .search input[type=text] {

@@ -155,8 +155,8 @@ export const RemoveAllHighlights = new ModalText(
     This cannot be undone.
   </p>
   `,
-  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove' title='Remove All Highlights'></input>
-  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `<button class='modal-button modal-button-remove' id='remove' title='Remove All Highlights'><i class='fa-solid fa-trash'></i> Remove</button>
+  <button class='modal-button modal-button-cancel' title='Cancel' id='cancel'><i class="fa-solid fa-x"></i> Cancel</button>
   `,
   undefined,
   {
@@ -173,8 +173,8 @@ export const RemoveAllBookmarks = new ModalText(
     This cannot be undone.
   </p>
   `,
-  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove' title='Remove All Bookmarks'></input>
-  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `<button class='modal-button modal-button-remove' id='remove' Remove' title='Remove All Bookmarks'><i class='fa-solid fa-trash'></i> Remove</button>
+  <button class='modal-button modal-button-cancel' title='Cancel' id='cancel'><i class="fa-solid fa-x"></i> Cancel</button>
   `,
   undefined,
   {
@@ -191,8 +191,8 @@ export const ResetSettings = new ModalText(
     This cannot be undone.
   </p>
   `,
-  `<input type='button' class='modal-button modal-button-remove' id='remove' value='↺ Reset' title='Reset settings to default'></input>
-  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `<button class='modal-button modal-button-remove' id='remove' title='Reset settings to default'><i class='fa-solid fa-delete-left'></i> Reset</button>
+  <button class='modal-button modal-button-cancel' title='Cancel' id='cancel'><i class="fa-solid fa-x"></i> Cancel</button>
   `,
   undefined,
   {
@@ -209,8 +209,8 @@ export const ClearLibrary = new ModalText(
     This cannot be undone, but your progress in each book will remain after removal.
   </p>
   `,
-  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove All Books' title='Remove all books in all categories'></input>
-  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `<button class='modal-button modal-button-remove' id='remove' title='Remove all books in all categories'><i class='fa-solid fa-delete-left'></i> Delete All Books</button>
+  <button class='modal-button modal-button-cancel' title='Cancel' id='cancel'><i class="fa-solid fa-x"></i> Cancel</button>
   `,
   undefined,
   {
@@ -227,8 +227,8 @@ export const RemoveBook = new ModalText(
     This cannot be undone, but your progress in this book will remain after removal.
   </p>
   `,
-  `<input type='button' class='modal-button modal-button-remove' id='remove' value='🗑 Remove Book' title='Remove book'></input>
-  <input type='button' class='modal-button modal-button-cancel' value='🗙 Cancel' title='Cancel' id='cancel'></input
+  `<button class='modal-button modal-button-remove' id='remove' Remove Book' title='Remove book'><i class='fa-solid fa-trash'></i> Remove</button>
+  <button class='modal-button modal-button-cancel' title='Cancel' id='cancel'><i class="fa-solid fa-x"></i> Cancel</button>
   `,
   undefined,
   {

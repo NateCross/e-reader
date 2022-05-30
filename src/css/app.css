@@ -33,9 +33,13 @@ select {
   transition: background-color .2s ease-in;
 }
 
+.file-upload-container:before {
+  font-family: FontAwesome;
+  content: '\f093 '
+}
 
 .file-upload-container:after {
-  content: '⬆ UPLOAD';
+  content: ' UPLOAD';
 }
 
 .file-upload-container:hover {
@@ -52,7 +56,7 @@ select {
 }
 
 .file-upload-file-is-hovered:after {
-  content: '⬆ DROP EPUB FILE HERE';
+  content: ' DROP EPUB FILE HERE';
 }
 
 /*
