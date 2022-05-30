@@ -79,18 +79,9 @@ input[type="file"] {
   /* Stay in place */
   z-index: 1;
   /* Sit on top */
-  padding-top: 200px;
-  padding-bottom: 200px;
   /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%;
-  /* Full width */
-  height: 100%;
-  /* Full height */
+  top: 10vh;
   overflow: auto;
-  /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0);
   /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4);
   /* Black w/ opacity */
@@ -271,7 +262,7 @@ input[type="file"] {
 }
 
 
-.search input[type=text]{
+.search input[type=text] {
   /* float: right; */
   padding: 6px;
   border: none;
@@ -280,7 +271,7 @@ input[type="file"] {
   /* margin-right: 16px; */
 }
 
-#search-results ul{
+#search-results ul {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
 }
@@ -298,15 +289,11 @@ input[type="file"] {
  * Styles the library div
  */
 
-#library{
-  
-}
+#library {}
 
-.library-search-highlight {
+.library-search-highlight {}
 
-}
-
-#library > h3{
+#library>h3 {
   font-size: 45px;
   text-align: center;
   color: #F1EEE9;
@@ -314,7 +301,7 @@ input[type="file"] {
   margin-top: 25px;
 }
 
-#library > ul{
+#library>ul {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
 }
@@ -361,7 +348,7 @@ input[type="file"] {
   font-weight: bold;
 }
 
-.library-book-title::after{
+.library-book-title::after {
   content: "\a";
   white-space: pre;
 }
@@ -389,20 +376,20 @@ input[type="file"] {
   white-space: pre;
 }
 
-.library-book-image-container{
-  position:relative;
+.library-book-image-container {
+  position: relative;
   width: auto;
 }
 
-.library-book:hover .library-book-cover{
+.library-book:hover .library-book-cover {
   opacity: 0.3;
 }
 
-.library-book:hover .library-book-image-button-container{
+.library-book:hover .library-book-image-button-container {
   opacity: 1;
 }
 
-.library-book-image-button-container{
+.library-book-image-button-container {
   margin: 0;
   transition: .5s ease;
   opacity: 0;
@@ -421,14 +408,15 @@ input[type="file"] {
 
 .library-book-category-button {
   background-color: #15133C;
-  border-color:#F1EEE9;
-  color:#F1EEE9;
+  border-color: #F1EEE9;
+  color: #F1EEE9;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
   padding: 10px 25px;
   transition: background-color .2s ease-in;
-  display: block; /* Make the buttons appear below each other */
+  display: block;
+  /* Make the buttons appear below each other */
   margin-bottom: 10px;
   width: 100%;
   text-align: center;
@@ -445,8 +433,8 @@ input[type="file"] {
 
 .library-book-remove-button {
   background-color: #D0312D;
-  border-color:#F1EEE9;
-  color:#F1EEE9;
+  border-color: #F1EEE9;
+  color: #F1EEE9;
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
@@ -484,7 +472,7 @@ input[type="file"] {
   overflow: hidden;
 }
 
-.dropdown > div {
+.dropdown>div {
   padding: 1rem;
 }
 
@@ -539,18 +527,21 @@ select {
   border: 0;
 }
 
-.icon-bar > ul{
-  text-align:center;
+.icon-bar>ul {
+  text-align: center;
 }
 
-.icon-bar > ul > li{
-  display:inline-block;
-  margin-left: 15px;       /* This is when the drop down box appears */
+.icon-bar>ul>li {
+  display: inline-block;
+  margin-left: 15px;
+  /* This is when the drop down box appears */
   position: relative;
 }
 
 #icon-nav-container {
   display: flex;
+  flex-wrap: wrap;
+  /* row-gap: 2rem; */
 }
 
 .icon-nav-buttons {
@@ -634,7 +625,7 @@ select {
   font-size: 15px;
 }
 
-#fontSize span{
+#fontSize span {
   font-weight: bold;
 }
 
@@ -663,7 +654,7 @@ select {
 }
 
 #results-total {
-  font-size:larger;
+  font-size: larger;
   font-weight: bold;
 }
 
@@ -685,7 +676,7 @@ select {
 
 #search-button:hover, #search-clear:hover {
   background-color: #EC994B;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 #searchInBook_results {
@@ -705,11 +696,11 @@ select {
   max-height: 300px;
 }
 
-ul{
+ul {
   list-style-type: none;
- }
+}
 
-#highlight-buttons input[type=button]{
+#highlight-buttons input[type=button] {
   background-color: #73777B;
   border: none;
   color: white;
@@ -727,7 +718,7 @@ ul{
 
 #highlight-buttons input[type=button]:hover {
   background-color: #EC994B;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 #bookmarks {
@@ -736,7 +727,7 @@ ul{
   text-align: center;
 }
 
-#bookmark-buttons input[type=button]{
+#bookmark-buttons input[type=button] {
   background-color: #73777B;
   border: none;
   color: white;
@@ -754,7 +745,7 @@ ul{
 
 #bookmark-buttons input[type=button]:hover {
   background-color: #EC994B;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 #text-to-speech {
@@ -763,7 +754,7 @@ ul{
   text-align: center;
 }
 
-.speech input[type=button]{
+.speech input[type=button] {
   background-color: #73777B;
   border: none;
   color: white;
@@ -781,17 +772,16 @@ ul{
 
 .speech input[type=button]:hover {
   background-color: #EC994B;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-#title{
+#title {
   padding: 15px 15px;
 }
 
-#viewer {
-}
+#viewer {}
 
-.page-count{
+.page-count {
   color: #F1EEE9;
   display: flex;
   align-items: center;
@@ -801,7 +791,7 @@ ul{
   margin-bottom: 5px;
 }
 
-#current-page{
+#current-page {
   padding: 5px;
   border: 3px solid var(--main-color);
   font-size: 15px;
@@ -814,8 +804,7 @@ ul{
   border-color: var(--hover);
 }
 
-#percentage{
-}
+#percentage {}
 
 .page-slider-container {
   display: flex;
@@ -824,143 +813,187 @@ ul{
   margin-bottom: 5px;
 }
 
-#page-slider{
-  -webkit-appearance: none;  /* Override default CSS styles */
+#page-slider {
+  -webkit-appearance: none;
+  /* Override default CSS styles */
   appearance: none;
   /* height: 15px; */
   /* min-width: 150px; */
   width: 100%;
   border-radius: 5px;
   margin: 5px 10px;
-  background: #F1EEE9; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  background: #F1EEE9;
+  /* Grey background */
+  outline: none;
+  /* Remove outline */
+  opacity: 0.7;
+  /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s;
+  /* 0.2 seconds transition on hover */
   transition: opacity .2s;
 }
 
 #page-slider:hover {
-  opacity: 1; /* Fully shown on mouse-over */
+  opacity: 1;
+  /* Fully shown on mouse-over */
 }
 
 #page-slider::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
+  -webkit-appearance: none;
+  /* Override default look */
   appearance: none;
-  width: 25px; /* Set a specific slider handle width */
+  width: 25px;
+  /* Set a specific slider handle width */
   height: 20px;
-  border-radius: 50%; 
+  border-radius: 50%;
   background: #EC994B;
-  cursor: pointer; /* Cursor on hover */
+  cursor: pointer;
+  /* Cursor on hover */
 }
 
 #page-slider::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%;
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-volume{
-  -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
-  height: 15px;
-  border-radius: 5px;  
-  background: #73777B; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
-}
-
-#speech-volume:hover{
-  opacity: 1; /* Fully shown on mouse-over */
-}
-
-#speech-volume::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
-  appearance: none;
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%; 
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-volume::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%;
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-rate{
-  -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
-  height: 15px;
-  border-radius: 5px;  
-  background: #73777B; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
-}
-
-#speech-rate:hover{
-  opacity: 1; /* Fully shown on mouse-over */
-}
-
-#speech-rate::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
-  appearance: none;
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%; 
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-rate::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%;
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-pitch{
-  -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
-  height: 15px;
-  border-radius: 5px;  
-  background: #73777B; /* Grey background */
-  outline: none; /* Remove outline */
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
-}
-
-#speech-pitch:hover{
-  opacity: 1; /* Fully shown on mouse-over */
-}
-
-#speech-pitch::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Override default look */
-  appearance: none;
-  width: 25px; /* Set a specific slider handle width */
-  height: 20px;
-  border-radius: 50%; 
-  background: #EC994B; 
-  cursor: pointer; /* Cursor on hover */
-}
-
-#speech-pitch::-moz-range-thumb {
-  width: 25px; /* Set a specific slider handle width */
+  width: 25px;
+  /* Set a specific slider handle width */
   height: 20px;
   border-radius: 50%;
   background: #EC994B;
-  cursor: pointer; /* Cursor on hover */
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-volume {
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;
+  background: #73777B;
+  /* Grey background */
+  outline: none;
+  /* Remove outline */
+  opacity: 0.7;
+  /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s;
+  /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-volume:hover {
+  opacity: 1;
+  /* Fully shown on mouse-over */
+}
+
+#speech-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Override default look */
+  appearance: none;
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-volume::-moz-range-thumb {
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-rate {
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;
+  background: #73777B;
+  /* Grey background */
+  outline: none;
+  /* Remove outline */
+  opacity: 0.7;
+  /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s;
+  /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-rate:hover {
+  opacity: 1;
+  /* Fully shown on mouse-over */
+}
+
+#speech-rate::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Override default look */
+  appearance: none;
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-rate::-moz-range-thumb {
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-pitch {
+  -webkit-appearance: none;
+  /* Override default CSS styles */
+  appearance: none;
+  height: 15px;
+  border-radius: 5px;
+  background: #73777B;
+  /* Grey background */
+  outline: none;
+  /* Remove outline */
+  opacity: 0.7;
+  /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s;
+  /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+#speech-pitch:hover {
+  opacity: 1;
+  /* Fully shown on mouse-over */
+}
+
+#speech-pitch::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  /* Override default look */
+  appearance: none;
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
+}
+
+#speech-pitch::-moz-range-thumb {
+  width: 25px;
+  /* Set a specific slider handle width */
+  height: 20px;
+  border-radius: 50%;
+  background: #EC994B;
+  cursor: pointer;
+  /* Cursor on hover */
 }
 
 .speech-sliders {
@@ -1023,7 +1056,7 @@ ul{
   font-weight: 700;
 }
 
-.speech-sliders span{
+.speech-sliders span {
   font-weight: 700;
   /* margin-right: 25px; */
 }
@@ -1033,12 +1066,11 @@ ul{
  * Since they cannot be styled
  * https://stackoverflow.com/questions/44147362/firefox-overriding-style-of-html-select-option
  */
- @supports (-moz-appearance:none) {
-  select
-  {
-  -moz-appearance:none !important;
-  background: transparent url('data:image/gif;base64,R0lGODlhBgAGAKEDAFVVVX9/f9TU1CgmNyH5BAEKAAMALAAAAAAGAAYAAAIODA4hCDKWxlhNvmCnGwUAOw==') right center no-repeat !important;
-  background-position: calc(100% - 5px) center !important;
+@supports (-moz-appearance:none) {
+  select {
+    -moz-appearance: none !important;
+    background: transparent url('data:image/gif;base64,R0lGODlhBgAGAKEDAFVVVX9/f9TU1CgmNyH5BAEKAAMALAAAAAAGAAYAAAIODA4hCDKWxlhNvmCnGwUAOw==') right center no-repeat !important;
+    background-position: calc(100% - 5px) center !important;
   }
 }
 
@@ -1060,6 +1092,10 @@ ul{
   .dropdown .dropbtn {
     padding-right: 1rem;
     padding-left: 1rem;
+  }
+  #icon-nav-container {
+    flex-direction: column;
+    gap: 2rem;
   }
 
 }

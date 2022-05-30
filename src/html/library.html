@@ -1,81 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="icon" type="image/x-icon" href="css/imgs/favicon.ico">
-    <title>Libre Ipsum E-Reader</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./css/toastify.css">
-    <link rel="stylesheet" href="./css/app.css">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/library.css">
-  </head>
-  <body>
-    <nav class="mainNavbar">
-      <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
-      <i class="fa-solid fa-bars nav-hamburger"></i>
-      <ul class="nav-list">
-        <li><a href="/">Home</a></li>
-        <li><a href="/library">Library</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/contact">Contact Us</a></li>
-        <li><a href="/sitemap">Site Map</a></li>
-        <li><a href="/faq">FAQ</a></li>
-      </ul>
-    </nav>
-    <div class="top-bar">
-      <div class="upload">
-        <label for="file-upload" class="file-upload-container"></label>
-        <input
-          type   = "file"
-          id     = "file-upload"
-          name   = "file-upload"
-          accept = ".epub"
-        >
-      </div>
-      <div class="search-lib">
-        <div id="search-query"></div>
-        <input type="text" id="search-bar" title="Search for a Book" placeholder="Search for a book's title or author..." size='50'>
-        <input type="button" id="search-clear" value='Clear' title='Clear'>
-      </div>
+
+<head>
+  <link rel="icon" type="image/x-icon" href="css/imgs/favicon.ico">
+  <title>Libre Ipsum E-Reader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./css/toastify.css">
+  <link rel="stylesheet" href="./css/app.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/library.css">
+</head>
+
+<body>
+  <nav class="mainNavbar">
+    <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
+    <i class="fa-solid fa-bars nav-hamburger"></i>
+    <ul class="nav-list">
+      <li><a href="/">Home</a></li>
+      <li><a href="/library">Library</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/contact">Contact Us</a></li>
+      <li><a href="/sitemap">Site Map</a></li>
+      <li><a href="/faq">FAQ</a></li>
+    </ul>
+  </nav>
+  <div class="top-bar">
+    <div class="upload">
+      <label for="file-upload" class="file-upload-container"></label>
+      <input type="file" id="file-upload" name="file-upload" accept=".epub">
     </div>
-
-    <div id="search-results"></div>
-
-    <div id="library"></div>
-
-    <div id="storage">
-      <p>Storage: <output id="usage">-</output> / <output id="quota">-</output> (<output id="percent">-</output>%) 
-        <button id="clear-storage">Clear Storage</button>
-      </p>
+    <div class="search-lib">
+      <div id="search-query"></div>
+      <input type="text" id="search-bar" title="Search for a Book" placeholder="Search for a book's title or author..."
+        size='50'>
+      <input type="button" id="search-clear" value='Clear' title='Clear'>
     </div>
+  </div>
 
-    <!-- SCRIPTS -->
+  <div id="search-results"></div>
 
-    <!-- Unpack epub files -->
-    <script src="./scripts/jszip.min.js"></script>
+  <div id="library"></div>
 
-    <!-- Enhanced local storage, allows for objects -->
-    <script src="./scripts/localforage.min.js"></script>
+  <div id="storage">
+    <p>Storage: <output id="usage">-</output> / <output id="quota">-</output> (<output id="percent">-</output>%)
+      <button id="clear-storage">Clear Storage</button>
+    </p>
+  </div>
 
-    <!-- Main reader library -->
-    <script src="./scripts/epub.min.js"></script>
+  <!-- SCRIPTS -->
 
-    <!-- For displaying toast messages -->
-    <script src="./scripts/toastify.js"></script>
+  <!-- Unpack epub files -->
+  <script src="./scripts/jszip.min.js"></script>
 
-    <!-- Fuzzy searching of books -->
-    <script src="./scripts/fuse.min.js"></script>
+  <!-- Enhanced local storage, allows for objects -->
+  <script src="./scripts/localforage.min.js"></script>
 
-    <!-- Helper functions -->
-    <script src="./scripts/lodash.js"></script>
+  <!-- Main reader library -->
+  <script src="./scripts/epub.min.js"></script>
 
-    <!-- Font Awesome -->
-    <script src="./js/font-awesome.js"></script>
+  <!-- For displaying toast messages -->
+  <script src="./scripts/toastify.js"></script>
 
-    <!-- <script type="module" src="./js/router.js"></script> -->
-    <script type="module" src="./js/library-page.js"></script>
-  </body>
+  <!-- Fuzzy searching of books -->
+  <script src="./scripts/fuse.min.js"></script>
+
+  <!-- Helper functions -->
+  <script src="./scripts/lodash.js"></script>
+
+  <!-- Font Awesome -->
+  <script src="./js/font-awesome.js"></script>
+
+  <!-- <script type="module" src="./js/router.js"></script> -->
+  <script type="module" src="./js/library-page.js"></script>
+</body>
+
 </html>
-
-

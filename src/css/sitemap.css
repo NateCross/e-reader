@@ -1,0 +1,14 @@
+.sitemap-container {
+  overflow: 'hidden';
+  width: 100vw;
+  height: 'auto';
+  padding-left: 4rem;
+  padding-right: 4rem;
+  margin-bottom: 2rem;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}

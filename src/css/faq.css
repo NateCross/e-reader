@@ -1,28 +1,28 @@
-section{
+section {
     width: 100%;
-    
+
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.container{
+.container {
     width: 100%;
     max-width: 80rem;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
 
-.container h1{
+.container h1 {
     color: white;
     font-size: 52px;
     text-align: center;
     margin-bottom: 30px;
     margin-top: 30px;
-    
+
 }
 
-.accordion-item{
+.accordion-item {
     background-color: #15133C;
     border-radius: .4rem;
     margin-bottom: 1rem;
@@ -30,7 +30,7 @@ section{
     box-shadow: .5rem 2px .5rem rgba(0, 0, 0, .1);
 }
 
-.accordion-link{
+.accordion-link {
     font-size: 1.6rem;
     color: #F1EEE9;
     text-decoration: none;
@@ -42,24 +42,24 @@ section{
     padding: 1rem 0;
 }
 
-.accordion-link i{
+.accordion-link i {
     color: #F1EEE9;
     padding: .5rem;
 }
 
-.accordion-link .fa-minus{
+.accordion-link .fa-minus {
     display: none;
 }
 
-.answer{
-    max-height:  0;
+.answer {
+    max-height: 0;
     overflow: hidden;
     position: relative;
     background-color: #F1EEE9;
     transition: max-height 650ms;
 }
 
-.answer::before{
+.answer::before {
     content: "";
     position: absolute;
     width: .6rem;
@@ -70,20 +70,20 @@ section{
     transform: translateY(-50%);
 }
 
-.answer p{
+.answer p {
     color: #15133C;
     font-size: 1.4rem;
     padding: 2rem;
 }
 
-.accordion-item:target .answer{
+.accordion-item:target .answer {
     max-height: 20rem;
 }
 
-.accordion-item:target .accordion-link .fa-plus{
+.accordion-item:target .accordion-link .fa-plus {
     display: none;
 }
 
-.accordion-item:target .accordion-link .fa-minus{
+.accordion-item:target .accordion-link .fa-minus {
     display: block;
 }

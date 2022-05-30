@@ -123,12 +123,12 @@ function loadFileAsEpub(file) {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", coverUrl, true);
     xhr.responseType = "blob";
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       if (xhr.readyState !== 4) return;
 
       if (((xhr.status === 200) || (xhr.status == 0)) && (xhr.response)) {
         const ImgReader = new FileReader();
-        ImgReader.onloadend = function() {
+        ImgReader.onloadend = function () {
           storeBookToLib(bookData.target.result, Lib.bookLib, "Library", metadata, ImgReader.result);
 
           // Need to execute the functions directly after uploading a book
@@ -141,7 +141,7 @@ function loadFileAsEpub(file) {
           // showToast('Added new EPUB to Library.');
         }
         ImgReader.readAsDataURL(xhr.response);
-        }
+      }
     }
     xhr.send(null);
 

@@ -1,4 +1,4 @@
-.wrapper h1{
+.wrapper h1 {
   color: #F1EEE9;
   font-size: 52px;
   margin-top: 27px;
@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-.team{
+.team {
   display: flex;
   text-align: center;
   width: auto;
@@ -14,7 +14,7 @@
   flex-wrap: wrap;
 }
 
-.team .team_member{
+.team .team_member {
   background: #15133C;
   margin: 25px;
   margin-bottom: 50px;
@@ -25,20 +25,20 @@
   position: relative;
 }
 
-.team .team_member h3{
+.team .team_member h3 {
   color: #F1EEE9;
   font-size: 26px;
   margin-top: 50px;
 }
 
-.team .team_member p.role{
+.team .team_member p.role {
   color: #F1EEE9;
   font-size: 12px;
   text-transform: uppercase;
   margin: 12px 0;
 }
 
-.team .team_member .team_img{
+.team .team_member .team_img {
   border-radius: 50%;
   position: absolute;
   top: -50px;
@@ -47,7 +47,7 @@
   background: #EC994B;
 }
 
-.team .team_member .team_img img{
+.team .team_member .team_img img {
   width: 100px;
   height: 100px;
   padding: 5px;

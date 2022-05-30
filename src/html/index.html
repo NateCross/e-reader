@@ -1,67 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="icon" type="image/x-icon" href="css/imgs/favicon.ico">
-    <title>Libre Ipsum E-Reader</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./css/toastify.css">
-    <link rel="stylesheet" href="./css/app.css">
-    <link rel="stylesheet" href="./css/style.css">
-  </head>
-  <body>
-    <nav class="mainNavbar">
-      <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
-      <i class="fa-solid fa-bars nav-hamburger"></i>
-      <ul class="nav-list">
-        <li><a href="/">Home</a></li>
-        <li><a href="/library">Library</a></li>
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/contact">Contact Us</a></li>
-        <li><a href="/sitemap">Site Map</a></li>
-        <li><a href="/faq">FAQ</a></li>
-      </ul>
-    </nav>
 
-    <main class="content">
-      <h1>READ YOUR EPUBS FOR FREE</h1>
-      <p>Upload any EPUB file you have on hand by pressing the button or dragging the file to the button below,
+<head>
+  <link rel="icon" type="image/x-icon" href="css/imgs/favicon.ico">
+  <title>Libre Ipsum E-Reader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./css/toastify.css">
+  <link rel="stylesheet" href="./css/app.css">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+  <nav class="mainNavbar">
+    <a href="/"><img src="css/imgs/logo.png" class="logo" alt="Libre Ipsum Logo"></a>
+    <i class="fa-solid fa-bars nav-hamburger"></i>
+    <ul class="nav-list">
+      <li><a href="/">Home</a></li>
+      <li><a href="/library">Library</a></li>
+      <li><a href="/about">About Us</a></li>
+      <li><a href="/contact">Contact Us</a></li>
+      <li><a href="/sitemap">Site Map</a></li>
+      <li><a href="/faq">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <h1>READ YOUR EPUBS FOR FREE</h1>
+    <p>Upload any EPUB file you have on hand by pressing the button or dragging the file to the button below,
       <br> then simply click on the newly uploaded book's title or cover below to begin.
-      <br>Happy reading!</p>
-      <label for="file-upload" class="file-upload-container">
-        <input
-          type   = "file"
-          id     = "file-upload"
-          name   = "file-upload"
-          accept = ".epub"
-        >
-      </label>
+      <br>Happy reading!
+    </p>
+    <label for="file-upload" class="file-upload-container">
+      <input type="file" id="file-upload" name="file-upload" accept=".epub">
+    </label>
 
-      <div class="iframe-container">
-       <iframe width="560" height="315" src="https://www.youtube.com/embed/hE5hS53fYqs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </main>
-    <!-- SCRIPTS -->
+    <div class="iframe-container">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/hE5hS53fYqs" title="YouTube video player"
+        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+    </div>
+  </main>
+  <!-- SCRIPTS -->
 
-    <!-- Unpack epub files -->
-    <script src="./scripts/jszip.min.js"></script>
+  <!-- Unpack epub files -->
+  <script src="./scripts/jszip.min.js"></script>
 
-    <!-- Enhanced local storage, allows for objects -->
-    <script src="./scripts/localforage.min.js"></script>
+  <!-- Enhanced local storage, allows for objects -->
+  <script src="./scripts/localforage.min.js"></script>
 
-    <!-- Main reader library -->
-    <script src="./scripts/epub.min.js"></script>
+  <!-- Main reader library -->
+  <script src="./scripts/epub.min.js"></script>
 
-    <!-- For displaying toast messages -->
-    <script src="./scripts/toastify.js"></script>
+  <!-- For displaying toast messages -->
+  <script src="./scripts/toastify.js"></script>
 
-    <!-- Fuzzy searching of books -->
-    <script src="./scripts/fuse.min.js"></script>
+  <!-- Fuzzy searching of books -->
+  <script src="./scripts/fuse.min.js"></script>
 
-    <script src="./js/font-awesome.js"></script>
+  <script src="./js/font-awesome.js"></script>
 
-    <script type="module" src="./js/index.js"></script>
-  </body>
+  <script type="module" src="./js/index.js"></script>
+</body>
+
 </html>
-
-
