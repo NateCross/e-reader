@@ -4,19 +4,31 @@ const path = require('path');
 // Used for livereload in Express
 // https://stackoverflow.com/a/60542066
 
-const livereload = require("livereload");
-const connectLivereload = require("connect-livereload");
+let livereload;
+let connectLivereload;
 
-// open livereload high port and start to watch public directory for changes
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(path.join(__dirname, 'src'));
+try {
+  require.resolve('livereload'); 
+  require.resolve('connect-livereload');
 
-// ping browser on Express boot, once browser has reconnected and handshaken
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
-});
+  livereload = require("livereload");
+  connectLivereload = require("connect-livereload");
+
+  // open livereload high port and start to watch public directory for changes
+  const liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(path.join(__dirname, 'src'));
+
+  // ping browser on Express boot, once browser has reconnected and handshaken
+  liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+      liveReloadServer.refresh("/");
+    }, 100);
+  });
+} catch (err) {
+  console.log(err);
+}
+
+
 
 // Boilerplate for express.js
 const express = require('express');
@@ -90,8 +102,12 @@ fs.readdir(`${__dirname}/src/html`, (err, files) => {
 
   }
 });
-app.use(connectLivereload());
 
+try {
+  app.use(connectLivereload());
+} catch (err) {
+  console.log(err);
+}
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}!`);
