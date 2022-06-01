@@ -3,6 +3,8 @@ import LibItem from './LibItem.js';
 import { showToast, fuseSearchHighlight } from './Utils.js';
 import * as Modals from './ModalTextContent.js';
 
+///// HTML ELEMENTS /////
+
 const $library = document.querySelector('#library');
 const $file_upload = document.querySelector('#file-upload');
 const $file_upload_container = document.querySelector('.file-upload-container');
@@ -18,6 +20,8 @@ const $search_clear = document.querySelector('#search-clear');
 const $search_results = document.querySelector('#search-results');
 const $search_query = document.querySelector('#search-query');
 
+///// MAIN /////
+
 const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
 
 $file_upload.onchange = openBookEvent();
@@ -28,9 +32,13 @@ initDragAndDrop();
 
 // Load the books from storage and populate the library div
 (async () => {
-  await Lib.init();
-  Lib.refreshLibraryDisplay($library);
-  showToast('Loaded Library.');
+  try {
+    await Lib.init();
+    Lib.refreshLibraryDisplay($library);
+    showToast('Loaded Library.');
+  } catch(err) {
+    console.log(err);
+  }
 })();
 
 ///// FUNCTIONS /////
@@ -103,14 +111,10 @@ async function clearLibrary() {
 }
 
 function dropZoneDragOver(e) {
-  console.log('File in drop zone');
-
   e.preventDefault();
 }
 
 function dropZoneOnDrop(e) {
-  console.log('File dropped');
-
   e.preventDefault();
 
   $file_upload_container.classList.remove("file-upload-file-is-hovered");
@@ -126,7 +130,6 @@ function dropZoneOnDrop(e) {
 
 function initDragAndDrop() {
   document.ondragenter = (e => {
-    console.log('Dragging on body');
     e.preventDefault();
 
     $file_upload_container.classList.add("file-upload-file-is-hovered");
@@ -152,10 +155,17 @@ function loadFileAsEpub(file) {
 
   // Executes after readAsArrayBuffer finishes
   reader.onload = async bookData => {
-    const book = ePub({ replacements: 'base64' });
-    await book.open(bookData.target.result, 'base64');
-    const metadata = book.packaging.metadata;
-    let coverUrl = await book.coverUrl();
+    let book;
+    let metadata;
+    let coverUrl;
+    try {
+      book = ePub({ replacements: 'base64' });
+      await book.open(bookData.target.result, 'base64');
+      metadata = book.packaging.metadata;
+      coverUrl = await book.coverUrl();
+    } catch(err) {
+      console.log(err);
+    }
 
     // We use an HTTP request to get the image from the url,
     // then we can load the response into the File Reader to get

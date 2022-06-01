@@ -31,7 +31,12 @@ export default class Library {
    * @function
    */
   async init() {
-    this.bookLib = await this.getLibrary() || [];
+    try {
+      this.bookLib = await this.getLibrary() || [];
+    } catch (err) {
+      console.log(err);
+      return;
+    }
   }
 
   async getLibrary() {
@@ -140,7 +145,6 @@ export default class Library {
         class: 'library-book',
         href: `/reader?book=${index}`,
       }, bookLink, bookAuthor, divBookImageContainer);
-      console.log(removeBook);
       divParent.onclick = this.openReaderEvent(moveCategory, removeBook);
 
       const listChild = elementFactory('li', {},
@@ -273,10 +277,15 @@ export default class Library {
    */
   removeBookFromLib(index) {
     return async () => {
-      this.bookLib.splice(index, 1);
-      showToast('Book removed from Library.');
-      await this.saveLibrary();
-      this.refreshLibraryDisplay();
+      try {
+        this.bookLib.splice(index, 1);
+        showToast('Book removed from Library.');
+        await this.saveLibrary();
+        this.refreshLibraryDisplay();
+      } catch(err) {
+        console.log(err);
+        return;
+      }
     }
   }
 
@@ -289,8 +298,6 @@ export default class Library {
    */
   openReaderEvent(moveCategory = null, removeBook = null) {
 
-    console.log(removeBook);
-    console.log(moveCategory);
     // We return a function here as a workaround to pass parameters
     return e => {
       // It returns false so that it prevents the parent anchor from going to the href
@@ -305,19 +312,16 @@ export default class Library {
   /** Use with a button attached to the bookLib elements */
   moveBookToCategory(book, oldCategory = "Library", newCategory = "Favorites") {
     return async () => {
+      try {
+        this.bookLib[this.bookLib.indexOf(book)].category = newCategory;
 
-      // this.bookLib[oldCategory].splice(this.bookLib[oldCategory].indexOf(book), 1);
-      //
-      // if (!this.bookLib[newCategory])
-      //   this.bookLib[newCategory] = [];
-      //
-      // this.bookLib[newCategory].push(book);
-
-      this.bookLib[this.bookLib.indexOf(book)].category = newCategory;
-
-      showToast(`Book moved to ${newCategory}.`);
-      this.refreshLibraryDisplay();
-      await this.saveLibrary();
+        showToast(`Book moved to ${newCategory}.`);
+        await this.refreshLibraryDisplay();
+        await this.saveLibrary();
+      } catch(err) {
+        console.log(err);
+        return;
+      }
     }
   }
 
@@ -338,7 +342,6 @@ export default class Library {
     // We use lodash's cloneDeep function since this
     // isn't natively available in ES6
     const bookLibCopy = _.cloneDeep(this.bookLib);
-    // console.log(bookLibCopy);
 
     const search = new Fuse(bookLibCopy, options);
     return search.search(query);
@@ -360,8 +363,6 @@ export default class Library {
       const bookImage = this.createElementBookImage(book, index);
       const bookLink = this.createElementBookLink(book, index);
       const bookAuthor = this.createElementBookAuthor(book, index);
-      // const moveCategory = this.createElementMoveCategory(book);
-      // const removeBook = this.createElementRemoveBook(book, index);
 
       const divParent = elementFactory('a', {
         class: 'library-book',

@@ -8,7 +8,8 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const bookToOpen = urlParams.get('book');
 
-/// HTML Elements ///
+///// HTML ELEMENTS /////
+
 const $title = document.querySelector('#title');
 const $toc = document.querySelector('#table-of-contents');
 const $viewer = document.querySelector('#viewer');
@@ -16,7 +17,6 @@ const $viewer = document.querySelector('#viewer');
 const $prev = document.querySelector('#prev');
 const $next = document.querySelector('#next');
 
-// const $page_count = document.querySelector('.page-count');
 const $page_current = document.querySelector('#current-page');
 const $page_total = document.querySelector('#total-pages');
 const $page_percent = document.querySelector('#percentage');
@@ -44,7 +44,7 @@ const $speech = document.querySelector('.speech');
 
 const $settings_remove = document.querySelector('#settings-remove');
 // TODO: Change it to settings. This was a mistake
-const $options_flow = document.querySelector('#options-flow');
+const $settings_flow = document.querySelector('#options-flow');
 const $settings_font_size = document.querySelector('#settings-font-size');
 const $settings_font = document.querySelector('#settings-font');
 const $settings_theme = document.querySelector('#settings-theme');
@@ -59,11 +59,12 @@ const $settings_speech_pitch_val = document.querySelector('#speech-pitch-val');
 
 const $metadata_button = document.querySelector('#metadata');
 
+///// MAIN /////
+
 // We have to create the AppState object before we perform
 // the other operations here
 const AppState = new State();
 
-///// MAIN /////
 
 /**
  * The initialization function that turns everything on and hooks
@@ -78,17 +79,17 @@ const AppState = new State();
  * It is my understanding that there are none at the moment, but it is worth looking into.
  */
 const Initialize = async () => {
-  // Library is in localforage -- or indexedDB -- because it
-  // can store objects. The opened book index is stored in
-  // localStorage since it is just a simple number
-  const Lib = await localforage.getItem('Library');
-  const openedBook = bookToOpen;
-
-  // Performing initialization operations
-  // Order is not very important, as long as they are there.
-  // We have to open the book and get the settings first before
-  // anything else, though, or else nothing will load right
   try {
+    // Library is in localforage -- or indexedDB -- because it
+    // can store objects. The opened book index is stored in
+    // localStorage since it is just a simple number
+    const Lib = await localforage.getItem('Library');
+    const openedBook = bookToOpen;
+
+    // Performing initialization operations
+    // Order is not very important, as long as they are there.
+    // We have to open the book and get the settings first before
+    // anything else, though, or else nothing will load right
     await AppState.openBook(Lib[openedBook].bookData);
   } catch (err) {
     console.log(err);
@@ -143,7 +144,7 @@ const Initialize = async () => {
   $speech_stop.onclick = stopSpeech;
 
   $settings_remove.onclick = Modals.showModalWrapper(Modals.ResetSettings, ModalResetSettingsWrapper);
-  $options_flow.onchange = changeSettingsFlow;
+  $settings_flow.onchange = changeSettingsFlow;
   $settings_font_size.onchange = changeFontSize;
   $settings_font.onchange = changeFont;
   $settings_theme.onchange = changeTheme;
@@ -152,7 +153,6 @@ const Initialize = async () => {
   $settings_speech_pitch.oninput = changeSpeechPitch;
 
   $metadata_button.onclick = Modals.showModalWrapper(Modals.Metadata, getMetadata);
-  // $metadata_button.onclick = attachModal(Modals.Metadata, 'modal-container', getMetadata);
 
   AppState.attachContentsSelectionHook($viewer);
 
@@ -210,15 +210,10 @@ function attachKeyboardInput() {
 
 function attachClickButtonInput() {
   $next.onclick = () => AppState.nextPage();
-  $prev.onclick = () => AppState.prevPage()
+  $prev.onclick = () => AppState.prevPage();
 }
 
-function highlightCurrentTextSelection(e) {
-
-  // Hacky way to deselect the highlighted text
-  // TODO: Find a cleaner way to do this
-  // NOTE: Doesn't work on Firefox
-  // e.view[0].getSelection().empty();
+function highlightCurrentTextSelection() {
 
   if (!AppState.currentSelectionText || !AppState.currentSelectionCFI) {
     showToast('Unable to highlight selected text.');
@@ -301,7 +296,6 @@ async function resetBookmarks() {
 
 /**
  * Called as an event attached to the search bar
- * TODO: Make it search from current position
  */
 async function searchInBook(e) {
 
@@ -315,7 +309,6 @@ async function searchInBook(e) {
   // Resetting search values
   $search_results_container.style.display = 'none';
   $search_results_current.value = null;
-  // $search_results_total.textContent = 'Searching...'
 
   // Fixes a massive memory leak when you empty the search string.
   // Without this, clearing the search bar will basically crash the app.
@@ -324,7 +317,13 @@ async function searchInBook(e) {
     return;
   }
 
-  const query = await AppState.doSearch(e.target.value);
+  let query;
+  try {
+    query = await AppState.doSearch(e.target.value);
+  } catch(err) {
+    console.log(err);
+    return;
+  }
   if (query.length === 0) {
     $search_results_total.textContent = '-';
     showToast('No search results found.');
@@ -340,7 +339,6 @@ async function searchInBook(e) {
   $search_results_container.style.display = 'block';
 
   const index = AppState.getNextSearchResultFromCurrentCFI() || 0;
-  // console.log(index);
 
   AppState.jumpToSearchCFI(index, $search_results_current);
 }
@@ -393,16 +391,20 @@ function ModalResetSettingsWrapper(_, __, footer, container) {
  * set them all one by one. Refreshing works better in this case.
  */
 async function restoreSettingsToDefault() {
-  await AppState.removeStoredSettings();
-  refreshRendition();
+  try {
+    await AppState.removeStoredSettings();
+    refreshRendition();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 /** Registers the settings so they take effect */
 function initSettingsDisplay() {
   if (AppState.settings.flow === 'paginated')
-    $options_flow.selectedIndex = 0;
+    $settings_flow.selectedIndex = 0;
   else
-    $options_flow.selectedIndex = 1;
+    $settings_flow.selectedIndex = 1;
 
   $settings_font_size.value = AppState.settings.fontSize;
   AppState.setRenditionFontSize();
@@ -427,16 +429,24 @@ function initSettingsDisplay() {
 }
 
 async function changeSettingsFlow(e) {
-  AppState.settings.flow = e.target.value;
-  await AppState.storeSettings();
-  refreshRendition();
+  try {
+    AppState.settings.flow = e.target.value;
+    await AppState.storeSettings();
+    refreshRendition();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function changeFontSize(e) {
-  AppState.settings.fontSize = e.target.value;
-  AppState.setRenditionFontSize();
-  await AppState.storeSettings();
-  refreshRendition();
+  try {
+    AppState.settings.fontSize = e.target.value;
+    AppState.setRenditionFontSize();
+    await AppState.storeSettings();
+    refreshRendition();
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 function attachSettingsOptions(optionName, htmlElement) {
@@ -460,38 +470,58 @@ function attachSettingsOptions(optionName, htmlElement) {
 }
 
 async function changeFont(e) {
-  AppState.settings.font = e.target.value;
-  AppState.setRenditionFont();
-  await AppState.storeSettings();
-  refreshRendition();
+  try {
+    AppState.settings.font = e.target.value;
+    AppState.setRenditionFont();
+    await AppState.storeSettings();
+    refreshRendition();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function changeTheme(e) {
-  AppState.settings.theme = e.target.value;
-  AppState.setRenditionTheme();
-  await AppState.storeSettings();
-  refreshRendition();
+  try {
+    AppState.settings.theme = e.target.value;
+    AppState.setRenditionTheme();
+    await AppState.storeSettings();
+    refreshRendition();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function changeSpeechVolume(e) {
-  AppState.speech.volume = e.target.value;
-  AppState.settings.speech.volume = e.target.value;
-  $settings_speech_volume_val.textContent = e.target.value;
-  await AppState.storeSettings();
+  try {
+    AppState.speech.volume = e.target.value;
+    AppState.settings.speech.volume = e.target.value;
+    $settings_speech_volume_val.textContent = e.target.value;
+    await AppState.storeSettings();
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 async function changeSpeechRate(e) {
-  AppState.speech.rate = e.target.value;
-  AppState.settings.speech.rate = e.target.value;
-  $settings_speech_rate_val.textContent = e.target.value;
-  await AppState.storeSettings();
+  try {
+    AppState.speech.rate = e.target.value;
+    AppState.settings.speech.rate = e.target.value;
+    $settings_speech_rate_val.textContent = e.target.value;
+    await AppState.storeSettings();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function changeSpeechPitch(e) {
-  AppState.speech.pitch = e.target.value;
-  AppState.settings.speech.pitch = e.target.value;
-  $settings_speech_pitch_val.textContent = e.target.value;
-  await AppState.storeSettings();
+  try {
+    AppState.speech.pitch = e.target.value;
+    AppState.settings.speech.pitch = e.target.value;
+    $settings_speech_pitch_val.textContent = e.target.value;
+    await AppState.storeSettings();
+  } catch(err) {
+    console.log(err);
+  }
 }
 
 /**
