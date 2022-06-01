@@ -140,7 +140,8 @@ export default class Library {
         class: 'library-book',
         href: `/reader?book=${index}`,
       }, bookLink, bookAuthor, divBookImageContainer);
-      divParent.onclick = this.openReaderEvent(index, moveCategory, removeBook);
+      console.log(removeBook);
+      divParent.onclick = this.openReaderEvent(moveCategory, removeBook);
 
       const listChild = elementFactory('li', {},
       divParent);
@@ -288,12 +289,15 @@ export default class Library {
    */
   openReaderEvent(moveCategory = null, removeBook = null) {
 
+    console.log(removeBook);
+    console.log(moveCategory);
     // We return a function here as a workaround to pass parameters
     return e => {
       // It returns false so that it prevents the parent anchor from going to the href
       if (typeof e === 'undefined')
         window.location.href = `/reader?book=${this.bookLib.length - 1}`;
 
+      e.stopPropagation();
       if (e.target === moveCategory || e.target === removeBook) return false;
     }
   }

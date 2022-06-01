@@ -78,8 +78,6 @@ const AppState = new State();
  * It is my understanding that there are none at the moment, but it is worth looking into.
  */
 const Initialize = async () => {
-  showToast('Loading book...', 'quick');
-
   // Library is in localforage -- or indexedDB -- because it
   // can store objects. The opened book index is stored in
   // localStorage since it is just a simple number
@@ -161,7 +159,7 @@ const Initialize = async () => {
   // Update the page title
   // Must be done after book is loaded
   document.title = `Libre Ipsum: ${AppState.metadata.title}`;
-  showToast('Finished loading book.');
+  showToast('Finished loading book.', 'quick');
 };
 
 ///// FUNCTIONS /////

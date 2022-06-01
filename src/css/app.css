@@ -81,7 +81,10 @@ input[type="file"] {
   /* Sit on top */
   /* Location of the box */
   background-color: rgba(0, 0, 0, 0.4);
-  top: 10vh;
+  top: 0;
+  padding-top: 10vh;
+  height: 100vh;
+  width: 100vw;
   overflow: auto;
   /* Black w/ opacity */
   font-family: 'Arial', 'sans-serif';
@@ -697,6 +700,10 @@ select {
 
 ul {
   list-style-type: none;
+}
+
+#highlight-buttons.dropdown-content {
+  max-width: 33%;
 }
 
 #highlight-buttons input[type=button] {
