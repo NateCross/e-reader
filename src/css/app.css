@@ -80,6 +80,7 @@ input[type="file"] {
   z-index: 1;
   /* Sit on top */
   /* Location of the box */
+  background-color: rgba(0, 0, 0, 0.4);
   top: 10vh;
   overflow: auto;
   /* Black w/ opacity */
