@@ -564,7 +564,7 @@ function clearSearch() {
  * Call this after every time a setting is changed.
  */
 function refreshRendition() {
-  $viewer.innerHTML = ""; // TODO: Insert a loading image indicator or GIF
+  $viewer.innerHTML = "";
   Initialize();
 }
 

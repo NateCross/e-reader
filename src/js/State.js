@@ -1,5 +1,4 @@
 import { elementFactory, showToast } from './Utils.js';
-// import { defaultOptions } from './Options.js';
 
 /**
  * Manages state of the entire app.
@@ -158,7 +157,7 @@ export default class State {
     this.book = ePub(); // Reset book
 
     try {
-      promise = this.book.open(bookData);
+      promise = await this.book.open(bookData);
     } catch (err) {
       console.log(`ERROR: ${err}`);
     }
@@ -178,13 +177,10 @@ export default class State {
     // use the left and right arrow keys to go prev/next
     try {
       this.rendition = this.book.renderTo(viewer, {
-        // manager: "continuous",
         flow: this.settings.flow,
         width: this.settings.width,
         height: '75vh',
-        // height: this.settings.height,
         allowScriptedContent: true,
-        snap: true,
       });
       /*
       *  NOTE: On rendition stuff:
@@ -200,17 +196,9 @@ export default class State {
       this.renderSavedLocation();
 
     } catch (err) {
-      console.log(`ERROR: ${err}`);
+      console.log(err);
     }
 
-  }
-
-  async reset() {
-    // if (this.book)
-      // this.book.destroy();
-    // if (this.rendition)
-      // this.rendition.destroy();
-    // TODO: Insert code to remove inputs
   }
 
   get metadata() {
@@ -226,11 +214,15 @@ export default class State {
   // https://github.com/futurepress/epub.js/issues/986#issuecomment-538716885
   /** Used in loading table of contents */
   async getCfiFromHref(href) {
-    const id = href.split('#')[1]
-    const item = this.book.spine.get(href)
-    await item.load(this.book.load.bind(this.book))
-    const el = id ? item.document.getElementById(id) : item.document.body
-    return item.cfiFromElement(el)
+    try {
+      const id = href.split('#')[1]
+      const item = this.book.spine.get(href)
+      await item.load(this.book.load.bind(this.book))
+      const el = id ? item.document.getElementById(id) : item.document.body
+      return item.cfiFromElement(el)
+    } catch(err) {
+      console.log(err);
+    }
   };
 
   updateBookTitle($title) {
@@ -242,14 +234,17 @@ export default class State {
     this.savedLocation = localStorage.getItem(`${this.book.key()}-currLoc`);
     this.storedLocations = localStorage.getItem(`${this.book.key()}-locations`);
 
-    if (this.storedLocations)
-      await this.book.locations.load(this.storedLocations);
-    else
-      await this.book.locations.generate(
-        this.locationBreakAfterXCharacters
-      );
-
-    this.updateStoredLocations($page_total);
+    try {
+      if (this.storedLocations)
+        await this.book.locations.load(this.storedLocations);
+      else
+        await this.book.locations.generate(
+          this.locationBreakAfterXCharacters
+        );
+      this.updateStoredLocations($page_total);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   updateStoredLocations($page_total) {
@@ -283,7 +278,13 @@ export default class State {
   }
 
   async loadTableOfContents($toc) {
-    const tocArr = await this.book.loaded.navigation;
+    let tocArr;
+    try {
+      tocArr = await this.book.loaded.navigation;
+    } catch(err) {
+      console.log(err);
+      return;
+    }
 
       // Using document fragments allow us to add a lot of options
       // to the "select" element that is our table of contents
@@ -347,10 +348,6 @@ export default class State {
   resetCurrentBookUserData($viewer, $page_total) {
     this.resetStoredLocations($page_total);
     this.resetCurrentLocation();
-
-    // TODO: these functions
-    // this.resetHighlights();
-    // this.resetBookmarks();
 
     this.renderBook($viewer);
   }
@@ -499,9 +496,6 @@ export default class State {
       if (hr < -0.25 && vr < 0.1)
         return this.rendition.next();
 
-      // Fixes highlights and getting text on mobile
-      // FIX: Having it in a separate function does not work
-      // this.getCurrentSelectionTextAndCFI(contents);
       const { text, range } = this.#mouseUpEventGetText(contents);
 
       if (!text || !range) return;
@@ -698,14 +692,10 @@ export default class State {
 
     this.bookmarks.forEach(bookmark => {
       let li = elementFactory('li');
-      // let text = elementFactory('p');
       let pageNum = elementFactory('input');
       pageNum.type = 'button';
       let remove = elementFactory('input');
       remove.type = 'button';
-
-      // this.book.getRange(bookmark).then(range => {
-      //   text.textContent = range.toString();
 
       pageNum.value = this.book.locations.locationFromCfi(bookmark);
       pageNum.onclick = () => {
@@ -718,7 +708,6 @@ export default class State {
       };
 
       li.appendChild(pageNum);
-      // li.appendChild(text);
       li.appendChild(remove);
       list.appendChild(li);
     });
@@ -811,7 +800,6 @@ export default class State {
       this.voices = window.speechSynthesis.getVoices();
       if (this.voices.length === 0){
         showToast('Unable to load voices for Speech Synthesis.', 'warning');
-        $speech.style.display = 'none';
         return;
       }
 
