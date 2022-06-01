@@ -250,6 +250,10 @@ body {
   .mainNavbar ul li a:hover::after {
     width: 100%;
   }
+
+  .navBarActive {
+    color: #EC994B !important;
+  }
 }
 
 @media screen and (max-width: 1000px) {
