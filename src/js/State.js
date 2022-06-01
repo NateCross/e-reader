@@ -178,13 +178,10 @@ export default class State {
     // use the left and right arrow keys to go prev/next
     try {
       this.rendition = this.book.renderTo(viewer, {
-        // manager: "continuous",
         flow: this.settings.flow,
         width: this.settings.width,
         height: '75vh',
-        // height: this.settings.height,
         allowScriptedContent: true,
-        snap: true,
       });
       /*
       *  NOTE: On rendition stuff:
@@ -205,14 +202,6 @@ export default class State {
 
   }
 
-  async reset() {
-    // if (this.book)
-      // this.book.destroy();
-    // if (this.rendition)
-      // this.rendition.destroy();
-    // TODO: Insert code to remove inputs
-  }
-
   get metadata() {
     return this.book.packaging.metadata;
   }
@@ -228,7 +217,12 @@ export default class State {
   async getCfiFromHref(href) {
     const id = href.split('#')[1]
     const item = this.book.spine.get(href)
-    await item.load(this.book.load.bind(this.book))
+    try {
+      await item.load(this.book.load.bind(this.book))
+    } catch (err) {
+      console.log(err);
+      return;
+    }
     const el = id ? item.document.getElementById(id) : item.document.body
     return item.cfiFromElement(el)
   };
@@ -242,12 +236,17 @@ export default class State {
     this.savedLocation = localStorage.getItem(`${this.book.key()}-currLoc`);
     this.storedLocations = localStorage.getItem(`${this.book.key()}-locations`);
 
-    if (this.storedLocations)
-      await this.book.locations.load(this.storedLocations);
-    else
-      await this.book.locations.generate(
-        this.locationBreakAfterXCharacters
-      );
+    try {
+      if (this.storedLocations)
+        await this.book.locations.load(this.storedLocations);
+      else
+        await this.book.locations.generate(
+          this.locationBreakAfterXCharacters
+        );
+    } catch (err) {
+      console.log(err);
+      return;
+    }
 
     this.updateStoredLocations($page_total);
   }
@@ -283,7 +282,13 @@ export default class State {
   }
 
   async loadTableOfContents($toc) {
-    const tocArr = await this.book.loaded.navigation;
+    let tocArr;
+    try {
+      tocArr = await this.book.loaded.navigation;
+    } catch (err) {
+      console.log(err);
+      showToast('Unable to load table of contents.', 'warning');
+    }
 
       // Using document fragments allow us to add a lot of options
       // to the "select" element that is our table of contents
@@ -586,16 +591,16 @@ export default class State {
   async getStoredHighlights($highlight_list) {
     try {
       this.highlights = await localforage.getItem(`${this.book.key()}-highlights`) || [];
-      if (this.highlights) {
-        this.highlights.forEach(highlight => {
-          this.rendition.annotations.add(
-            "highlight",
-            highlight,
-            {},
-          );
-        });
-        this.updateHighlightList($highlight_list);
-      }
+      if (this.highlights.length === 0) return;
+
+      this.highlights.forEach(highlight => {
+        this.rendition.annotations.add(
+          "highlight",
+          highlight,
+          {},
+        );
+      });
+      this.updateHighlightList($highlight_list);
     } catch(err) {
       console.log(err);
     }
@@ -604,7 +609,7 @@ export default class State {
   async getStoredBookmarks($bookmark_list) {
     try {
       this.bookmarks = await localforage.getItem(`${this.book.key()}-bookmarks`) || [];
-      if (!this.bookmarks) return;
+      if (this.bookmarks.length === 0) return;
 
       this.updateBookmarkList($bookmark_list);
     } catch(err) {
@@ -698,14 +703,10 @@ export default class State {
 
     this.bookmarks.forEach(bookmark => {
       let li = elementFactory('li');
-      // let text = elementFactory('p');
       let pageNum = elementFactory('input');
       pageNum.type = 'button';
       let remove = elementFactory('input');
       remove.type = 'button';
-
-      // this.book.getRange(bookmark).then(range => {
-      //   text.textContent = range.toString();
 
       pageNum.value = this.book.locations.locationFromCfi(bookmark);
       pageNum.onclick = () => {
@@ -718,7 +719,6 @@ export default class State {
       };
 
       li.appendChild(pageNum);
-      // li.appendChild(text);
       li.appendChild(remove);
       list.appendChild(li);
     });

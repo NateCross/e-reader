@@ -3,6 +3,34 @@ import LibItem from './LibItem.js';
 import { showToast } from './Utils.js';
 import * as Modals from './ModalTextContent.js';
 
+//// HTML ELEMENTS /////
+
+const $library = document.querySelector('#library');
+const $file_upload = document.querySelector('#file-upload');
+const $file_upload_container = document.querySelector('.file-upload-container');
+
+const $storage_usage = document.querySelector('#usage');
+const $storage_quota = document.querySelector('#quota');
+const $storage_percent = document.querySelector('#percent');
+const $storage_clear = document.querySelector('#clear-storage');
+
+///// MAIN /////
+
+const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
+
+// Load the books from storage and populate the library div
+(async () => {
+  await Lib.init();
+  Lib.refreshLibraryDisplay($library);
+  showToast('Loaded Library.');
+})();
+
+///// EVENTS /////
+
+$file_upload.onchange = openBookEvent(Lib);
+$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
+initDragAndDrop();
+
 ///// FUNCTIONS /////
 
 /**
@@ -42,33 +70,6 @@ function openBookEvent(Library) {
   }
 }
 
-//// HTML ELEMENTS /////
-
-const $library = document.querySelector('#library');
-const $file_upload = document.querySelector('#file-upload');
-const $file_upload_container = document.querySelector('.file-upload-container');
-
-const $storage_usage = document.querySelector('#usage');
-const $storage_quota = document.querySelector('#quota');
-const $storage_percent = document.querySelector('#percent');
-const $storage_clear = document.querySelector('#clear-storage');
-
-// const $drop_zone = document.querySelector('.drop-zone');
-
-///// MAIN /////
-const Lib = new Library($library, $storage_usage, $storage_quota, $storage_percent);
-
-$file_upload.onchange = openBookEvent(Lib);
-$storage_clear.onclick = Modals.showModalWrapper(Modals.ClearLibrary, ModalClearLibraryWrapper);
-initDragAndDrop();
-
-// Load the books from storage and populate the library div
-(async () => {
-  await Lib.init();
-  Lib.refreshLibraryDisplay($library);
-  showToast('Loaded Library.');
-})();
-
 function ModalClearLibraryWrapper(_, __, footer, container) {
   const remove = footer.querySelector('#remove');
   const cancel = footer.querySelector('#cancel');
@@ -100,14 +101,10 @@ async function clearLibrary() {
 }
 
 function dropZoneDragOver(e) {
-  console.log('File in drop zone');
-
   e.preventDefault();
 }
 
 function dropZoneOnDrop(e) {
-  console.log('File dropped');
-
   e.preventDefault();
 
   $file_upload_container.classList.remove("file-upload-file-is-hovered");
@@ -123,7 +120,6 @@ function dropZoneOnDrop(e) {
 
 function initDragAndDrop() {
   document.ondragenter = (e => {
-    console.log('Dragging on body');
     e.preventDefault();
 
     $file_upload_container.classList.add("file-upload-file-is-hovered");
