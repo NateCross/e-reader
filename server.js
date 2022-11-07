@@ -8,7 +8,7 @@ let livereload;
 let connectLivereload;
 
 try {
-  require.resolve('livereload'); 
+  require.resolve('livereload');
   require.resolve('connect-livereload');
 
   livereload = require("livereload");
@@ -47,13 +47,13 @@ const moduleSrc = {'toastify-js': 'toastify'};
 // This is an abstracted way of serving all the needed scripts
 // thanks to using moduleDists
 Object.keys(moduleDists).forEach(key => {
-  app.get(`/scripts/${moduleDists[key]}.min.js`, function(req, res) {
+  app.get(`/scripts/${moduleDists[key]}.min.js`, function(_, res) {
     res.sendFile(path.join(__dirname, `/node_modules/${key}/dist/${moduleDists[key]}.min.js`));
   });
 });
 
 for (module in moduleSrc) {
-  app.get(`/scripts/${moduleSrc[module]}.js`, function (req, res) {
+  app.get(`/scripts/${moduleSrc[module]}.js`, function (_, res) {
     res.sendFile(path.join(__dirname, `/node_modules/${module}/src/${moduleSrc[module]}.js`));
   });
 }
@@ -61,16 +61,24 @@ for (module in moduleSrc) {
 // Serving the js
 app.use('/js', express.static(path.join(__dirname, '/src/js/')));
 // Serving lodash specifically
-app.get('/scripts/lodash.js', function(req, res) {
+app.get('/scripts/lodash.js', function(_, res) {
   res.sendFile(path.join(__dirname, '/node_modules/lodash/lodash.js'));
 });
 
 // Serving the css
 app.use('/css',express.static(path.join(__dirname, '/src/css/')));
 // Also serving this css file
-app.get('/css/toastify.css', function(req, res) {
+app.get('/css/toastify.css', function(_, res) {
   res.sendFile(path.join(__dirname, '/node_modules/toastify-js/src/toastify.css'));
 });
+
+// Serve bootstrap
+app.get('/css/bootstrap.min.css', function(_, res) {
+  res.sendFile(path.join(__dirname, '/node_modules/bootstrap/dist/css/bootstrap.min.css'));
+})
+app.get('/scripts/bootstrap.bundle.min.js', function(_, res) {
+  res.sendFile(path.join(__dirname, '/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'));
+})
 
 // Reads all files in the html folder and serves them once loaded
 fs.readdir(`${__dirname}/src/html`, (err, files) => {
