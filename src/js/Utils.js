@@ -195,7 +195,7 @@ export function attachModal(
 
 const toast = Toastify({
   text: "",
-  duration: 3000,
+  duration: 1500,
   close: true,
   gravity: "top",
   position: "center",

@@ -8,6 +8,7 @@ import * as Modals from './ModalTextContent.js';
 const $library = document.querySelector('#library');
 const $file_upload = document.querySelector('#file-upload');
 const $file_upload_container = document.querySelector('.file-upload-container');
+const $file_upload_read_toggle = document.querySelector('#file-upload-read-toggle');
 
 const $storage_usage = document.querySelector('#usage');
 const $storage_quota = document.querySelector('#quota');
@@ -185,10 +186,13 @@ function loadFileAsEpub(file) {
           // Async await does not work here, apparently, so we use 'then'
           // to make these async functions execute one after the other
           Lib.saveLibrary().then(() => {
-            Lib.openReaderEvent(Lib.bookLib.length - 1)();
-            // Lib.refreshLibraryDisplay();
+            if ($file_upload_read_toggle?.checked)
+              Lib.openReaderEvent(Lib.bookLib.length - 1)();
+            else {
+              Lib.refreshLibraryDisplay();
+              showToast('Added new EPUB to Library.');
+            }
           });
-          // showToast('Added new EPUB to Library.');
         }
         ImgReader.readAsDataURL(xhr.response);
         }

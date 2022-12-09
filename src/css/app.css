@@ -76,6 +76,16 @@ select {
   content: ' DROP EPUB FILE HERE';
 }
 
+.upload {
+  display: flex;
+  gap: 1.1rem;
+  flex-direction: column;
+}
+
+.file-upload-read-toggle-label {
+  color: white;
+}
+
 /*
  * Hides the actual file upload button so we can style
  * file-upload-container instead
@@ -485,6 +495,9 @@ input[type="file"] {
   background-color: #15133C;
   overflow: auto;
   /* Overflow due to float */
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 1;
 }
 
 /* The dropdown container */
@@ -801,7 +814,7 @@ ul {
 }
 
 #title {
-  padding: 15px 15px;
+  /* padding: 15px 15px; */
 }
 
 #viewer {}
@@ -1088,7 +1101,8 @@ ul {
 
 .reader-container {
   height: 100vh;
-  bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /*

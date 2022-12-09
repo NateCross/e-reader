@@ -18,8 +18,15 @@
   </nav>
   <div class="top-bar">
     <div class="upload">
-      <label for="file-upload" class="file-upload-container"></label>
-      <input type="file" id="file-upload" name="file-upload" accept=".epub">
+      <div>
+        <label for="file-upload" class="file-upload-container"></label>
+        <input type="file" id="file-upload" name="file-upload" accept=".epub">
+      </div>
+      <div>
+        <label for="file-upload-read-toggle" class="file-upload-read-toggle-label">Read after Upload?</label>
+        <input type="checkbox" name="file-upload-read-toggle" id="file-upload-read-toggle">
+      </div>
+
     </div>
     <div class="search-lib">
       <div id="search-query"></div>
