@@ -200,7 +200,7 @@ const toast = Toastify({
   gravity: "top",
   position: "center",
   style: {
-    background: "black",
+    background: "var(--main-color)",
     color: "white",
     "font-family": "Arial, sans-serif",
   },
@@ -213,7 +213,7 @@ const quickToast = Toastify({
   gravity: "top",
   position: "center",
   style: {
-    background: "black",
+    background: "var(--main-color)",
     color: "white",
     "font-family": "Arial, sans-serif",
   },

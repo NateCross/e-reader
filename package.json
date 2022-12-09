@@ -30,6 +30,7 @@
     "nodemon": "^2.0.16"
   },
   "dependencies": {
+    "again": "^0.0.1",
     "bootstrap": "^5.2.2",
     "epubjs": "^0.3.93",
     "express": "^4.17.3",

@@ -35,7 +35,7 @@ initDragAndDrop();
   try {
     await Lib.init();
     Lib.refreshLibraryDisplay($library);
-    showToast('Loaded Library.');
+    // showToast('Loaded Library.');
   } catch(err) {
     console.log(err);
   }

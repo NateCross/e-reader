@@ -103,7 +103,7 @@ export default class Library {
       // as well in case we clear bookLib
       libraryElement.innerHTML = "";
       showToast('Library is empty.');
-      return;
+      return false;
     }
 
     // We use a docfrag to add elements in a performant way
@@ -170,6 +170,7 @@ export default class Library {
       libraryElement.appendChild(docFrags['Favorites']);
     if (docFrags['Library'])
       libraryElement.appendChild(docFrags['Library']);
+    return true;
   }
 
   createElementBookImage(book, index) {

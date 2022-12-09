@@ -17,6 +17,23 @@ select {
   filter: brightness(100%);
 }
 
+.btn{
+  background-color: #15133C !important;
+  color: #F1EEE9;
+  border: 1px solid #F1EEE9 !important;
+  margin-top: 10px;
+  border-radius: 5px !important;
+  border-width: 1px !important;
+  font-size: larger !important;
+  padding: 10px !important;
+  cursor: pointer;
+  transition: background-color .2s ease-in;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #EC994B !important;
+}
 /*
  * See https://stackoverflow.com/a/25825731
  * on styling buttons
@@ -257,12 +274,15 @@ input[type="file"] {
 
 .search-lib {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.25rem;
   justify-content: center;
   align-items: center;
 }
 
+.search-lib input[type=text] {
+  width: 100%;
+  padding: 0.5rem;
+}
 
 .search input[type=text] {
   /* float: right; */
@@ -465,7 +485,6 @@ input[type="file"] {
   background-color: #15133C;
   overflow: auto;
   /* Overflow due to float */
-  margin-bottom: 2rem;
 }
 
 /* The dropdown container */
@@ -672,8 +691,8 @@ select {
   border-radius: 5px;
   border-width: 1px;
   border-style: solid;
-  /* font-family: Arial; */
   transition: background-color .2s ease-in;
+  font-family: inherit;
 }
 
 #search-button:hover, #search-clear:hover {
@@ -1065,6 +1084,11 @@ ul {
 .speech-sliders span {
   font-weight: 700;
   /* margin-right: 25px; */
+}
+
+.reader-container {
+  height: 100vh;
+  bottom: 0;
 }
 
 /*

@@ -25,219 +25,201 @@
 </head>
 
 <body>
-  <!-- Book Title -->
-  <h1 id="title"></h1>
-  <div class="page-count">
-    <input type="text" onFocus="this.select();" id="current-page" size="10" title="Currently Displayed Pages">
-    <span id="percentage"></span>
-    /
-    <span id="total-pages"></span>
-  </div>
-  <div class="icon-bar">
-    <ul>
-      <!-- Page navigation buttons -->
-      <div class="dropdown">
-        <li>
-          <button class="dropbtn" id="return-to-home" type="button" value="Return to Home Page">
-            <i class="fa-solid fa-house"></i>
-            <i class="fa fa-caret-down"></i>
-          </button>
-        </li>
-        <div class="dropdown-content">
-          <ul id="icon-nav-container">
-            <li>
-              <a id="nav-button-home" class="icon-nav-buttons" href="/">
-                Home
-              </a>
-            </li>
-            <li>
-              <a id="nav-button-library" class="icon-nav-buttons" href="/library">
-                Library
-              </a>
-            </li>
-            <li>
-              <a id="nav-button-about-us" class="icon-nav-buttons" href="/about">
-                About Us
-              </a>
-            </li>
-            <li>
-              <a id="nav-button-contact" class="icon-nav-buttons" href="/contact">
-                Contact Us
-              </a>
-            </li>
-            <li>
-              <a id="nav-button-sitemap" class="icon-nav-buttons" href="/sitemap">
-                Site Map
-              </a>
-            </li>
-            <li>
-              <a id="nav-button-faq" class="icon-nav-buttons" href="/faq">
-                FAQ
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <!-- Table of Contents -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-table-list"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div class="custom-select">
-            <div id="TOC">
-              <p id="toc_title">Table of Contents</p>
-              <select name="table-of-contents" id="table-of-contents" title="Table of Contents"></select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- View Mode Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-eye"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div id="viewMode">
-            <p id="viewMode_title">View Mode</p>
-            <select name="Flow" id="options-flow" title="View Mode">
-              <option value="paginated">Paginated</option>
-              <option value="scrolled-doc">Scroll</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <!-- Theme Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-circle-half-stroke"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div id="themes">
-            <p id="themes_title">Themes</p>
-            <select name="Theme" id="settings-theme" title="Theme"></select>
-          </div>
-        </div>
-      </div>
-      <!-- Font Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-font"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div id="fonts">
-            <p id="fonts_title">Fonts</p>
-            <select name="Font" id="settings-font" title="Font"></select>
-          </div>
-        </div>
-      </div>
-      <!-- Font Size Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-text-height"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div id="fontSize">
-            <p id="fontSize_title">Font Size</p>
-            <input type="number" id="settings-font-size" title="Font Size" min=15>
-            <span>(Min. 15)</span>
-          </div>
-        </div>
-      </div>
-      <!-- Search in Book Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-magnifying-glass"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div class="dropdown-content">
-          <div id="searchInBook" class="search">
-            <div class="search-function-container">
-              <p id="searchInBook_title">Search in Book</p>
-              <input type="text" id="search-bar">
-              <input type="button" id="search-button" value='Search' title='Search'>
-              <input type="button" id="search-clear" value='Clear' title='Clear Search'>
-            </div>
-            <div class="search-results-container">
-              <p id="searchInBook_results">Search Results</p>
-              <input type="number" id="results-current" min=1>
-              /
-              <span id="results-total">-</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Highlight Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-highlighter"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div id="highlight-buttons" class="dropdown-content">
-          <p id="highlights">Highlights</p>
-          <div id="highlight-list"></div>
-          <input type="button" id="highlight" value="Highlight Selected Text">
-          <input type="button" id="highlight-remove-all" value="Remove All Highlights">
-        </div>
-      </div>
-      <!-- Bookmark Option -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-bookmark"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div id="bookmark-buttons" class="dropdown-content">
-          <p id="bookmarks">Bookmarks</p>
-          <div id="bookmark-list"></div>
-          <input type="button" id="bookmark" value="Bookmark Current Page">
-          <input type="button" id="bookmark-remove-all" value="Remove All Bookmarks">
-        </div>
-      </div>
-      <!-- Text-to-Speech Options -->
-      <div class="dropdown">
-        <li><button class="dropbtn"><i class="fa-solid fa-microphone"></i>
-            <i class="fa fa-caret-down"></i>
-          </button></li>
-        <div id="speech" class="dropdown-content">
-          <p id="text-to-speech">Text-to-Speech</p>
-          <div class="speech">
-            <select name="Voices" id="voices" title="Text-to-Speech Voices"></select>
-            <input type="button" id="speech-start" value="Start Speech">
-            <input type="button" id="speech-stop" value="Stop Speech">
-          </div>
-          <div class="speech-sliders">
-            <label for="speech-volume" id="speech-volume-label">Volume</label>
-            <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
-            <span id="speech-volume-val"></span>
-
-            <label for="speech-rate" id="speech-rate-label">Rate</label>
-            <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1" step="0.1">
-            <span id="speech-rate-val"></span>
-
-            <label for="speech-pitch" id="speech-pitch-label">Pitch</label>
-            <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1" step="0.1">
-            <span id="speech-pitch-val"></span>
-          </div>
-        </div>
-      </div>
-      <!-- Get Book Metadata-->
-      <div class="dropdown">
-        <li><button class="dropbtn funcbtn" id="metadata" value="Get Book Metadata" title="Get Book Metadata"><i
-              class="fa-solid fa-file-code"></i></button></li>
-      </div>
-      <!-- Return Settings to Default -->
-      <div class="dropdown">
-        <li><button class="dropbtn funcbtn" id="settings-remove" value="Reset Settings to Default"
-            title="Return Settings to Default"><i class="fa-solid fa-arrow-rotate-left"></i></button></li>
-      </div>
-    </ul>
-    <!-- Render the book here -->
-    <div id="viewer" class="spreads"> </div>
-    <!-- Arrows for going back/forwards one page -->
-    <a href="#prev" id="prev" class="arrow" title="Previous Page"> <i class="fa-solid fa-chevron-left"></i> </a>
-    <a href="#next" id="next" class="arrow" title="Next Page"> <i class="fa-solid fa-chevron-right"></i> </a>
-
-    <div class="page-slider-container">
-      <input type="range" id="page-slider" min='0' max='100' step='1'>
+  <div class="reader-container">
+    <!-- Book Title -->
+    <h1 id="title"></h1>
+    <div class="page-count">
+      <input type="text" onFocus="this.select();" id="current-page" size="10" title="Currently Displayed Pages">
+      <span id="percentage"></span>
+      /
+      <span id="total-pages"></span>
     </div>
-    <!-- <label for="page-slider">Page Slider</label> -->
+    <div class="icon-bar">
+      <ul>
+        <!-- Page navigation buttons -->
+        <div class="dropdown">
+          <li>
+            <button class="dropbtn" id="return-to-home" type="button" value="Return to Home Page">
+              <i class="fa-solid fa-house"></i>
+              <i class="fa fa-caret-down"></i>
+            </button>
+          </li>
+          <div class="dropdown-content">
+            <ul id="icon-nav-container">
+              <li>
+                <a id="nav-button-home" class="icon-nav-buttons" href="/">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a id="nav-button-library" class="icon-nav-buttons" href="/library">
+                  Library
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- Table of Contents -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-table-list"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div class="custom-select">
+              <div id="TOC">
+                <p id="toc_title">Table of Contents</p>
+                <select name="table-of-contents" id="table-of-contents" title="Table of Contents"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- View Mode Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-eye"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div id="viewMode">
+              <p id="viewMode_title">View Mode</p>
+              <select name="Flow" id="options-flow" title="View Mode">
+                <option value="paginated">Paginated</option>
+                <option value="scrolled-doc">Scroll</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- Theme Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-circle-half-stroke"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div id="themes">
+              <p id="themes_title">Themes</p>
+              <select name="Theme" id="settings-theme" title="Theme"></select>
+            </div>
+          </div>
+        </div>
+        <!-- Font Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-font"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div id="fonts">
+              <p id="fonts_title">Fonts</p>
+              <select name="Font" id="settings-font" title="Font"></select>
+            </div>
+          </div>
+        </div>
+        <!-- Font Size Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-text-height"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div id="fontSize">
+              <p id="fontSize_title">Font Size</p>
+              <input type="number" id="settings-font-size" title="Font Size" min=15>
+              <span>(Min. 15)</span>
+            </div>
+          </div>
+        </div>
+        <!-- Search in Book Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-magnifying-glass"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div class="dropdown-content">
+            <div id="searchInBook" class="search">
+              <div class="search-function-container">
+                <p id="searchInBook_title">Search in Book</p>
+                <input type="text" id="search-bar">
+                <input type="button" id="search-button" value='Search' title='Search'>
+                <input type="button" id="search-clear" value='Clear' title='Clear Search'>
+              </div>
+              <div class="search-results-container">
+                <p id="searchInBook_results">Search Results</p>
+                <input type="number" id="results-current" min=1>
+                /
+                <span id="results-total">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Highlight Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-highlighter"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div id="highlight-buttons" class="dropdown-content">
+            <p id="highlights">Highlights</p>
+            <div id="highlight-list"></div>
+            <input type="button" id="highlight" value="Highlight Selected Text">
+            <input type="button" id="highlight-remove-all" value="Remove All Highlights">
+          </div>
+        </div>
+        <!-- Bookmark Option -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-bookmark"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div id="bookmark-buttons" class="dropdown-content">
+            <p id="bookmarks">Bookmarks</p>
+            <div id="bookmark-list"></div>
+            <input type="button" id="bookmark" value="Bookmark Current Page">
+            <input type="button" id="bookmark-remove-all" value="Remove All Bookmarks">
+          </div>
+        </div>
+        <!-- Text-to-Speech Options -->
+        <div class="dropdown">
+          <li><button class="dropbtn"><i class="fa-solid fa-microphone"></i>
+              <i class="fa fa-caret-down"></i>
+            </button></li>
+          <div id="speech" class="dropdown-content">
+            <p id="text-to-speech">Text-to-Speech</p>
+            <div class="speech">
+              <select name="Voices" id="voices" title="Text-to-Speech Voices"></select>
+              <input type="button" id="speech-start" value="Start Speech">
+              <input type="button" id="speech-stop" value="Stop Speech">
+            </div>
+            <div class="speech-sliders">
+              <label for="speech-volume" id="speech-volume-label">Volume</label>
+              <input type="range" id="speech-volume" title="Speech Volume" min="0" max="1" value="1" step="0.1">
+              <span id="speech-volume-val"></span>
+
+              <label for="speech-rate" id="speech-rate-label">Rate</label>
+              <input type="range" id="speech-rate" title="Speech Rate" min="0.1" max="10" value="1" step="0.1">
+              <span id="speech-rate-val"></span>
+
+              <label for="speech-pitch" id="speech-pitch-label">Pitch</label>
+              <input type="range" id="speech-pitch" title="Speech Rate" min="0" max="2" value="1" step="0.1">
+              <span id="speech-pitch-val"></span>
+            </div>
+          </div>
+        </div>
+        <!-- Get Book Metadata-->
+        <div class="dropdown">
+          <li><button class="dropbtn funcbtn" id="metadata" value="Get Book Metadata" title="Get Book Metadata"><i
+                class="fa-solid fa-file-code"></i></button></li>
+        </div>
+        <!-- Return Settings to Default -->
+        <div class="dropdown">
+          <li><button class="dropbtn funcbtn" id="settings-remove" value="Reset Settings to Default"
+              title="Return Settings to Default"><i class="fa-solid fa-arrow-rotate-left"></i></button></li>
+        </div>
+      </ul>
+      <!-- Render the book here -->
+      <div id="viewer" class="spreads"> </div>
+      <!-- Arrows for going back/forwards one page -->
+      <a href="#prev" id="prev" class="arrow" title="Previous Page"> <i class="fa-solid fa-chevron-left"></i> </a>
+      <a href="#next" id="next" class="arrow" title="Next Page"> <i class="fa-solid fa-chevron-right"></i> </a>
+
+      <div class="page-slider-container">
+        <input type="range" id="page-slider" min='0' max='100' step='1'>
+      </div>
+      <!-- <label for="page-slider">Page Slider</label> -->
+    </div>
   </div>
   </div>
   <!-- SCRIPTS -->
